@@ -1,24 +1,27 @@
 using System;
 using System.Collections.Generic;
-using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
 using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States;
-using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain;
-using Core.Scripts.Game.ScriptableObjects.Configs;
 using UnityEngine;
+using Zenject;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain
 {
     public sealed class GameStateMachine : GameStateMachineBase
     {
-        internal GameStateMachine(
-            GameConfig config, IAssetProvider assetProvider, MainGameUIStateMachine uiStateMachine)
+        [Inject]
+        public GameStateMachine(
+            BootStrapState.Factory bootFactory,
+            LoadLevelState.Factory loadLevelFactory,
+            PhotonLobbyState.Factory photonFactory,
+            GamePlayState.Factory gamePlayFactory)
         {
             States = new Dictionary<Type, IExitState>
             {
-                [typeof(BootStrapState)] = new BootStrapState(this),
-                [typeof(LoadLevelState)] = new LoadLevelState(this, config),
-                [typeof(GamePlayState)] = new GamePlayState(this, assetProvider, uiStateMachine),
+                [typeof(BootStrapState)] = bootFactory.Create(this),
+                [typeof(LoadLevelState)] = loadLevelFactory.Create(this),
+                [typeof(PhotonLobbyState)] = photonFactory.Create(this),
+                [typeof(GamePlayState)] = gamePlayFactory.Create(this),
             };
         }
 
@@ -26,11 +29,11 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain
         {
             try
             {
-                Debug.Log($"{"ENTER"}: {message}");
+                Debug.Log($"{message}");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"{"ENTER"}: {ex.Message}");
+                Debug.LogError($"{ex.Message}");
             }
         }
     }

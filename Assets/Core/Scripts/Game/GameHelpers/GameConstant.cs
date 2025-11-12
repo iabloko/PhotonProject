@@ -35,12 +35,12 @@ namespace Core.Scripts.Game.GameHelpers
         public const string LAYER_GROUND = "Ground";
 
         #endregion
-        
+
         #region USER INTERFACE STATE MACHINE VIEWS
-        
-        public const string GAME_UI_MAIN_VIEW = "GameUIMain/UIStateMachineParentView";
-        public const string GAME_UI_CHARACTER_VIEW = "GameUIMain/GameMenuUICharacterView";
-        public const string GAME_UI_GAME_PLAY_VIEW = "GameUIMain/GameMenuUIGamePlayView";
+
+        public const string GAME_UI_MAIN_VIEW = "GameUIMain/UIStateMachineParentView.prefab";
+        public const string GAME_UI_GAME_PLAY_VIEW = "GameUIMain/GameMenuUIGamePlayView.prefab";
+        public const string GAME_UI_DESCRIPTION_VIEW = "GameUIMain/GameMenuUIDescriptionView.prefab";
 
         #endregion
     }

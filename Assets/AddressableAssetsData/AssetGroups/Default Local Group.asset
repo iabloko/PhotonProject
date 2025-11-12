@@ -14,27 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
   m_GUID: 586b8c940c46f8649a875de02f08d3c4
-  m_SerializeEntries:
-  - m_GUID: 1cd2c812b78e76b4fae0b41796a44955
-    m_Address: GameUIMain/GameMenuUICharacterView
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 53c60b0e2539c37418aaf968f47c06f3
-    m_Address: GameUIMain/GameMenuUIBaseView
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c030303a5ba097f47b87178a26860441
-    m_Address: GameUIMain/GameMenuUIGamePlayView
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f805a45101b7ca14899b9e843540f41c
-    m_Address: GameUIMain/UIStateMachineParentView
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: b3f6e48f74018ac4881892a1c59681af, type: 2}
   m_SchemaSet:

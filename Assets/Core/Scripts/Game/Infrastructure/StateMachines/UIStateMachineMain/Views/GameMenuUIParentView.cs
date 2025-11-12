@@ -1,7 +1,9 @@
 using System;
 using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
+using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Data;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views
 {
@@ -12,10 +14,15 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
         [SerializeField] private Canvas canvas;
         [SerializeField] public CanvasGroup canvasGroup;
 
+        [SerializeField] internal GameMenuUIFadeConfig fadeConfig;
+        [SerializeField] internal Image fadeImage;
+        
         private MainGameUIStateMachine _stateMachine;
 
-        public void Setup(MainGameUIStateMachine gameMenuUIStateMachine)
+        public void Setup(MainGameUIStateMachine gameMenuUIStateMachine, Camera c)
         {
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = c;
             _stateMachine = gameMenuUIStateMachine;
         }
 

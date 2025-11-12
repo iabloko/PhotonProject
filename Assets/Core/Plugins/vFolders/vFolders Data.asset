@@ -78,6 +78,11 @@ MonoBehaviour:
     - 58ce8b2ff4b7bcf4f8e9e8db3d0e333d
     - 9a3798fca9e37a34cb6a7c65ee3f89a5
     - fba942bdd42eca340a5fe25882320d86
+    - 81d9cdde77ea7ab48bb9da573882100f
+    - 5e47346b297027e46a21b6a0294d01b1
+    - 8cc30f48f08271446a6374814974fe5f
+    - 8c2eefb384ff859438c247d53f0df08b
+    - d546904c12b9aa9448a92c459ba9a70c
     values:
     - iconNameOrGuid: FreeformLayoutGroup Icon
       colorIndex: 0
@@ -332,6 +337,26 @@ MonoBehaviour:
       isIconRecursive: 0
       isColorRecursive: 0
     - iconNameOrGuid: WaitSpin00
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Flare On Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Sprite Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Font Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Shader Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Material On Icon
       colorIndex: 0
       isIconRecursive: 0
       isColorRecursive: 0

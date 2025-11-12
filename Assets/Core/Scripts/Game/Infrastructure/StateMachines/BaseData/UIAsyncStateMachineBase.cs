@@ -62,7 +62,6 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.BaseData
 
         public virtual async UniTask CloseStateMachine(Action closed = null)
         {
-            UnSubscribeEvents();
             await CloseActiveState(closed);
             OnStateMachineClosed?.Invoke();
         }
@@ -85,7 +84,5 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.BaseData
         }
 
         public abstract void SetUIStateView(UIAsyncPayloadView view);
-        protected abstract void SubscribeEvents();
-        protected abstract void UnSubscribeEvents();
     }
 }

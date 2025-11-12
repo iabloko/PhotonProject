@@ -1,5 +1,7 @@
+using Core.Scripts.Game.Infrastructure.Bootstrapper;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
-using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain;
+using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain;
+using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States;
 using Zenject;
 
 namespace Core.Scripts.Game.Installers
@@ -9,19 +11,31 @@ namespace Core.Scripts.Game.Installers
         public override void InstallBindings()
         {
             BindHelpers();
-            BindMainGameUI();
-            
-            Container.Bind<GameStartup>().AsSingle().NonLazy();
+            BindGameStateMachine();
+            BindBootstrap();
         }
 
         private void BindHelpers()
         {
             Container.Bind<IAssetProvider>().To<AssetProvider>().AsSingle().NonLazy();
         }
-
-        private void BindMainGameUI()
+        
+        private void BindGameStateMachine()
         {
-            Container.Bind<MainGameUIStateMachine>().AsSingle().NonLazy();
+            Container.Bind<BootStrapState>().AsSingle();
+            Container.Bind<LoadLevelState>().AsSingle();
+            Container.Bind<GamePlayState>().AsSingle();
+
+            Container.BindFactory<GameStateMachine, BootStrapState, BootStrapState.Factory>().AsSingle();
+            Container.BindFactory<GameStateMachine, LoadLevelState, LoadLevelState.Factory>().AsSingle();
+            Container.BindFactory<GameStateMachine, GamePlayState, GamePlayState.Factory>().AsSingle();
+
+            Container.Bind<GameStateMachine>().AsSingle().NonLazy();
+        }
+        
+        private void BindBootstrap()
+        {
+            Container.BindInterfacesTo<GameBootstrapper>().AsSingle().NonLazy();
         }
     }
 }

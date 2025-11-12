@@ -24,7 +24,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.BaseData
         UniTask Enter(TPayload payload);
     }
 
-    public abstract class AsyncAsyncPayloadState<TPayload> : IAsyncPayloadState<TPayload>
+    public abstract class AsyncPayloadState<TPayload> : IAsyncPayloadState<TPayload>
     {
         public TPayload Payload { get; private set; }
         public abstract string StateName { get; }
@@ -33,6 +33,22 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.BaseData
         public virtual async UniTask Enter(TPayload payload)
         {
             Payload = payload;
+            await StateView.Open();
+        }
+
+        public virtual async UniTask Exit()
+        {
+            await StateView.Close();
+        }
+    }    
+    
+    public abstract class AsyncState : IAsyncState
+    {
+        public abstract string StateName { get; }
+        public abstract IAsyncStateView StateView { get; }
+
+        public virtual async UniTask Enter()
+        {
             await StateView.Open();
         }
 

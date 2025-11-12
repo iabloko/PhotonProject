@@ -2,7 +2,8 @@ using System;
 using Core.Scripts.Game.Infrastructure.Loader;
 using Core.Scripts.Game.Infrastructure.StateMachines.DataInterfaces;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States.Base;
-using GameConfig = Core.Scripts.Game.ScriptableObjects.Configs.GameConfig;
+using UnityEngine.Scripting;
+using Zenject;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States
 {
@@ -13,19 +14,18 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
 
         public LoadLevelData(string nextSceneName, Action onSceneLoaded)
         {
-            this.NextSceneName = nextSceneName;
-            this.OnSceneLoaded = onSceneLoaded;
+            NextSceneName = nextSceneName;
+            OnSceneLoaded = onSceneLoaded;
         }
     }
 
-    internal sealed class LoadLevelState : PayloadStateBase<LoadLevelData>
+    public sealed class LoadLevelState : PayloadStateBase<LoadLevelData>
     {
         public override string StateName => "LoadLevelState";
 
         private readonly SceneLoader _sceneLoader;
 
-        public LoadLevelState(
-            GameStateMachine gameGameStateMachineBase, GameConfig config) : base(gameGameStateMachineBase)
+        public LoadLevelState(GameStateMachine gameGameStateMachineBase) : base(gameGameStateMachineBase)
         {
             _sceneLoader = new SceneLoader();
         }
@@ -37,6 +37,15 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
 
         public override void Exit()
         {
+        }
+
+        [Preserve]
+        public sealed class Factory : PlaceholderFactory<GameStateMachine, LoadLevelState>
+        {
+            [Preserve]
+            public Factory()
+            {
+            }
         }
     }
 }
