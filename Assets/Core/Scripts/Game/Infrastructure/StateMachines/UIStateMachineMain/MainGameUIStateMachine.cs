@@ -41,7 +41,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
         {
             _cts = new CancellationTokenSource();
             _mainView = await CreateMainView();
-            _mainView.Setup(this, Camera.main);
+            _mainView.Setup(this);
 
             States = new Dictionary<Type, IAsyncExitState>
             {

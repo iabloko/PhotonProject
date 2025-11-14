@@ -12,23 +12,14 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
         [SerializeField] private RectTransform bodyRT;
 
         [SerializeField] private Canvas canvas;
-        [SerializeField] public CanvasGroup canvasGroup;
+        [SerializeField] private CanvasGroup canvasGroup;
 
         [SerializeField] internal GameMenuUIFadeConfig fadeConfig;
         [SerializeField] internal Image fadeImage;
         
-        private MainGameUIStateMachine _stateMachine;
-
-        public void Setup(MainGameUIStateMachine gameMenuUIStateMachine, Camera c)
+        public void Setup(MainGameUIStateMachine gameMenuUIStateMachine)
         {
-            canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.worldCamera = c;
-            _stateMachine = gameMenuUIStateMachine;
-        }
-
-        public void ChangeSortOrder(int order)
-        {
-            canvas.sortingOrder = order;
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         }
 
         internal void Close(bool withAnimation, Action closed = null)

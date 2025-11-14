@@ -7,7 +7,8 @@ namespace Core.Scripts.Game.GameHelpers
         #region GAME_SCENES
 
         public const string GAME_INITIALIZATION = "Initialization";
-        public const string GAME_PLAY = "Game";
+        public const string SCENE_GAME_PLAY = "Game";
+        public const string SCENE_TRANSITION = "Transition";
         public const string GAME_CHARACTER_BUILDER = "CharacterBuilder";
 
         #endregion

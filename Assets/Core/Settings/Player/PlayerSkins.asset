@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a9ef6b70f04bcf9bb2ac605995b9a9, type: 3}
+  m_Name: PlayerSkins
+  m_EditorClassIdentifier: OnlySpace.Player.Skins::Sandbox.Project.Scripts.Player.PlayersSkins.PlayerVisualData
+  skins:
+  - {fileID: 2800000, guid: b24b57e0cfed05643be34b0256df875e, type: 3}
+  - {fileID: 2800000, guid: f3117e735161a1e49aa3f78498761f06, type: 3}
+  - {fileID: 2800000, guid: a2e781ab9b9e5d748b74706dcbbab973, type: 3}
+  - {fileID: 2800000, guid: e2470a432baf43f4b9602fe6cb1753ba, type: 3}

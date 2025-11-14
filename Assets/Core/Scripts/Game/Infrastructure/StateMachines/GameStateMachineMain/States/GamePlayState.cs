@@ -5,11 +5,7 @@ using Zenject;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States
 {
-    public struct GamePlayStateData : IData
-    {
-    }
-
-    public sealed class GamePlayState : PayloadStateBase<GamePlayStateData>
+    public sealed class GamePlayState : StateBase
     {
         public GamePlayState(GameStateMachine gameGameStateMachineBase) : base(gameGameStateMachineBase)
         {
@@ -17,7 +13,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
 
         public override string StateName => "GamePlayState";
 
-        public override void Enter(GamePlayStateData data)
+        public override void Enter()
         {
         }
 

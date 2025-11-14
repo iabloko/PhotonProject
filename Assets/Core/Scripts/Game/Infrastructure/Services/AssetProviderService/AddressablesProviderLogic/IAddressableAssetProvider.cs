@@ -26,6 +26,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Address
     public interface IAddressableAssetProvider
     {
         public void Release(Object instance);
+        public void ReleaseInstance(GameObject gameObject);
+        
         public UniTask UnLoadAsset<T>(string path);
 
         public UniTask<GameObject> InstantiateAsync(string path, Transform parent,

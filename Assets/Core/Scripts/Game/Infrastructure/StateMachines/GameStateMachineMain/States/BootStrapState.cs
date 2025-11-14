@@ -15,11 +15,9 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
         
         public override void Enter()
         {
-            GamePlayStateData data = new();
-
             GameStateMachine.Enter<LoadLevelState, LoadLevelData>(
-                new LoadLevelData(GameConstant.GAME_PLAY,
-                () => GameStateMachine.Enter<GamePlayState, GamePlayStateData>(data)));
+                new LoadLevelData(GameConstant.SCENE_TRANSITION,
+                () => GameStateMachine.Enter<PhotonLobbyState>()));
         }
 
         public override void Exit()

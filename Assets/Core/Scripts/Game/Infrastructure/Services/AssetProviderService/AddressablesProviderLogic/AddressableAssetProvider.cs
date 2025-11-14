@@ -110,7 +110,11 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Address
             }
         }
 
-        void IAddressableAssetProvider.Release(Object instance) => Addressables.Release(instance);
+        void IAddressableAssetProvider.ReleaseInstance(GameObject gameObject) => 
+            Addressables.ReleaseInstance(gameObject);
+
+        void IAddressableAssetProvider.Release(Object instance) => 
+            Addressables.Release(instance);
 
         private void Log<T>(string path)
         {

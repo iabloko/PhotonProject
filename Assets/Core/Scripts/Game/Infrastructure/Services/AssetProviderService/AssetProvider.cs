@@ -3,19 +3,19 @@ using System.Threading;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService.AddressablesProviderLogic;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService.ResourceProviderLogic;
 using Cysharp.Threading.Tasks;
+using Sandbox.Project.Scripts.Helpers.BetterSpaceStringHelper;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
 {
+    // ReSharper disable once ConvertConstructorToMemberInitializers
+    // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class AssetProvider : IAssetProvider
     {
         private readonly IAddressableAssetProvider _addressables;
         private readonly IResourceProvider _resources;
 
-        [Inject]
         public AssetProvider()
         {
             _addressables = new AddressableAssetProvider();
@@ -32,21 +32,22 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
 
             GameObject createdObject =
                 await _addressables.InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle, cts);
-
+            
             if (createdObject == null) return null;
 
-            T component = createdObject.GetComponent<T>();
+            createdObject.TryGetComponent(out T component);
             if (component == null)
             {
+                ReleaseInstance(createdObject);
                 Debug.LogError(
                     $"[AssetProvider] InstantiateAsync<{typeof(T).Name}>: prefab at '{path}' does not contain requested component. Releasing instance.");
-                Addressables.ReleaseInstance(createdObject);
                 return null;
             }
 
             if (dontDestroy)
                 Object.DontDestroyOnLoad(createdObject);
 
+            createdObject.transform.name = path.CleanAssetName();
             return component;
         }
 
@@ -58,10 +59,11 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
 
             GameObject createdObject =
                 await _addressables.InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle, cts);
-
+            
             if (createdObject == null) return null;
             if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
 
+            createdObject.transform.name = path.CleanAssetName();
             return createdObject;
         }
 
@@ -77,6 +79,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
             if (instance == null) return null;
             if (dontDestroy) Object.DontDestroyOnLoad(instance);
 
+            instance.transform.name = path.CleanAssetName();
             return instance;
         }
 
@@ -84,20 +87,16 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
 
         #region RELEASE
 
-        void IAssetProvider.ReleaseObject(Object obj)
+        public void ReleaseObject(Object obj)
         {
-            if (obj == null)
-                return;
-
-            Addressables.Release(obj);
+            if (obj == null) return;
+            _addressables.Release(obj);
         }
 
-        void IAssetProvider.ReleaseInstance(GameObject obj)
+        public void ReleaseInstance(GameObject obj)
         {
-            if (obj == null)
-                return;
-
-            Addressables.ReleaseInstance(obj);
+            if (obj == null) return;
+            _addressables.ReleaseInstance(obj);
         }
 
         #endregion

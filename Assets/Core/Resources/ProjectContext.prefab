@@ -76,3 +76,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db4af64be24c4b31a28b38268d547f81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkObjectProvider: {fileID: 1004917546762834014}

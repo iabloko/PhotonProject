@@ -83,6 +83,9 @@ MonoBehaviour:
     - 8cc30f48f08271446a6374814974fe5f
     - 8c2eefb384ff859438c247d53f0df08b
     - d546904c12b9aa9448a92c459ba9a70c
+    - f0edd8b31ac80f3499edcc70757f9834
+    - 8add7c2d8188bca499e85ff8f5addda3
+    - 4bf1975ac61ff2147be5ce70bde2c06a
     values:
     - iconNameOrGuid: FreeformLayoutGroup Icon
       colorIndex: 0
@@ -357,6 +360,18 @@ MonoBehaviour:
       isIconRecursive: 0
       isColorRecursive: 0
     - iconNameOrGuid: Material On Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: PreMatCube
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: AnimationClip Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Particle Effect
       colorIndex: 0
       isIconRecursive: 0
       isColorRecursive: 0

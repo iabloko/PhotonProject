@@ -1,33 +1,49 @@
 using Core.Scripts.Game.Infrastructure.Bootstrapper;
+using Core.Scripts.Game.Infrastructure.ProjectNetworking.Provider;
+using Core.Scripts.Game.Infrastructure.ProjectNetworking.Service;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States;
+using UnityEngine;
 using Zenject;
+using AssetProvider = Core.Scripts.Game.Infrastructure.Services.AssetProviderService.AssetProvider;
 
 namespace Core.Scripts.Game.Installers
 {
     public sealed class InitializationInstaller : MonoInstaller
     {
+        [SerializeField] private Transform networkObjectProvider;
+        
         public override void InstallBindings()
         {
-            BindHelpers();
+            BindCoreServices();
             BindGameStateMachine();
             BindBootstrap();
         }
 
-        private void BindHelpers()
+        private void BindCoreServices()
         {
             Container.Bind<IAssetProvider>().To<AssetProvider>().AsSingle().NonLazy();
+            
+            Container
+                .BindInterfacesAndSelfTo<ZenjectNetworkObjectProvider>()
+                .FromNewComponentOn(networkObjectProvider.gameObject)
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<INetworkService>().To<NetworkService>().AsSingle().NonLazy();
         }
         
         private void BindGameStateMachine()
         {
             Container.Bind<BootStrapState>().AsSingle();
             Container.Bind<LoadLevelState>().AsSingle();
+            Container.Bind<PhotonLobbyState>().AsSingle();
             Container.Bind<GamePlayState>().AsSingle();
 
             Container.BindFactory<GameStateMachine, BootStrapState, BootStrapState.Factory>().AsSingle();
             Container.BindFactory<GameStateMachine, LoadLevelState, LoadLevelState.Factory>().AsSingle();
+            Container.BindFactory<GameStateMachine, PhotonLobbyState, PhotonLobbyState.Factory>().AsSingle();
             Container.BindFactory<GameStateMachine, GamePlayState, GamePlayState.Factory>().AsSingle();
 
             Container.Bind<GameStateMachine>().AsSingle().NonLazy();
