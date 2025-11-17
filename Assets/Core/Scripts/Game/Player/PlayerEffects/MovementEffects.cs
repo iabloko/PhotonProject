@@ -1,8 +1,7 @@
+using Core.Scripts.Game.Infrastructure.ModelData.InteractionObjects;
 using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
 using Core.Scripts.Game.Player.PlayerMovementEffects;
 using Fusion.Addons.SimpleKCC;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.InteractionObjects;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.MovementEffects;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -70,25 +69,6 @@ namespace Core.Scripts.Game.Player.PlayerEffects
             // _bananaSpecialObjectEffect.Stop();
             // _bubbleGumSpecialObjectEffect.Stop();
             // _speedUpSpecialObjectEffect.Stop();
-        }
-
-        public void StartMovementEvent(MovementEffectData movementData)
-        {
-            switch (movementData.Type)
-            {
-                case InteractionObjectType.BANANA:
-                    StartBanana();
-                    break;
-                case InteractionObjectType.BUBBLE_GUM:
-                    StartBubbleGum();
-                    break;
-                case InteractionObjectType.SPEED_BOOSTER_PLANE:
-                    StartSpeedUpBoost();
-                    break;
-                case InteractionObjectType.JUMP_PAD:
-                    StartJumPad();
-                    break;
-            }
         }
 
         private void StartJumPad()

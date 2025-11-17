@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
+using Unity.Cinemachine;
 using UnityEngine;
 using Zenject;
 
@@ -21,10 +22,11 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
 
         private readonly Dictionary<CinemachineState, CinemachineVirtualRig> _virtualRigs = new(4);
 
-        // private CinemachineVirtualCamera _vcam3Rd;
-        // private CinemachineVirtualCamera _vcamFps;
-        // private CinemachineVirtualCamera _vcamPrev;
-        // private CinemachineVirtualCamera _vcamTps;
+        private CinemachineCamera _vcam3Rd;
+        private CinemachineCamera _vcamFps;
+        private CinemachineCamera _vcamPrev;
+        private CinemachineCamera _vcamTps;
+
         private Transform _player;
 
         public int PreviewDirection { get; private set; } = 1;
@@ -39,55 +41,50 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             _provider = provider;
         }
 
-        public void ChangeVCamFieldOfView(int newValue)
+        void ICinemachineService.ChangeCamFarClipPlane(int newFarClip)
         {
-            // foreach (var rig in _virtualRigs)
-            // {
-            //     rig.Value.VCam.m_Lens.FarClipPlane = newValue;
-            // }
+            foreach (var rig in _virtualRigs)
+            {
+                LensSettings lens = rig.Value.VCam.Lens;
+                lens.FarClipPlane = newFarClip;
+                rig.Value.VCam.Lens = lens;
+            }
         }
 
         void ICinemachineService.Register(Transform player, Transform previewRotation, Vector2 pitchYawDeg)
         {
-            // _token = new CancellationTokenSource();
-            //
-            // if (_initialized) return;
-            // _player = player;
-            //
-            // _root = new GameObject("Virtual_Cameras").transform;
-            //
-            // _vcam3Rd = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_3_RD, "VCam_3rd");
-            // _vcamFps = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_FPS, "VCam_FPS");
-            // _vcamPrev = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_PREVIEW, "VCam_Preview");
-            // _vcamTps = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_TELEPORTATION, "VCam_Teleport");
-            //
-            // HookOnLive(_vcam3Rd, CinemachineState.Normal3Rd);
-            // HookOnLive(_vcamFps, CinemachineState.NormalFPS);
-            // HookOnLive(_vcamPrev, CinemachineState.Preview);
-            // HookOnLive(_vcamTps, CinemachineState.Teleportation);
-            //
-            // _vcam3Rd.Follow = _vcam3Rd.LookAt = player;
-            // _vcamFps.Follow = _vcamFps.LookAt = player;
-            // _vcamTps.Follow = _vcamTps.LookAt = player;
-            //
-            // _vcamPrev.Follow = _vcamPrev.LookAt = previewRotation;
-            //
-            // _virtualRigs[CinemachineState.Normal3Rd] = new CinemachineVirtualRig(_vcam3Rd);
-            // _virtualRigs[CinemachineState.NormalFPS] = new CinemachineVirtualRig(_vcamFps);
-            // _virtualRigs[CinemachineState.Preview] = new CinemachineVirtualRig(_vcamPrev);
-            // _virtualRigs[CinemachineState.Teleportation] = new CinemachineVirtualRig(_vcamTps);
-            //
-            // ConfigurePov(_virtualRigs[CinemachineState.Normal3Rd].Pov, pitchYawDeg);
-            // ConfigurePov(_virtualRigs[CinemachineState.NormalFPS].Pov, pitchYawDeg);
-            //
-            // CinemachineFramingTransposer transposer3Rd = _virtualRigs[CinemachineState.Normal3Rd].Transposer;
-            // if (transposer3Rd != null) transposer3Rd.m_CameraDistance = PlayerInfo.CameraDistance;
-            //
-            // SetAllPriorities(INACTIVE_PRIORITY);
-            // _virtualRigs[CinemachineState.Preview].SetPriority(ACTIVE_PRIORITY);
-            // CurrentState = CinemachineState.Preview;
-            //
-            // _initialized = true;
+            _token = new CancellationTokenSource();
+
+            if (_initialized) return;
+
+            _player = player;
+            _root = new GameObject("Virtual_Cameras").transform;
+
+            _vcam3Rd = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_3_RD, "VCam_3rd");
+            _vcamFps = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_FPS, "VCam_FPS");
+            _vcamPrev = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_PREVIEW, "VCam_Preview");
+            _vcamTps = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_TELEPORTATION, "VCam_Teleport");
+
+            _vcam3Rd.Follow = _vcam3Rd.LookAt = player;
+            _vcamFps.Follow = _vcamFps.LookAt = player;
+            _vcamTps.Follow = _vcamTps.LookAt = player;
+            _vcamPrev.Follow = _vcamPrev.LookAt = previewRotation;
+
+            _virtualRigs[CinemachineState.Normal3Rd] = new CinemachineVirtualRig(_vcam3Rd);
+            _virtualRigs[CinemachineState.NormalFPS] = new CinemachineVirtualRig(_vcamFps);
+            _virtualRigs[CinemachineState.Preview] = new CinemachineVirtualRig(_vcamPrev);
+            _virtualRigs[CinemachineState.Teleportation] = new CinemachineVirtualRig(_vcamTps);
+
+            ConfigurePov(_virtualRigs[CinemachineState.Normal3Rd].Pov, pitchYawDeg);
+            ConfigurePov(_virtualRigs[CinemachineState.NormalFPS].Pov, pitchYawDeg);
+
+            SetAllPriorities(INACTIVE_PRIORITY);
+            _virtualRigs[CinemachineState.Preview].SetPriority(ACTIVE_PRIORITY);
+            CurrentState = CinemachineState.Preview;
+
+            SubscribeCameraActivationEvents();
+
+            _initialized = true;
         }
 
         void ICinemachineService.ChangeCinemachineState(CinemachineState state)
@@ -102,11 +99,11 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             SetAllPriorities(INACTIVE_PRIORITY);
 
             CinemachineVirtualRig currentRig = _virtualRigs[state];
-            // currentRig.SetPriority(ACTIVE_PRIORITY);
+            currentRig.SetPriority(ACTIVE_PRIORITY);
 
             CurrentCameraDistance = state switch
             {
-                // CinemachineState.Normal3Rd => currentRig.Transposer.m_CameraDistance,
+                CinemachineState.Normal3Rd => currentRig.Transposer.CameraDistance,
                 CinemachineState.NormalFPS => 0,
                 _ => CurrentCameraDistance
             };
@@ -115,38 +112,36 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
         void ICinemachineService.UpdateVCam(Vector2 pitchYawDeg)
         {
             if (!_initialized) return;
+            
+            foreach (CinemachineVirtualRig rig in _virtualRigs.Values.Where(r => r.Pov != null))
+            {
+                rig.Pov.PanAxis.Value = pitchYawDeg.y;
+                rig.Pov.TiltAxis.Value = pitchYawDeg.x;
+            }
 
-            // foreach (CinemachineVirtualRig rig in _virtualRigs.Values.Where(rig => rig.Pov != null))
-            // {
-            //     rig.Pov.m_HorizontalAxis.Value = pitchYawDeg.y;
-            //     rig.Pov.m_VerticalAxis.Value = pitchYawDeg.x;
-            // }
+            if (float.IsNaN(pitchYawDeg.x) || float.IsNaN(pitchYawDeg.y)) return;
 
-            // if (float.IsNaN(pitchYawDeg.x) || float.IsNaN(pitchYawDeg.y)) return;
-            //
-            // foreach (CinemachineVirtualRig rig in _virtualRigs.Values)
-            //     DrivePovTowards(rig.Pov, pitchYawDeg);
+            foreach (CinemachineVirtualRig rig in _virtualRigs.Values)
+                DrivePovTowards(rig.Pov, pitchYawDeg);
         }
+        
 
-        // private static void DrivePovTowards(CinemachinePOV pov, Vector2 pitchYawDeg)
-        // {
-        //     if (!pov) return;
-        //
-        //     float targetYaw = Normalize180(pitchYawDeg.y);
-        //     float targetPitch = Normalize180(pitchYawDeg.x);
-        //
-        //     float curYaw = pov.m_HorizontalAxis.Value;
-        //     float curPitch = pov.m_VerticalAxis.Value;
-        //
-        //     pov.m_HorizontalAxis.Value = curYaw + Mathf.DeltaAngle(curYaw, targetYaw);
-        //     pov.m_VerticalAxis.Value = curPitch + Mathf.DeltaAngle(curPitch, targetPitch);
-        //
-        //     pov.m_VerticalAxis.Value = Mathf.Clamp(
-        //         pov.m_VerticalAxis.Value,
-        //         pov.m_VerticalAxis.m_MinValue,
-        //         pov.m_VerticalAxis.m_MaxValue
-        //     );
-        // }
+        private static void DrivePovTowards(CinemachinePanTilt pov, Vector2 pitchYawDeg)
+        {
+            if (!pov) return;
+
+            float targetYaw = Normalize180(pitchYawDeg.y);
+            float targetPitch = Normalize180(pitchYawDeg.x);
+
+            float curYaw = pov.PanAxis.Value;
+            float curPitch = pov.TiltAxis.Value;
+
+            pov.PanAxis.Value = curYaw + Mathf.DeltaAngle(curYaw, targetYaw);
+            pov.TiltAxis.Value = curPitch + Mathf.DeltaAngle(curPitch, targetPitch);
+            
+            Vector2 range = pov.TiltAxis.Range;
+            pov.TiltAxis.Value = Mathf.Clamp(pov.TiltAxis.Value, range.x, range.y);
+        }
 
         private static float Normalize180(float angle)
         {
@@ -155,39 +150,28 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             if (angle <= -180f) angle += 360f;
             return angle;
         }
-
-        void ICinemachineService.ChangeVCamVerticalSensitivity(float value)
-        {
-            // if (_virtualRigs.TryGetValue(CinemachineState.Normal3Rd, out CinemachineVirtualRig rig3Rd) &&
-            //     rig3Rd.Pov != null)
-            //     rig3Rd.Pov.m_VerticalAxis.m_MaxSpeed = value;
-            //
-            // if (_virtualRigs.TryGetValue(CinemachineState.NormalFPS, out CinemachineVirtualRig rigFps) &&
-            //     rigFps.Pov != null)
-            //     rigFps.Pov.m_VerticalAxis.m_MaxSpeed = value;
-        }
-
+        
         void ICinemachineService.ChangeVCamDistance(float distance)
         {
             if (!_initialized) return;
 
-            // if (!_virtualRigs.TryGetValue(CinemachineState.Normal3Rd, out CinemachineVirtualRig rig3Rd) ||
-            //     rig3Rd.Transposer == null) return;
-            //
-            // rig3Rd.Transposer.m_CameraDistance = distance;
-            CurrentCameraDistance = distance;
-            // PlayerInfo.UpdateCameraDistance(distance);
-        }
+            if (!_virtualRigs.TryGetValue(CinemachineState.Normal3Rd, out CinemachineVirtualRig rig3Rd) ||
+                rig3Rd.Transposer == null) return;
 
+            rig3Rd.Transposer.CameraDistance = distance;
+            CurrentCameraDistance = distance;
+        }
+        
         void ICinemachineService.Dispose()
         {
-            _token.Cancel();
-            _token.Dispose();
+            if (_token != null)
+            {
+                _token.Cancel();
+                _token.Dispose();
+                _token = null;
+            }
 
-            // _vcam3Rd.m_Transitions.m_OnCameraLive.RemoveAllListeners();
-            // _vcamFps.m_Transitions.m_OnCameraLive.RemoveAllListeners();
-            // _vcamPrev.m_Transitions.m_OnCameraLive.RemoveAllListeners();
-            // _vcamTps.m_Transitions.m_OnCameraLive.RemoveAllListeners();
+            UnsubscribeCameraActivationEvents();
 
             if (_root != null)
             {
@@ -195,50 +179,67 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
                 _root = null;
             }
 
+            _vcam3Rd = null;
+            _vcamFps = null;
+            _vcamPrev = null;
+            _vcamTps = null;
+
             _virtualRigs.Clear();
             _initialized = false;
         }
+        
+        private void SubscribeCameraActivationEvents()
+        {
+            CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
+        }
 
-        // private void HookOnLive(CinemachineVirtualCamera vcam, CinemachineState stateToReport)
-        // {
-        //     vcam.m_Transitions.m_OnCameraLive.AddListener((incoming, _) =>
-        //     {
-        //         if (ReferenceEquals(incoming, vcam))
-        //             OnStateChange?.Invoke(stateToReport);
-        //     });
-        // }
-        //
-        // private CinemachineVirtualCamera CreateVcam(string assetPath, string name)
-        // {
-        //     CinemachineVirtualCamera vcam =
-        //         _projectFactory.Instantiate<CinemachineVirtualCamera>(assetPath, false, _root);
-        //     vcam.transform.name = name;
-        //     vcam.Priority = INACTIVE_PRIORITY;
-        //     return vcam;
-        // }
-        //
-        // private static void ConfigurePov(CinemachinePOV pov, Vector2 pitchYawDeg)
-        // {
-        //     if (pov == null) return;
-        //
-        //     pov.m_HorizontalAxis.m_InputAxisName = string.Empty;
-        //     pov.m_VerticalAxis.m_InputAxisName = string.Empty;
-        //     pov.m_HorizontalAxis.m_InputAxisValue = 0f;
-        //     pov.m_VerticalAxis.m_InputAxisValue = 0f;
-        //
-        //     pov.m_HorizontalAxis.m_AccelTime = 0f;
-        //     pov.m_HorizontalAxis.m_DecelTime = 0f;
-        //     pov.m_VerticalAxis.m_AccelTime = 0f;
-        //     pov.m_VerticalAxis.m_DecelTime = 0f;
-        //
-        //     pov.m_HorizontalAxis.Value = pitchYawDeg.y;
-        //     pov.m_VerticalAxis.Value = pitchYawDeg.x;
-        // }
+        private void UnsubscribeCameraActivationEvents()
+        {
+            CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraActivated);
+        }
+
+        private void OnCameraActivated(ICinemachineCamera.ActivationEventParams args)
+        {
+            if (!_initialized) return;
+
+            if (ReferenceEquals(args.IncomingCamera, _vcam3Rd))
+            {
+                OnStateChange?.Invoke(CinemachineState.Normal3Rd);
+            }
+            else if (ReferenceEquals(args.IncomingCamera, _vcamFps))
+            {
+                OnStateChange?.Invoke(CinemachineState.NormalFPS);
+            }
+            else if (ReferenceEquals(args.IncomingCamera, _vcamPrev))
+            {
+                OnStateChange?.Invoke(CinemachineState.Preview);
+            }
+            else if (ReferenceEquals(args.IncomingCamera, _vcamTps))
+            {
+                OnStateChange?.Invoke(CinemachineState.Teleportation);
+            }
+        }
+        
+        private CinemachineCamera CreateVcam(string assetPath, string name)
+        {
+            CinemachineCamera vcam = _provider.InstantiateObject<CinemachineCamera>(assetPath, _root);
+            vcam.transform.name = name;
+            vcam.Priority = INACTIVE_PRIORITY;
+            return vcam;
+        }
+
+        private static void ConfigurePov(CinemachinePanTilt pov, Vector2 pitchYawDeg)
+        {
+            if (pov == null) return;
+            
+            pov.PanAxis.Value = pitchYawDeg.y;
+            pov.TiltAxis.Value = pitchYawDeg.x;
+        }
 
         private void SetAllPriorities(int value)
         {
-            // foreach (CinemachineVirtualRig rig in _virtualRigs.Values)
-            //     rig.SetPriority(value);
+            foreach (CinemachineVirtualRig rig in _virtualRigs.Values)
+                rig.SetPriority(value);
         }
 
         private void EnsureInitialized()

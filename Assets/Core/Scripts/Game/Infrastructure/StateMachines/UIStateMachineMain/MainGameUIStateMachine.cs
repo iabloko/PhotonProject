@@ -26,8 +26,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
             GameMenuUIGamePlayState.Factory gamePlayFactory) : base(assetProvider) =>
             SetUpStateMachine(descriptionFactory, gamePlayFactory).Forget();
 
-        protected override string MainViewPath => 
-            GameConstant.GAME_UI_MAIN_VIEW;
+        protected override string MainViewPath => GameConstant.GAME_UI_MAIN_VIEW;
 
         void IDisposable.Dispose()
         {
@@ -41,7 +40,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
         {
             _cts = new CancellationTokenSource();
             _mainView = await CreateMainView();
-            _mainView.Setup(this);
+            _mainView.Setup();
 
             States = new Dictionary<Type, IAsyncExitState>
             {

@@ -1,18 +1,20 @@
+using Unity.Cinemachine;
+
 namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
 {
     public sealed class CinemachineVirtualRig
     {
-        // public readonly CinemachineVirtualCamera VCam;
-        // public readonly CinemachinePOV Pov;
-        // public readonly CinemachineFramingTransposer Transposer;
-        //
-        // public CinemachineVirtualRig(CinemachineVirtualCamera vcam)
-        // {
-        //     VCam = vcam;
-        //     Pov = vcam ? vcam.GetCinemachineComponent<CinemachinePOV>() : null;
-        //     Transposer = vcam ? vcam.GetCinemachineComponent<CinemachineFramingTransposer>() : null;
-        // }
+        public readonly CinemachineCamera VCam;
+        public readonly CinemachinePanTilt Pov;
+        public readonly CinemachinePositionComposer Transposer;
+        
+        public CinemachineVirtualRig(CinemachineCamera vcam)
+        {
+            VCam = vcam;
+            Pov = vcam ? vcam.GetComponent<CinemachinePanTilt>() : null;
+            Transposer = vcam ? vcam.GetComponent<CinemachinePositionComposer>() : null;
+        }
 
-        // public void SetPriority(int value) => VCam.Priority = value;
+        public void SetPriority(int value) => VCam.Priority = value;
     }
 }

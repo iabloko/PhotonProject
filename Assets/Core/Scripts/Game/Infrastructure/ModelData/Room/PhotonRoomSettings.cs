@@ -2,7 +2,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine.Scripting;
 
-namespace Sandbox.Project.Scripts.Infrastructure.ModelData.Room
+namespace Core.Scripts.Game.Infrastructure.ModelData.Room
 {
     [BoxGroup("GAME ROOM SETTINGS"), Serializable, Preserve]
     public struct PhotonRoomSettings

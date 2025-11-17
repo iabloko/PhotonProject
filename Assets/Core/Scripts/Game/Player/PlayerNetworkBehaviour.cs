@@ -17,9 +17,7 @@ namespace Core.Scripts.Game.Player
         [Networked, UnitySerializeField] protected internal int IsPlayerMoving { get; protected set; }
 
         private ChangeDetector _changeDetector;
-
-        public bool IsNetworkValid() => Object != null && Object.IsValid;
-
+        
         [Rpc(RpcSources.All, RpcTargets.All)]
         protected void RPC_PlayerDeathLogic(Vector3 position, Vector3 rotation, Vector3 scale, bool isLine = false)
         {
@@ -31,11 +29,6 @@ namespace Core.Scripts.Game.Player
         {
             base.Spawned();
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-        }
-
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            base.Despawned(runner, hasState);
         }
 
         public override void Render()

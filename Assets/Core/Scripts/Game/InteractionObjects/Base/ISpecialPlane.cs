@@ -1,12 +1,10 @@
-using Sandbox.Project.Scripts.Infrastructure.ModelData.InteractionObjects;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.MovementEffects;
+using Core.Scripts.Game.Infrastructure.ModelData.InteractionObjects;
 using UnityEngine;
 
 namespace Core.Scripts.Game.InteractionObjects.Base
 {
     public interface ISpecialPlane
     {
-        public MovementEffectData EffectData { get; }
         public Transform Transform { get; }
         public InteractionObjectType Type { get; }
         public int InteractionObjectIndex { get; set; }

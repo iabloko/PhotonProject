@@ -27,22 +27,8 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
 
         protected override void OnEntered()
         {
-            // _stateView.startEasyGame.onClick.RemoveAllListeners();
-            // _stateView.startEasyGame.onClick.AddListener(() => StartGameplay(GameDifficulty.Easy).Forget());
-
-            // _stateView.startHardGame.onClick.RemoveAllListeners();
-            // _stateView.startHardGame.onClick.AddListener(() => StartGameplay(GameDifficulty.Hard).Forget());
-
-            StateMachine.FadeLogic(1, 0).Forget(); // fade out
+            StateMachine.FadeLogic(1, 0).Forget();
             base.OnEntered();
-        }
-
-        protected override void OnStartExit()
-        {
-            // _stateView.startEasyGame.onClick.RemoveAllListeners();
-            // _stateView.startHardGame.onClick.RemoveAllListeners();
-
-            base.OnStartExit();
         }
         
         [Preserve]
@@ -53,28 +39,5 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
             {
             }
         }
-
-        // private HashSet<Banknote> CreateBanknotes()
-        // {
-        //     int rnd = UnityEngine.Random.Range(0, 2);
-        //     _preCreateddifficulty = rnd == 0 ? GameDifficulty.Easy : GameDifficulty.Hard;
-        //
-        //     GameInformation.SetGameDifficulty(_preCreateddifficulty);
-        //     return _payload.GameLogic.CreateBanknotes();
-        // }
-        //
-        // private async UniTaskVoid StartGameplay(GameDifficulty difficulty)
-        // {
-        //     await StateMachine.FadeLogic(0, 1); // fade in
-        //
-        //     if (!_preCreateddifficulty.Equals(difficulty))
-        //     {
-        //         GameInformation.SetGameDifficulty(difficulty);
-        //         _payload.GameLogic.CreateBanknotes();
-        //     }
-        //
-        //     await StateMachine.OpenOrEnter<GameMenuUIGamePlayState, GameMenuUIGamePlayData>(
-        //         new GameMenuUIGamePlayData(_payload.GameLogic));
-        // }
     }
 }

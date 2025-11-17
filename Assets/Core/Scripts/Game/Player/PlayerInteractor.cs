@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
 using Core.Scripts.Game.Player.NetworkInput;
-using Cysharp.Threading.Tasks;
 using Fusion;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -10,11 +9,6 @@ namespace Core.Scripts.Game.Player
 {
     public abstract class PlayerInteractor : PlayerNetworkBehaviour
     {
-        // [Title("Interactor", subtitle: "Scale", TitleAlignments.Right), SerializeField, MinValue(0.001f)]
-        // private float scaleSensitivity = 0.06f;
-        // [SerializeField, MinValue(0.01f)] private float minUniformScale = 0.1f;
-        // [SerializeField, MinValue(0.01f)] private float maxUniformScale = 5f;
-
         [Title("Interactor", subtitle: "Draggable", TitleAlignments.Right), SerializeField, MinValue(0.5f)]
         private float interactionDistance = 6f;
         private float _maxInteractionDistance;

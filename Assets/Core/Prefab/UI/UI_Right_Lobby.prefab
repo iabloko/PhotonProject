@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: 39185090393039124, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 58a38b850a8714e7c951a5d1044b6b24, type: 3}
+      objectReference: {fileID: 21300000, guid: e5da1d880b311497b9ed8213592e283a, type: 3}
     - target: {fileID: 39185090393039124, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
       propertyPath: m_Color.a
       value: 1
@@ -103,6 +103,10 @@ PrefabInstance:
     - target: {fileID: 7007945660878944947, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7554518486402355138, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7554518486402355138, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
       propertyPath: m_fontAsset

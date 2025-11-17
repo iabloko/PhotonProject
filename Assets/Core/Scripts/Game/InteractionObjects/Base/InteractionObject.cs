@@ -1,6 +1,5 @@
+using Core.Scripts.Game.Infrastructure.ModelData.InteractionObjects;
 using Fusion;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.InteractionObjects;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.MovementEffects;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -17,23 +16,16 @@ namespace Core.Scripts.Game.InteractionObjects.Base
 
         [ShowInInspector] public bool DisabledAtStart { get; private set; }
 
-        public abstract MovementEffectData EffectData { get; protected set; }
         public abstract bool IsInteractable { get; }
         public abstract InteractionObjectType Type { get; }
 
-        protected IPlayerMovementEffectsListener _listener;
         
         public override void Spawned() => DisabledAtStart = false;
 
-        public void Constructor(IPlayerMovementEffectsListener listener) => _listener = listener;
 
         public void SetInteractionObjectIndex(int index) => InteractionObjectIndex = index;
 
-        public virtual void Interact()
-        {
-            WasInteracted = true;
-            _listener.StartMovementEffect(EffectData);
-        }
+        public virtual void Interact() => WasInteracted = true;
 
         public virtual void StopInteract() => WasInteracted = false;
         public void DisableAtStart() => DisabledAtStart = true;

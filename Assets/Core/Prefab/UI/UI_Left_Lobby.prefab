@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 39185090393039124, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 39185090393039124, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 54f0921763a474464872caf0f46654a0, type: 3}
     - target: {fileID: 2814960571378085251, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
       propertyPath: m_Name
       value: UI_Left_Lobby
@@ -91,6 +99,14 @@ PrefabInstance:
     - target: {fileID: 7007945660878944947, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7554518486402355138, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7554518486402355138, guid: 81e16cbb4cebbf64c9b31dd6d0896889, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

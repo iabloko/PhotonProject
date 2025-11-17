@@ -2,8 +2,11 @@ using Core.Scripts.Game.Infrastructure.Bootstrapper;
 using Core.Scripts.Game.Infrastructure.ProjectNetworking.Provider;
 using Core.Scripts.Game.Infrastructure.ProjectNetworking.Service;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
+using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
+using Core.Scripts.Game.Infrastructure.Services.KeyHandlerService;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States;
+using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
 using UnityEngine;
 using Zenject;
 using AssetProvider = Core.Scripts.Game.Infrastructure.Services.AssetProviderService.AssetProvider;
@@ -24,9 +27,11 @@ namespace Core.Scripts.Game.Installers
         private void BindCoreServices()
         {
             Container.Bind<IAssetProvider>().To<AssetProvider>().AsSingle().NonLazy();
+            Container.Bind<INickNameFadeEffect>().To<NickNameFadeEffect>().AsSingle().NonLazy();
+            Container.Bind<IKeyHandler>().To<StandardAloneKeyHandler>().AsSingle().NonLazy();
+            Container.Bind<ICinemachineService>().To<CinemachineService>().AsSingle().NonLazy();
             
-            Container
-                .BindInterfacesAndSelfTo<ZenjectNetworkObjectProvider>()
+            Container.BindInterfacesAndSelfTo<ZenjectNetworkObjectProvider>()
                 .FromNewComponentOn(networkObjectProvider.gameObject)
                 .AsSingle()
                 .NonLazy();

@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using Fusion;
 using UnityEngine;
 
-namespace Sandbox.Project.Scripts.Infrastructure.PlayersSpawner
+namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.PlayersSpawner
 {
     public sealed class PlayerSelfSpawner : SimulationBehaviour, IPlayerJoined
     {

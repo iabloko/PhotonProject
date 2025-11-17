@@ -31,11 +31,6 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
 
         protected virtual void CloseView(Action onClosed)
         {
-            //Tween = CanvasGroup.DOFade(0, 0.25f)
-            //                          .SetDelay(0.0f)
-            //                          .SetEase(Ease.Linear)
-            //                          .OnComplete(OnComplete);
-
             canvasGroup.alpha = 0;
             OnComplete();
             return;
@@ -48,11 +43,6 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
 
         protected virtual void OpenView(Action onOpened)
         {
-            //Tween = CanvasGroup.DOFade(1, 0.5f)
-            //                                 .SetDelay(0.0f)
-            //                                 .SetEase(Ease.InSine)
-            //                                 .OnComplete(OnComplete);
-
             canvasGroup.alpha = 1;
             OnComplete();
             return;

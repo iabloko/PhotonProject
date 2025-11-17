@@ -25,13 +25,12 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
         #region ASYNCHRONOUSLY
 
         async UniTask<T> IAssetProvider.InstantiateAsync<T>(string path,
-            CancellationTokenSource cts, Transform parent, bool dontDestroy,
-            bool instantiateInWorldSpace, bool trackHandle)
+            CancellationTokenSource cts, Transform parent, bool dontDestroy, bool inWorldSpace, bool trackHandle)
         {
             if (cts == null) throw new ArgumentNullException(nameof(cts));
 
             GameObject createdObject =
-                await _addressables.InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle, cts);
+                await _addressables.InstantiateAsync(path, parent, inWorldSpace, trackHandle, cts);
             
             if (createdObject == null) return null;
 
@@ -44,9 +43,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
                 return null;
             }
 
-            if (dontDestroy)
-                Object.DontDestroyOnLoad(createdObject);
-
+            if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
             createdObject.transform.name = path.CleanAssetName();
             return component;
         }
@@ -77,7 +74,11 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
             T instance = _resources.InstantiateComponent<T>(path, parent, instantiateInWorldSpace);
             
             if (instance == null) return null;
-            if (dontDestroy) Object.DontDestroyOnLoad(instance);
+            if (dontDestroy)
+            {
+                Debug.Log($"InstantiateObject DontDestroyOnLoad {path}");
+                Object.DontDestroyOnLoad(instance);
+            }
 
             instance.transform.name = path.CleanAssetName();
             return instance;

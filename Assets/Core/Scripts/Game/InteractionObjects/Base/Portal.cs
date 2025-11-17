@@ -1,8 +1,7 @@
 using System;
 using System.Threading;
+using Core.Scripts.Game.Infrastructure.ModelData.InteractionObjects;
 using Cysharp.Threading.Tasks;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.InteractionObjects;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.MovementEffects;
 using UnityEngine;
 
 namespace Core.Scripts.Game.InteractionObjects.Base
@@ -25,8 +24,6 @@ namespace Core.Scripts.Game.InteractionObjects.Base
         public int PortalID;
 
         public Portal nextPortal;
-        public override MovementEffectData EffectData { get; protected set; }
-        public PortalMovementData PortalEffectData { get; protected set; }
 
         [SerializeField] protected Transform spawnPoint;
         [SerializeField] protected ParticleSystem FXportalOn;
@@ -37,7 +34,6 @@ namespace Core.Scripts.Game.InteractionObjects.Base
         public override void Spawned()
         {
             base.Spawned();
-            EffectData = new MovementEffectData(Type, Transform, Child);
             _cancellationToken = this.GetCancellationTokenOnDestroy();
         }
 
@@ -63,16 +59,12 @@ namespace Core.Scripts.Game.InteractionObjects.Base
 
         private void PrepareToTeleportation()
         {
-            PortalEffectData = new PortalMovementData(InteractionObjectType.EXIT_PORTAL, Transform, Child,
-                nextPortal.spawnPoint.position);
-
             Teleportation().Forget();
         }
 
         private async UniTaskVoid Teleportation()
         {
             //Disable Player visual data and movement
-            _listener.StartMovementEffect(EffectData);
 
             await ActivationPortalEffect();
 
@@ -81,7 +73,6 @@ namespace Core.Scripts.Game.InteractionObjects.Base
             await UniTask.Delay(100, cancellationToken: _cancellationToken);
 
             // Enable Player visual data and movement, and change position
-            _listener.StartMovementEffect(PortalEffectData);
 
             await DeactivationPortalEffect();
 

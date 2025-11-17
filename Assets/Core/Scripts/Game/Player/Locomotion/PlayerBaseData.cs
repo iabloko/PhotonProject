@@ -1,8 +1,8 @@
+using Core.Scripts.Game.Infrastructure.ModelData.Room;
 using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
 using Core.Scripts.Game.Player.NetworkInput;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.Room;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Zenject;

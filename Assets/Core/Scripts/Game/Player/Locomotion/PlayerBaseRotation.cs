@@ -23,7 +23,6 @@ namespace Core.Scripts.Game.Player.Locomotion
             if (Object.HasStateAuthority)
             {
                 Cinemachine.Register(transform, previewRotation, PitchRotation);
-                Cinemachine.ChangeVCamVerticalSensitivity(5);
                 Cinemachine.ChangeCinemachineState(CinemachineState.Normal3Rd);
 
                 SetNormalCamera();
@@ -51,9 +50,6 @@ namespace Core.Scripts.Game.Player.Locomotion
         protected override void LateUpdate()
         {
             base.LateUpdate();
-            
-            // if (ProjectSettings.IsGamePaused) return;
-
             FirstPersonSwitcher();
 
             if (Cinemachine.CurrentState == CinemachineState.Normal3Rd &&

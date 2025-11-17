@@ -1,4 +1,4 @@
-namespace Sandbox.Project.Scripts.Infrastructure.ModelData.InteractionObjects
+namespace Core.Scripts.Game.Infrastructure.ModelData.InteractionObjects
 {
     public class EffectDuration
     {

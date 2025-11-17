@@ -1,5 +1,5 @@
+using Core.Scripts.Game.Infrastructure.ModelData.InteractionObjects;
 using Core.Scripts.Game.InteractionObjects.Base;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.InteractionObjects;
 
 namespace Core.Scripts.Game.InteractionObjects
 {

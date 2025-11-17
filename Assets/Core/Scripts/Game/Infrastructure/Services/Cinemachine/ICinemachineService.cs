@@ -20,9 +20,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
         public float CurrentCameraDistance { get; }
         
         public void ChangeCinemachineState(CinemachineState state);
-        public void ChangeVCamVerticalSensitivity(float value);
         public void ChangeVCamDistance(float delta);
-        public void ChangeVCamFieldOfView(int newValue);
+        public void ChangeCamFarClipPlane(int newValue);
         
         public void Register(Transform player, Transform previewRotation, Vector2 pitchRotation);
         public void Dispose();

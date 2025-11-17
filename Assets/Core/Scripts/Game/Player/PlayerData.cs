@@ -3,11 +3,9 @@ using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
 using Core.Scripts.Game.Infrastructure.Services.GamePool;
 using Core.Scripts.Game.Player.Locomotion;
 using Core.Scripts.Game.Player.NetworkInput;
-using Core.Scripts.Game.Player.PlayerEffects;
 using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.MovementEffects;
 using Sandbox.Project.Scripts.Player.PlayersSkins;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -30,7 +28,6 @@ namespace Core.Scripts.Game.Player
         [SerializeField] protected SimpleKCC kcc;
         [SerializeField] protected PlayerInput input;
         
-        // [SerializeField] protected PlayerDeathEffect playerDeathEffect;
         [SerializeField] protected PlayerVisualData playerVisualData;
         [SerializeField] protected PlayerBaseMovement playerBaseMovement;
         [SerializeField] private SkinnedMeshRenderer[] skinnedMeshRenderers;
@@ -39,30 +36,23 @@ namespace Core.Scripts.Game.Player
         protected SkinnedMeshRenderer activeSkinnedMeshRenderer;
         protected CancellationTokenSource TokenSource;
         protected Camera MainCamera;
-        // protected IVisibilityController SkinVisibilityController;
         
         #region SERVICES
         
         protected ICinemachineService Cinemachine;
-        protected IPlayerMovementEffectsListener PlayerMovementEffectsListener;
         protected INickNameFadeEffect FadeEffect;
-        protected INetworkPool NetworkPool;
 
         #endregion SERVICES
         
         [Inject]
         public void Constructor(
             ICinemachineService cinemachine,
-            IPlayerMovementEffectsListener playerMovementEffectsListener,
-            INickNameFadeEffect nickNameFadeEffect,
-            INetworkPool networkPool)
+            INickNameFadeEffect nickNameFadeEffect)
         {
             MainCamera = Camera.main;
             
-            NetworkPool = networkPool;
             FadeEffect = nickNameFadeEffect;
             Cinemachine = cinemachine;
-            PlayerMovementEffectsListener = playerMovementEffectsListener;
             
             FadeEffect.Initialization(MainCamera);
             

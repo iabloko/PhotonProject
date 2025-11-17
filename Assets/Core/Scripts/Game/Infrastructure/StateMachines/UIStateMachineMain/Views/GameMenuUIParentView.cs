@@ -17,7 +17,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
         [SerializeField] internal GameMenuUIFadeConfig fadeConfig;
         [SerializeField] internal Image fadeImage;
         
-        public void Setup(MainGameUIStateMachine gameMenuUIStateMachine)
+        public void Setup()
         {
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         }

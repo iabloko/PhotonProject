@@ -1,7 +1,6 @@
+using Core.Scripts.Game.Infrastructure.ModelData.InteractionObjects;
 using Core.Scripts.Game.InteractionObjects.Base;
 using Newtonsoft.Json;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.InteractionObjects;
-using Sandbox.Project.Scripts.Infrastructure.ModelData.MovementEffects;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -24,8 +23,6 @@ namespace Core.Scripts.Game.InteractionObjects
             {
                 _properties = value;
                 NetJumpStrength = value.JumpPadStrength;
-
-                EffectData = new JumpPadMovementData(Type, Transform, Child, NetJumpStrength);
             }
         }
 
@@ -34,7 +31,6 @@ namespace Core.Scripts.Game.InteractionObjects
 
         private JumpPadProperties _properties;
 
-        public override MovementEffectData EffectData { get; protected set; }
 
         public override void Interact()
         {

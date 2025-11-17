@@ -26,10 +26,6 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
 
             _stateView.toMainView.onClick.AddListener(() => ReturnToMainView().Forget());
             _stateView.repeatGame.onClick.AddListener(RepeatGame);
-            // _stateView.AfkTimer.OnAfk += StartAfkLogic;
-
-            // _stateView.SetUpGameMenuUIGamePlayView(_payload.GameLogic);
-            // _payload.GameLogic.StartGamePlay();
             
             StateMachine.FadeLogic(1, 0).Forget(); // fade out
             base.OnEntered();
@@ -37,31 +33,21 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
 
         private void RepeatGame()
         {
-            // _payload.GameLogic.CreateBanknotes();
-            // _payload.GameLogic.StartGamePlay();
             _stateView.RepeatGame();
         }
 
         protected override void OnStartExit()
         {
-            // _payload.GameLogic.ExitGamePlayState();
-            
             _stateView.toMainView.onClick.RemoveAllListeners();
             _stateView.repeatGame.onClick.RemoveAllListeners();
-            // _stateView.AfkTimer.OnAfk -= StartAfkLogic;
             
             base.OnStartExit();
         }
 
         private async UniTaskVoid ReturnToMainView()
         {
-            await StateMachine.FadeLogic(0, 1); // fade in
-            
-            // await StateMachine.OpenOrEnter<GameMenuUIDescriptionState, GameMenuUIMainData>(
-            //     new GameMenuUIMainData(_payload.GameLogic));
+            await StateMachine.FadeLogic(0, 1);
         }
-        
-        private void StartAfkLogic() => ReturnToMainView().Forget();
         
         [Preserve]
         public class Factory : PlaceholderFactory<MainGameUIStateMachine, GameMenuUIGamePlayState>
