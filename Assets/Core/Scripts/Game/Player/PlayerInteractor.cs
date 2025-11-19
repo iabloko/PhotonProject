@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
+using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Player.NetworkInput;
 using Fusion;
 using Sirenix.OdinInspector;
@@ -55,7 +55,6 @@ namespace Core.Scripts.Game.Player
             bool released = curr.Actions.WasReleased(prev.Actions, InputModelData.DRAG_BUTTON);
             bool copy = curr.Actions.WasPressed(prev.Actions, InputModelData.COPY_BUTTON);
             bool scaleHeld = curr.Actions.IsSet(InputModelData.SCALE_BUTTON);
-            bool emptyBackPack = curr.Actions.IsSet(InputModelData.EMPTY_BACKPACK_BUTTON);
 
             // if (pressed) PrepareToDrag();
             // if (held) TickDrag();

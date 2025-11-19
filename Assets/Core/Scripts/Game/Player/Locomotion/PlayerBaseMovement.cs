@@ -26,11 +26,6 @@ namespace Core.Scripts.Game.Player.Locomotion
         private float _jumpImpulse;
         private float _acceleration;
 
-        private const float BUBBLE_SLOWDOWN_BOOST = 5f;
-        private const float ON_GROUND_MIN_THRESHOLD = -20f;
-
-        private bool _wasGroundedLastTick;
-
         public override void Spawned()
         {
             base.Spawned();
@@ -38,20 +33,10 @@ namespace Core.Scripts.Game.Player.Locomotion
             if (!Object.HasStateAuthority) return;
             kcc.SetMaxGroundAngle(75f);
         }
-
-        public override void BeforeTick()
-        {
-            _wasGroundedLastTick = kcc.IsGrounded;
-
-            if (!Object.HasStateAuthority) return;
-        }
-
+        
         public override void AfterTick()
         {
-            if (kcc.IsGrounded && !_wasGroundedLastTick && kcc.RealVelocity.y < ON_GROUND_MIN_THRESHOLD)
-            {
-                OnGroundEffect();
-            }
+            base.AfterTick();
 
             if (!Object.HasStateAuthority) return;
 
@@ -62,7 +47,15 @@ namespace Core.Scripts.Game.Player.Locomotion
         public override void FixedUpdateNetwork()
         {
             base.FixedUpdateNetwork();
-            kcc.SetGravity(kcc.RealVelocity.y >= 0 ? photonRoomSettings.upGravity : photonRoomSettings.downGravity);
+            kcc.SetGravity(kcc.RealVelocity.y >= 0 ? roomData.settings.upGravity : roomData.settings.downGravity);
+            
+            if (ProjectSettings.IsGamePaused)
+            {
+                MoveVelocity = _desiredMoveDirection = Vector3.zero;
+                kcc.ResetVelocity();
+                kcc.Move(kcc.IsGrounded ? Vector3.zero : new Vector3(0, roomData.settings.downGravity, 0));
+                return;
+            }
 
             CalculateDesiredMoveDirection();
             CalculateJumpImpulse();
@@ -83,13 +76,13 @@ namespace Core.Scripts.Game.Player.Locomotion
             if (inputDirection.sqrMagnitude > 1f)
                 inputDirection.Normalize();
 
-            _desiredMoveDirection = photonRoomSettings.autoRun ? transform.forward : inputDirection;
+            _desiredMoveDirection = roomData.settings.autoRun ? transform.forward : inputDirection;
             _desiredMoveDirection *= currentSpeed;
 
-            if (kcc.ProjectOnGround(_desiredMoveDirection, projectedVector: out Vector3 projectedDesiredMoveVelocity))
+            if (kcc.ProjectOnGround(_desiredMoveDirection, projectedVector: out Vector3 moveVelocity))
             {
                 _desiredMoveDirection =
-                    Vector3.ClampMagnitude(projectedDesiredMoveVelocity.normalized * currentSpeed, currentSpeed);
+                    Vector3.ClampMagnitude(moveVelocity.normalized * currentSpeed, currentSpeed);
             }
         }
 
@@ -97,15 +90,9 @@ namespace Core.Scripts.Game.Player.Locomotion
         {
             if (!kcc.IsGrounded) return;
 
-            if (photonRoomSettings.autoBunnyHop)
-            {
-                _jumpImpulse = photonRoomSettings.localJumpForce * photonRoomSettings.jumpFactor;
-                return;
-            }
-
             if (input.CurrentInput.Actions.WasPressed(input.PreviousInput.Actions, InputModelData.JUMP_BUTTON))
             {
-                _jumpImpulse = photonRoomSettings.localJumpForce * photonRoomSettings.jumpFactor;
+                _jumpImpulse = roomData.settings.localJumpForce * roomData.settings.jumpFactor;
                 JumpAnimation();
             }
         }
@@ -115,14 +102,14 @@ namespace Core.Scripts.Game.Player.Locomotion
             if (_desiredMoveDirection == Vector3.zero)
             {
                 _acceleration = kcc.IsGrounded
-                    ? photonRoomSettings.groundDeceleration
-                    : photonRoomSettings.airDeceleration;
+                    ? roomData.settings.groundDeceleration
+                    : roomData.settings.airDeceleration;
             }
             else
             {
                 _acceleration = kcc.IsGrounded
-                    ? photonRoomSettings.groundAcceleration
-                    : photonRoomSettings.airAcceleration;
+                    ? roomData.settings.groundAcceleration
+                    : roomData.settings.airAcceleration;
             }
         }
 
@@ -131,8 +118,11 @@ namespace Core.Scripts.Game.Player.Locomotion
 
         private float CalculateSpeed()
         {
-            bool isRunning = photonRoomSettings.shiftMode && input.KeyHandler.IsShifting;
-            float currentSpeed = isRunning ? photonRoomSettings.runningSpeed : photonRoomSettings.walkingSpeed;
+            InputModelData curr = input.CurrentInput;
+            bool isShiftButtonPressed = curr.Actions.IsSet(InputModelData.SHIFT_BUTTON);
+            IsPlayerShifting = roomData.settings.shiftMode && isShiftButtonPressed;
+            
+            float currentSpeed = IsPlayerShifting ? roomData.settings.runningSpeed : roomData.settings.walkingSpeed;
 
             return currentSpeed;
         }

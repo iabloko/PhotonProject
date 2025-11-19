@@ -24,12 +24,12 @@ namespace Core.Scripts.Game.Player.Locomotion
         
         protected virtual void LateUpdate()
         {
-            // if (ProjectSettings.IsGamePaused)
-            // {
-            //     _vertical = _horizontal = 0;
-            //     RestartPlayerAnimations();
-            //     return;
-            // }
+            if (ProjectSettings.IsGamePaused)
+            {
+                _vertical = _horizontal = 0;
+                RestartPlayerAnimations();
+                return;
+            }
             
             _vertical = CalculateVertical();
             _horizontal = CalculateHorizontal();
@@ -53,7 +53,7 @@ namespace Core.Scripts.Game.Player.Locomotion
 
         private float CalculateVertical()
         {
-            if (photonRoomSettings.autoRun) return 1;
+            if (roomData.settings.autoRun) return 1;
 
             float vertical = Mathf.Lerp(_vertical, input.CurrentInput.MoveDirection.y, 0.1f);
 

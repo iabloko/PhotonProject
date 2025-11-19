@@ -188,24 +188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.Player.Locomotion.PlayerBaseMovement
   kcc: {fileID: 8510932238888269501}
   input: {fileID: 1141547202729809357}
-  photonRoomSettings:
-    walkingSpeed: 0
-    runningSpeed: 0
-    jumpFactor: 0
-    jumpInertia: 0
-    autoBunnyHop: 0
-    shiftMode: 0
-    autoRun: 0
-    upGravity: 0
-    downGravity: 0
-    groundAcceleration: 0
-    groundDeceleration: 0
-    airAcceleration: 0
-    airDeceleration: 0
-    speedUpBoost: 0
-    localJumpForce: 0
-    jumpPadAirDeceleration: 0
-    jumpPadAirDecelerationMovement: 0
+  roomData: {fileID: 11400000, guid: 6550a4bc9d96cb343ad492eb207f1813, type: 2}
   animator: {fileID: 5760603903861678405}
   previewRotation: {fileID: 4144108850043587384}
   rotationSpeed: 2
@@ -1757,9 +1740,9 @@ MonoBehaviour:
   Animator: {fileID: 5760603903861678405}
   ApplyTiming: 2
   SyncSettings: 79
-  StateHashes: 00000000a1f7ab0ddb8afb11a2eb269192945c4bed001c2f6074fe1e575115b6da25f787c16112c14c15f0f062f4765fef80946ef4c4712879b093194e9578b1c3e19a80d8a57fc655d19df7ea6d9dc96ae39ec9c01206a9f7c36ff8441c5d7853b134386659477319cbfc95
+  StateHashes: 00000000a1f7ab0ddb8afb11a2eb269192945c4bed001c2f6074fe1e
   TriggerHashes: 00000000
-  TotalWords: 6
+  TotalWords: 5
 --- !u!1 &3164200150132414329
 GameObject:
   m_ObjectHideFlags: 0
@@ -5384,6 +5367,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DustParticles
       objectReference: {fileID: 0}
+    - target: {fileID: 3693714666907756952, guid: f2e1d5c0d6181bc488b4c3e833d7482a, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5115033217910598757, guid: f2e1d5c0d6181bc488b4c3e833d7482a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -5490,6 +5477,10 @@ PrefabInstance:
     - target: {fileID: 6349572248807365906, guid: f4afddbc715e4b347be326fbc3bb6c01, type: 3}
       propertyPath: m_Name
       value: DustGroundParticles
+      objectReference: {fileID: 0}
+    - target: {fileID: 6349572248807365906, guid: f4afddbc715e4b347be326fbc3bb6c01, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6349572248807365906, guid: f4afddbc715e4b347be326fbc3bb6c01, type: 3}
       propertyPath: m_IsActive

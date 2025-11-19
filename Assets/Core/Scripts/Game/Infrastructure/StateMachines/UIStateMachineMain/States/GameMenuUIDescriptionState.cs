@@ -1,5 +1,6 @@
 using Core.Scripts.Game.GameHelpers;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
+using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States.Base;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views;
 using Cysharp.Threading.Tasks;
@@ -11,9 +12,14 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
     public sealed class
         GameMenuUIDescriptionState : GameMenuUISimpleStateBase<GameMenuUIDescriptionView>
     {
-        public GameMenuUIDescriptionState(MainGameUIStateMachine stateMachine, IAssetProvider assetProvider) : base(
-            stateMachine, assetProvider)
+        private readonly IProjectSettings _settings;
+
+        public GameMenuUIDescriptionState(
+            MainGameUIStateMachine stateMachine, 
+            IAssetProvider assetProvider,
+            IProjectSettings settings) : base(stateMachine, assetProvider)
         {
+            _settings = settings;
         }
 
         public override string StateName => "GameMenuUIDescriptionState";
@@ -22,7 +28,13 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
         protected override async UniTask OnStartEnter()
         {
             await base.OnStartEnter();
-            _stateView.Setup();
+            _stateView.StartGameButtonClicked += PrepareToStartGame;
+        }
+
+        protected override void OnStartExit()
+        {
+            base.OnStartExit();
+            _stateView.StartGameButtonClicked -= PrepareToStartGame;
         }
 
         protected override void OnEntered()
@@ -30,7 +42,17 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
             StateMachine.FadeLogic(1, 0).Forget();
             base.OnEntered();
         }
-        
+
+        private void PrepareToStartGame() => PrepareToStartGameAsync().Forget();
+
+        private async UniTaskVoid PrepareToStartGameAsync()
+        {
+            await StateMachine.CloseStateMachine();
+            
+            _settings.ChangeGamePauseStatus(false);
+            _settings.SetCursor(false);
+        }
+
         [Preserve]
         public class Factory : PlaceholderFactory<MainGameUIStateMachine, GameMenuUIDescriptionState>
         {

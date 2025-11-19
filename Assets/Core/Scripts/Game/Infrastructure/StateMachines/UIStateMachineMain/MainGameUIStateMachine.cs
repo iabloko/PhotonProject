@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Core.Scripts.Game.GameHelpers;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
+using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views;
@@ -19,12 +20,18 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
         private GameMenuUIParentView _mainView;
         private CancellationTokenSource _cts;
 
+        private readonly IProjectSettings _settings;
+
         [Inject]
         public MainGameUIStateMachine(
             IAssetProvider assetProvider,
+            IProjectSettings projectSettings,
             GameMenuUIDescriptionState.Factory descriptionFactory,
-            GameMenuUIGamePlayState.Factory gamePlayFactory) : base(assetProvider) =>
+            GameMenuUIGamePlayState.Factory gamePlayFactory) : base(assetProvider)
+        {
+            _settings = projectSettings;
             SetUpStateMachine(descriptionFactory, gamePlayFactory).Forget();
+        }
 
         protected override string MainViewPath => GameConstant.GAME_UI_MAIN_VIEW;
 
@@ -38,6 +45,9 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
             GameMenuUIDescriptionState.Factory descriptionFactory,
             GameMenuUIGamePlayState.Factory gamePlayFactory)
         {
+            _settings.ChangeGamePauseStatus(true);
+            _settings.SetCursor(true);
+            
             _cts = new CancellationTokenSource();
             _mainView = await CreateMainView();
             _mainView.Setup();

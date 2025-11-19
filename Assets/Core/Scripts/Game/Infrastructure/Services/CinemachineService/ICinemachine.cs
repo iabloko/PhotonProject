@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
+namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
 {
     public enum CinemachineState
     {
@@ -11,7 +11,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
         Teleportation,
     }
     
-    public interface ICinemachineService
+    public interface ICinemachine
     {
         public int PreviewDirection { get; }
         public CinemachineState CurrentState { get; }

@@ -1,3 +1,4 @@
+using Core.Scripts.Game.Player.NetworkInput;
 using Core.Scripts.Game.Player.PlayerEffects;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -8,11 +9,15 @@ namespace Core.Scripts.Game.Player.Locomotion
     {
         [Title("Effects", "", TitleAlignments.Right), SerializeField]
         private ParticleSystem footprintParticles;
-        [SerializeField] private ParticleSystem onGroundParticles;
 
+        [SerializeField] private ParticleSystem onGroundParticles;
         [SerializeField] private MovementEffects movementEffects;
 
         private PlayerTeleportationData _playerTeleportationData;
+
+        private bool _wasGroundedLastTick;
+
+        private const float ON_GROUND_MIN_THRESHOLD = -20f;
 
         public override void Spawned()
         {
@@ -22,32 +27,39 @@ namespace Core.Scripts.Game.Player.Locomotion
             if (!Object.HasStateAuthority) return;
             base.Spawned();
         }
-        
+
         public virtual void SaveDataForKccTeleportation(PlayerTeleportationData data)
         {
             _playerTeleportationData = data;
             movementEffects.StopMovementEffects();
         }
 
-        protected void OnGroundEffect()
+        public override void BeforeTick()
+        {
+            _wasGroundedLastTick = kcc.IsGrounded;
+        }
+
+        public override void AfterTick()
+        {
+            if (kcc.IsGrounded && !_wasGroundedLastTick && kcc.RealVelocity.y < ON_GROUND_MIN_THRESHOLD)
+            {
+                OnGroundEffect();
+            }
+        }
+
+        private void OnGroundEffect()
         {
             onGroundParticles.Play();
         }
 
         protected override void LateUpdate()
         {
-            UpdatePlayerEffects();
+            bool showPlayerEffect = IsPlayerShifting && kcc.IsGrounded;
+            movementEffects.UpdatePlayerEffects(showPlayerEffect);
             movementEffects.UpdateMovementEffects();
-            
+
             if (!Object.HasStateAuthority) return;
             base.LateUpdate();
-        }
-
-        #region MOVEMENT EFFECTS
-
-        private void UpdatePlayerEffects()
-        {
-            movementEffects.UpdatePlayerEffects(IsPlayerMoving);
         }
 
         protected void StartTeleportation()
@@ -56,7 +68,5 @@ namespace Core.Scripts.Game.Player.Locomotion
             kcc.SetPosition(_playerTeleportationData.endPosition, teleport: true, allowAntiJitter: false);
             kcc.SetLookRotation(_playerTeleportationData.endRotation);
         }
-
-        #endregion
     }
 }

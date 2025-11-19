@@ -358,7 +358,7 @@ MonoBehaviour:
   returnToLobbyButton: {fileID: 6860586843926719568}
   reconnectionText: {fileID: 1367411579772038711}
   parent: {fileID: 6043756665746948899}
-  spinner: {fileID: 0}
+  spinner: {fileID: 7979958267965477132}
 --- !u!1 &4531859336705888777
 GameObject:
   m_ObjectHideFlags: 0

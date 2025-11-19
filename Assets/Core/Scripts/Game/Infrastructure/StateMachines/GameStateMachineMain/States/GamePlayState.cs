@@ -1,4 +1,4 @@
-using Core.Scripts.Game.Infrastructure.StateMachines.DataInterfaces;
+using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States.Base;
 using UnityEngine.Scripting;
 using Zenject;
@@ -7,8 +7,11 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
 {
     public sealed class GamePlayState : StateBase
     {
-        public GamePlayState(GameStateMachine gameGameStateMachineBase) : base(gameGameStateMachineBase)
+        private readonly IProjectSettings _settings;
+
+        public GamePlayState(GameStateMachine gsm, IProjectSettings settings) : base(gsm)
         {
+            _settings = settings;
         }
 
         public override string StateName => "GamePlayState";

@@ -13,7 +13,7 @@ namespace Core.Scripts.Game.Player.NetworkInput
         public const int DRAG_BUTTON = 2;
         public const int COPY_BUTTON = 3;
         public const int SCALE_BUTTON = 4;
-        public const int EMPTY_BACKPACK_BUTTON = 5;
+        public const int SHIFT_BUTTON = 5;
         
         public float DragZoomDelta;
         
@@ -31,7 +31,6 @@ namespace Core.Scripts.Game.Player.NetworkInput
 
         internal float ScrollWheel => KeyHandler.Scroll;
         internal float ScrollWheelRaw => KeyHandler.ScrollRaw;
-        internal bool IsProfileButtonPressed => KeyHandler.IsProfileButtonPressed;
 
         internal IKeyHandler KeyHandler;
 
@@ -45,8 +44,6 @@ namespace Core.Scripts.Game.Player.NetworkInput
 
         private bool _resetAccumulatedInput;
         private Vector2Accumulator _lookRotationAccumulator;
-        private bool _copyLatched;
-        private bool _emptyBackPackLatched;
         
         [Inject]
         public void Constructor(IKeyHandler keyHandler)
@@ -105,9 +102,6 @@ namespace Core.Scripts.Game.Player.NetworkInput
             // if (HasStateAuthority == false || ProjectSettings.IsCursorLocked == false) return;
             if (!Object.HasInputAuthority) return;
             
-            if (KeyHandler.IsCopyButtonPressed) _copyLatched = true;
-            if (KeyHandler.IsAlpha1Pressed) _emptyBackPackLatched = true;
-
             if (_resetAccumulatedInput)
             {
                 _resetAccumulatedInput = false;
@@ -122,7 +116,6 @@ namespace Core.Scripts.Game.Player.NetworkInput
             );
             
             _accumulatedInput.MoveDirection = KeyHandler.MovementData;
-            _accumulatedInput.Actions.Set(InputModelData.JUMP_BUTTON, KeyHandler.IsJumping);
 
             _lookRotationAccumulator.Accumulate(safeDelta);
 
@@ -130,10 +123,7 @@ namespace Core.Scripts.Game.Player.NetworkInput
             _accumulatedInput.DragZoomDelta = KeyHandler.ScrollRaw;
             
             _accumulatedInput.Actions.Set(InputModelData.JUMP_BUTTON, KeyHandler.IsJumping);
-            _accumulatedInput.Actions.Set(InputModelData.DRAG_BUTTON, KeyHandler.IsPrimaryHeld);
-            _accumulatedInput.Actions.Set(InputModelData.SCALE_BUTTON, KeyHandler.IsScaleHeld);
-            _accumulatedInput.Actions.Set(InputModelData.COPY_BUTTON, _copyLatched);
-            _accumulatedInput.Actions.Set(InputModelData.EMPTY_BACKPACK_BUTTON, _emptyBackPackLatched);
+            _accumulatedInput.Actions.Set(InputModelData.SHIFT_BUTTON, KeyHandler.IsShifting);
         }
 
         void IBeforeTick.BeforeTick()
@@ -165,8 +155,6 @@ namespace Core.Scripts.Game.Player.NetworkInput
             networkInput.Set(_accumulatedInput);
 
             _resetAccumulatedInput = true;
-            _copyLatched = false;
-            _emptyBackPackLatched = false;
         }
     }
 }

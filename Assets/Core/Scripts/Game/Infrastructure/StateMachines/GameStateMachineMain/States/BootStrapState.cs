@@ -9,7 +9,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
     {
         public override string StateName => "BootStrapState";
 
-        public BootStrapState(GameStateMachine gameGameStateMachineBase) : base(gameGameStateMachineBase)
+        public BootStrapState(GameStateMachine gsm) : base(gsm)
         {
         }
         

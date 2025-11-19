@@ -16,8 +16,8 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
         private readonly IAssetProvider _assetProvider;
         private readonly INetworkService _networkService;
 
-        public PhotonLobbyState(GameStateMachine gameStateMachineBaseBase, 
-            IAssetProvider assetProvider, INetworkService networkService) : base(gameStateMachineBaseBase)
+        public PhotonLobbyState(GameStateMachine gsm, 
+            IAssetProvider assetProvider, INetworkService networkService) : base(gsm)
         {
             _networkService = networkService;
             _assetProvider = assetProvider;

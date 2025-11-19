@@ -15,11 +15,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.KeyHandlerService
 
         private bool _isJumping;
         private bool _isShifting;
-        private bool _isPrimaryHeld;
-        private bool _isScaleHeld;
-        private bool _isCopyButtonPressed;
-        private bool _isProfileButtonPressed;
-        private bool _alpha1;
 
         private float _scroll;
 
@@ -28,43 +23,11 @@ namespace Core.Scripts.Game.Infrastructure.Services.KeyHandlerService
             get => Input.GetKey(KeyCode.Space);
             set => _isJumping = value;
         }
-
-        public bool IsJumpPadActivation { get; set; }
-
+        
         public bool IsShifting
         {
             get => Input.GetKey(KeyCode.LeftShift);
             set => _isShifting = value;
-        }
-
-        public bool IsPrimaryHeld
-        {
-            get => Input.GetKey(KeyCode.Mouse0);
-            set => _isPrimaryHeld = value;
-        }
-
-        public bool IsScaleHeld
-        {
-            get => Input.GetKey(KeyCode.Mouse1);
-            set => _isScaleHeld = value;
-        }
-
-        public bool IsCopyButtonPressed
-        {
-            get => Input.GetKeyDown(KeyCode.C);
-            set => _isCopyButtonPressed = value;
-        }
-
-        public bool IsProfileButtonPressed
-        {
-            get => Input.GetKeyDown(KeyCode.F);
-            set => _isProfileButtonPressed = value;
-        }
-        
-        public bool IsAlpha1Pressed
-        {
-            get => Input.GetKeyDown(KeyCode.Alpha1);
-            set => _alpha1 = value;
         }
 
         public float Scroll

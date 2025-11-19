@@ -1,5 +1,5 @@
 using Core.Scripts.Game.Infrastructure.RequiresInjection;
-using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
+using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Player.Locomotion;
 using Fusion;
 using Sirenix.OdinInspector;
@@ -16,8 +16,10 @@ namespace Core.Scripts.Game.Player
         
         public bool RequiresInjection { get; set; } = true;
 
-        private int _layerPlayer;
-        private int _layerIgnoreRendering;
+        // private int _layerPlayer;
+        // private int _layerIgnoreRendering;
+        private const string PLAYER_LAYER = "Player";
+        private const string IGNORE_RENDERING_LAYER = "IgnoreRendering";
 
         public override void Spawned()
         {
@@ -25,8 +27,8 @@ namespace Core.Scripts.Game.Player
 
             if (Object.HasStateAuthority)
             {
-                _layerPlayer = LayerMask.NameToLayer("Player");
-                _layerIgnoreRendering = LayerMask.NameToLayer("IgnoreRendering");
+                // _layerPlayer = LayerMask.NameToLayer(PLAYER_LAYER);
+                // _layerIgnoreRendering = LayerMask.NameToLayer(IGNORE_RENDERING_LAYER);
 
                 SubscribeOnEvents();
 
@@ -76,10 +78,10 @@ namespace Core.Scripts.Game.Player
         private void ChangeNetworkPlayerNickName()
         {
             var networkString = new NetworkString<_16>();
-            networkString.Set("Player");
+            networkString.Set(PLAYER_LAYER);
 
             PlayerNickName = networkString;
-            transform.name = "Player";
+            transform.name = PLAYER_LAYER;
         }
 
         private void ChangeNetworkSkinIndex() => SkinIndex = Random.Range(0, playerVisualData.skins.Length - 1);
@@ -141,7 +143,7 @@ namespace Core.Scripts.Game.Player
 
         private void CameraStateChanged(CinemachineState state)
         {
-            ApplyChangedVisibility(state == CinemachineState.NormalFPS ? _layerIgnoreRendering : _layerPlayer);
+            // ApplyChangedVisibility(state == CinemachineState.NormalFPS ? _layerIgnoreRendering : _layerPlayer);
         }
 
         #endregion

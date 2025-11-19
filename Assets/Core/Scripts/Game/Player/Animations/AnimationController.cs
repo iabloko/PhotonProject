@@ -5,9 +5,8 @@ namespace Core.Scripts.Game.Player.Animations
     public sealed class AnimationController
     {
         private static readonly int Vertical = Animator.StringToHash("Vertical");
-        private static readonly int RandomIdleIndex = Animator.StringToHash("RandomIdleIndex");
         private static readonly int Horizontal = Animator.StringToHash("Horizontal");
-        private static readonly int IsJumped = Animator.StringToHash("IsJumped");
+        private static readonly int IsAirborne = Animator.StringToHash("IsAirborne");
         private static readonly int IsMovement = Animator.StringToHash("IsMovement");
 
         private readonly Animator _animator;
@@ -15,18 +14,11 @@ namespace Core.Scripts.Game.Player.Animations
         public AnimationController(Animator animator)
         {
             _animator = animator;
-            SetRandomIdleAnimation();
         }
-
-        public void SetRandomIdleAnimation()
-        {
-            int rnd = Random.Range(0, 7);
-            _animator.SetInteger(RandomIdleIndex, rnd);
-        }
-
+        
         public void PlayJump(bool status)
         {
-            _animator.SetBool(IsJumped, !status);
+            _animator.SetBool(IsAirborne, !status);
         }
 
         public void PlayMovement(bool status)

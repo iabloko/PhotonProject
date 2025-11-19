@@ -1,3 +1,4 @@
+using System;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views.Base;
 using DG.Tweening;
 using Sirenix.OdinInspector;
@@ -6,43 +7,40 @@ using UnityEngine.UI;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views
 {
-    [System.Serializable, HideLabel]
-    public struct DescriptionBlock
-    {
-        [Required] public Button startDescriptionButton;
-        [Required] public CanvasGroup middleDescriptionUI;
-    }
-
     public sealed class GameMenuUIDescriptionView : GameMenuUIViewBase
     {
-        [Title("DESCRIPTION", "BLOCK", TitleAlignments.Right), SerializeField]
-        private DescriptionBlock descriptionBlock;
-
-        protected override void OnBeforeOpen() => SetupStartLogic();
+        [Title("DESCRIPTION", "BLOCK", TitleAlignments.Right), SerializeField, Required]
+        public Button startGame;
+        [Required] public CanvasGroup middleDescriptionUI;
+        public event Action StartGameButtonClicked;
         
+        protected override void OnBeforeOpen() => SetupStartLogic();
+
         protected override void OnBeforeClosed()
         {
+            startGame.onClick.RemoveAllListeners();
         }
 
         private void SetupStartLogic()
         {
-            descriptionBlock.startDescriptionButton.gameObject.SetActive(true);
+            startGame.gameObject.SetActive(true);
 
-            descriptionBlock.middleDescriptionUI.interactable = false;
-            descriptionBlock.middleDescriptionUI.blocksRaycasts = false;
-            descriptionBlock.middleDescriptionUI.alpha = 0;
+            middleDescriptionUI.interactable = true;
+            middleDescriptionUI.blocksRaycasts = true;
+            middleDescriptionUI.DOFade(1, .5f);
 
-            descriptionBlock.startDescriptionButton.onClick.RemoveAllListeners();
-            descriptionBlock.startDescriptionButton.onClick.AddListener(ShowDescription);
+            startGame.onClick.RemoveAllListeners();
+            startGame.onClick.AddListener(StartGame);
         }
 
-        private void ShowDescription()
+        private void StartGame()
         {
-            descriptionBlock.startDescriptionButton.gameObject.SetActive(false);
-
-            descriptionBlock.middleDescriptionUI.interactable = true;
-            descriptionBlock.middleDescriptionUI.blocksRaycasts = true;
-            descriptionBlock.middleDescriptionUI.DOFade(1, .5f);
+            StartGameButtonClicked?.Invoke();
+            startGame.gameObject.SetActive(false);
+            
+            middleDescriptionUI.interactable = false;
+            middleDescriptionUI.blocksRaycasts = false;
+            middleDescriptionUI.alpha = 0;
         }
     }
 }

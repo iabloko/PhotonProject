@@ -1,4 +1,4 @@
-using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
+using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Fusion;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -34,6 +34,8 @@ namespace Core.Scripts.Game.Player.Locomotion
 
         public override void FixedUpdateNetwork()
         {
+            if (ProjectSettings.IsGamePaused) return;
+            
             Vector2 lookDelta = input.CurrentInput.LookRotationDelta;
             kcc.AddLookRotation(lookDelta);
         }
@@ -50,6 +52,9 @@ namespace Core.Scripts.Game.Player.Locomotion
         protected override void LateUpdate()
         {
             base.LateUpdate();
+            
+            if (ProjectSettings.IsGamePaused) return;
+            
             FirstPersonSwitcher();
 
             if (Cinemachine.CurrentState == CinemachineState.Normal3Rd &&

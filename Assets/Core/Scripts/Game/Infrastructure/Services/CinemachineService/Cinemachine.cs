@@ -7,9 +7,9 @@ using Unity.Cinemachine;
 using UnityEngine;
 using Zenject;
 
-namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
+namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
 {
-    public sealed class CinemachineService : ICinemachineService
+    public sealed class Cinemachine : ICinemachine
     {
         private const int ACTIVE_PRIORITY = 20;
         private const int INACTIVE_PRIORITY = 10;
@@ -36,12 +36,12 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
         public float CurrentCameraDistance { get; private set; }
 
         [Inject]
-        public CinemachineService(IAssetProvider provider)
+        public Cinemachine(IAssetProvider provider)
         {
             _provider = provider;
         }
 
-        void ICinemachineService.ChangeCamFarClipPlane(int newFarClip)
+        void ICinemachine.ChangeCamFarClipPlane(int newFarClip)
         {
             foreach (var rig in _virtualRigs)
             {
@@ -51,7 +51,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             }
         }
 
-        void ICinemachineService.Register(Transform player, Transform previewRotation, Vector2 pitchYawDeg)
+        void ICinemachine.Register(Transform player, Transform previewRotation, Vector2 pitchYawDeg)
         {
             _token = new CancellationTokenSource();
 
@@ -87,7 +87,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             _initialized = true;
         }
 
-        void ICinemachineService.ChangeCinemachineState(CinemachineState state)
+        void ICinemachine.ChangeCinemachineState(CinemachineState state)
         {
             EnsureInitialized();
 
@@ -109,7 +109,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             };
         }
 
-        void ICinemachineService.UpdateVCam(Vector2 pitchYawDeg)
+        void ICinemachine.UpdateVCam(Vector2 pitchYawDeg)
         {
             if (!_initialized) return;
             
@@ -151,7 +151,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             return angle;
         }
         
-        void ICinemachineService.ChangeVCamDistance(float distance)
+        void ICinemachine.ChangeVCamDistance(float distance)
         {
             if (!_initialized) return;
 
@@ -162,7 +162,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
             CurrentCameraDistance = distance;
         }
         
-        void ICinemachineService.Dispose()
+        void ICinemachine.Dispose()
         {
             if (_token != null)
             {

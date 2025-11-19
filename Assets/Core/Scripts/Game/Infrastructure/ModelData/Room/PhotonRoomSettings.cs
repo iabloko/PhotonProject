@@ -4,14 +4,13 @@ using UnityEngine.Scripting;
 
 namespace Core.Scripts.Game.Infrastructure.ModelData.Room
 {
-    [BoxGroup("GAME ROOM SETTINGS"), Serializable, Preserve]
+    [BoxGroup("GAME ROOM SETTINGS"), Serializable, HideLabel, Preserve]
     public struct PhotonRoomSettings
     {
         public float walkingSpeed;
         public float runningSpeed;
         public float jumpFactor;
         public float jumpInertia;
-        public bool autoBunnyHop;
         public bool shiftMode;
         public bool autoRun;
 
@@ -25,14 +24,13 @@ namespace Core.Scripts.Game.Infrastructure.ModelData.Room
         [BoxGroup("Local Data")] public float localJumpForce;
         [BoxGroup("Local Data")] public float jumpPadAirDeceleration;
         [BoxGroup("Local Data")] public float jumpPadAirDecelerationMovement;
-        
+
         public static PhotonRoomSettings CreateDefault() => new()
         {
-            walkingSpeed = 10f,
-            runningSpeed = 20f,
+            walkingSpeed = 5f,
+            runningSpeed = 10f,
             jumpFactor = 1.5f,
             jumpInertia = 0f,
-            autoBunnyHop = false,
             shiftMode = false,
             autoRun = false,
 
@@ -49,5 +47,27 @@ namespace Core.Scripts.Game.Infrastructure.ModelData.Room
         };
 
         public static readonly PhotonRoomSettings Default = CreateDefault();
+
+        [Button(ButtonSizes.Medium)]
+        public void FillBaseRoomSettings()
+        {
+            walkingSpeed = 5f;
+            runningSpeed = 10f;
+            jumpFactor = 1.5f;
+            jumpInertia = 0f;
+            shiftMode = false;
+            autoRun = false;
+
+            upGravity = -50f;
+            downGravity = -90f;
+            groundAcceleration = 55f;
+            groundDeceleration = 25f;
+            airAcceleration = 25f;
+            airDeceleration = 1.3f;
+            speedUpBoost = 2f;
+            localJumpForce = 13.77f;
+            jumpPadAirDeceleration = 0.35f;
+            jumpPadAirDecelerationMovement = 1.1f;
+        }
     }
 }

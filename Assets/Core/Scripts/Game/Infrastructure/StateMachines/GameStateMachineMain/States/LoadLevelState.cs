@@ -25,7 +25,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.St
 
         private readonly SceneLoader _sceneLoader;
 
-        public LoadLevelState(GameStateMachine gameGameStateMachineBase) : base(gameGameStateMachineBase)
+        public LoadLevelState(GameStateMachine gsm) : base(gsm)
         {
             _sceneLoader = new SceneLoader();
         }

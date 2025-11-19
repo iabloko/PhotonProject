@@ -1,6 +1,5 @@
 using System.Threading;
-using Core.Scripts.Game.Infrastructure.Services.Cinemachine;
-using Core.Scripts.Game.Infrastructure.Services.GamePool;
+using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Player.Locomotion;
 using Core.Scripts.Game.Player.NetworkInput;
 using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
@@ -30,23 +29,21 @@ namespace Core.Scripts.Game.Player
         
         [SerializeField] protected PlayerVisualData playerVisualData;
         [SerializeField] protected PlayerBaseMovement playerBaseMovement;
-        [SerializeField] private SkinnedMeshRenderer[] skinnedMeshRenderers;
         [SerializeField] private Material playerMaterial;
         
-        protected SkinnedMeshRenderer activeSkinnedMeshRenderer;
         protected CancellationTokenSource TokenSource;
         protected Camera MainCamera;
         
         #region SERVICES
         
-        protected ICinemachineService Cinemachine;
+        protected ICinemachine Cinemachine;
         protected INickNameFadeEffect FadeEffect;
 
         #endregion SERVICES
         
         [Inject]
         public void Constructor(
-            ICinemachineService cinemachine,
+            ICinemachine cinemachine,
             INickNameFadeEffect nickNameFadeEffect)
         {
             MainCamera = Camera.main;

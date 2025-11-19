@@ -1,6 +1,6 @@
 using Unity.Cinemachine;
 
-namespace Core.Scripts.Game.Infrastructure.Services.Cinemachine
+namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
 {
     public sealed class CinemachineVirtualRig
     {

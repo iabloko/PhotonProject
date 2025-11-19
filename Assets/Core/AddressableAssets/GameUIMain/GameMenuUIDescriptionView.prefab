@@ -637,9 +637,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 6908053973073943482}
-  descriptionBlock:
-    startDescriptionButton: {fileID: 6023948980382344778}
-    middleDescriptionUI: {fileID: 6908053973073943482}
+  startGame: {fileID: 6023948980382344778}
+  middleDescriptionUI: {fileID: 6908053973073943482}
 --- !u!225 &6908053973073943482 stripped
 CanvasGroup:
   m_CorrespondingSourceObject: {fileID: 8826203537118012994, guid: 53c60b0e2539c37418aaf968f47c06f3, type: 3}
