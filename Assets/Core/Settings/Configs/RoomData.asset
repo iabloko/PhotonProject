@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6704dac095bd4e33803bb4084de3b8bd, type: 3}
+  m_Name: RoomData
+  m_EditorClassIdentifier: BetterSpace.Data.Models::Core.Scripts.Game.Infrastructure.ModelData.RoomSettings
+  settings:
+    walkingSpeed: 5
+    runningSpeed: 10
+    jumpFactor: 1.5
+    jumpInertia: 0
+    shiftMode: 1
+    autoRun: 0
+    upGravity: -50
+    downGravity: -90
+    groundAcceleration: 55
+    groundDeceleration: 25
+    airAcceleration: 25
+    airDeceleration: 1.3
+    speedUpBoost: 2
+    localJumpForce: 12
+    jumpPadAirDeceleration: 0.35
+    jumpPadAirDecelerationMovement: 1.1
