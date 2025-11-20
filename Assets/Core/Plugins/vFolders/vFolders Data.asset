@@ -86,6 +86,7 @@ MonoBehaviour:
     - f0edd8b31ac80f3499edcc70757f9834
     - 8add7c2d8188bca499e85ff8f5addda3
     - 4bf1975ac61ff2147be5ce70bde2c06a
+    - d663e6c06b9280246a5a49e54362d425
     values:
     - iconNameOrGuid: FreeformLayoutGroup Icon
       colorIndex: 0
@@ -372,6 +373,10 @@ MonoBehaviour:
       isIconRecursive: 0
       isColorRecursive: 0
     - iconNameOrGuid: Particle Effect
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: AudioSource Icon
       colorIndex: 0
       isIconRecursive: 0
       isColorRecursive: 0

@@ -19,7 +19,7 @@ namespace Core.Scripts.Game.Player
         Oy
     }
 
-    public abstract class PlayerData : NetworkBehaviour, IBeforeTick
+    public abstract class PlayerData : NetworkBehaviour
     {
         [Title("Data", "", TitleAlignments.Right)]
         public TMP_Text nickNameText;
@@ -59,9 +59,7 @@ namespace Core.Scripts.Game.Player
             //         new ClassicBaker(new PlayerSkinBodyPartMapping()), 
             //         new RendererSkinApplier(playerRenderers));
         }
-
-        public abstract void BeforeTick();
-
+        
         public override void Spawned()
         {
             base.Spawned();

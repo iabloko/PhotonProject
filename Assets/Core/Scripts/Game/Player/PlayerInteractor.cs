@@ -11,16 +11,14 @@ namespace Core.Scripts.Game.Player
     {
         [Title("Interactor", subtitle: "Draggable", TitleAlignments.Right), SerializeField, MinValue(0.5f)]
         private float interactionDistance = 6f;
-        private float _maxInteractionDistance;
+        [SerializeField] private LayerMask hoverMask;
+
         private Vector3 _currentRayPosition;
-
-        [Title("Interactor", subtitle: "Outline", TitleAlignments.Right), SerializeField]
-        private LayerMask hoverMask;
-
-        private int _layerOutline;
-
         private Vector3 _grabLocalOffset;
+
         private bool _hasGrab;
+        private int _layerOutline;
+        private float _maxInteractionDistance;
 
         private readonly List<(GameObject go, int layer)> _savedLayers = new(32);
         private static readonly List<Renderer> RendererCache = new(32);
@@ -38,17 +36,7 @@ namespace Core.Scripts.Game.Player
             ClearOutline();
         }
 
-        public override void BeforeTick()
-        {
-            if (!Object.HasStateAuthority) return;
-
-            InputModelData curr = input.CurrentInput;
-            InputModelData prev = input.PreviousInput;
-
-            InteractWithObjects(curr, prev);
-        }
-
-        private void InteractWithObjects(InputModelData curr, InputModelData prev)
+        protected void InteractWithObjects(InputModelData curr, InputModelData prev)
         {
             bool pressed = curr.Actions.WasPressed(prev.Actions, InputModelData.DRAG_BUTTON);
             bool held = curr.Actions.IsSet(InputModelData.DRAG_BUTTON);

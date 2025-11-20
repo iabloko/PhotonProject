@@ -1,6 +1,7 @@
 using Core.Scripts.Game.Infrastructure.RequiresInjection;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Player.Locomotion;
+using Core.Scripts.Game.Player.NetworkInput;
 using Fusion;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -8,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace Core.Scripts.Game.Player
 {
-    public sealed class PlayerController : PlayerInteractor, IAfterSpawned, IRequiresInjection
+    public sealed class PlayerController : PlayerInteractor, IAfterSpawned, IBeforeTick, IRequiresInjection
     {
         [Title("Controller", subtitle: "", TitleAlignments.Right), SerializeField]
         private NetworkObject networkObject;
@@ -49,7 +50,17 @@ namespace Core.Scripts.Game.Player
             SetUpLocalPlayerNickName();
             ChangePlayerNicknameVisibility(!Object.HasStateAuthority);
         }
+        
+        void IBeforeTick.BeforeTick()
+        {
+            if (!Object.HasStateAuthority) return;
 
+            InputModelData curr = input.CurrentInput;
+            InputModelData prev = input.PreviousInput;
+
+            InteractWithObjects(curr, prev);
+        }
+        
         public override void FixedUpdateNetwork()
         {
             if (!Object.HasStateAuthority) return;

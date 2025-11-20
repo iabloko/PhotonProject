@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Core.Scripts.Game.ObjectDamageReceiver;
 using Fusion;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -16,10 +17,12 @@ namespace Core.Scripts.Game.Player
         [Networked, UnitySerializeField] protected internal int PlayerID { get; protected set; }
         [Networked, UnitySerializeField] protected internal int IsPlayerMoving { get; protected set; }
 
+        [Networked, UnitySerializeField] public int CurrentHealth { get; protected set; }
+
         private ChangeDetector _changeDetector;
-        
+
         [Rpc(RpcSources.All, RpcTargets.All)]
-        protected void RPC_PlayerDeathLogic(Vector3 position, Vector3 rotation, Vector3 scale, bool isLine = false)
+        public void RPC_PlayerDeathLogic()
         {
             Debug.LogWarning("Player Death Logic");
             // playerDeathEffect.CreateDeathEffect(position, rotation, scale, isLine).Forget();
@@ -57,6 +60,11 @@ namespace Core.Scripts.Game.Player
                         break;
                 }
             }
+        }
+
+        public void ChangeHealth(int value)
+        {
+            if (HasStateAuthority) CurrentHealth = value;
         }
 
         private void ChangePlayerNickName(string playerNickName)

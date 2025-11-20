@@ -211,23 +211,6 @@ MonoBehaviour:
   input: {fileID: 1141547202729809357}
   playerVisualData: {fileID: 11400000, guid: 8273443315321904393f1dd62a7e8b57, type: 2}
   playerBaseMovement: {fileID: 8468754977651019720}
-  skinnedMeshRenderers:
-  - {fileID: 2775027434363758503}
-  - {fileID: 8410541985076831923}
-  - {fileID: 4612351264172065268}
-  - {fileID: 216964214594272816}
-  - {fileID: 825753534282443091}
-  - {fileID: 5754849972348532351}
-  - {fileID: 7693610797593770387}
-  - {fileID: 3724250034177472312}
-  - {fileID: 8706377549319478139}
-  - {fileID: 814938504748665760}
-  - {fileID: 3912421722949419521}
-  - {fileID: 3754554815616198195}
-  - {fileID: 219807161469014886}
-  - {fileID: 2592155330229998531}
-  - {fileID: 4435447878726206619}
-  - {fileID: 6295891677837789663}
   playerMaterial: {fileID: 2100000, guid: f5fe87fc8f513b0468aee2f963ed3e88, type: 2}
   _SkinVisibility:
     _value: 0
@@ -242,6 +225,7 @@ MonoBehaviour:
   _SkinIndex: 0
   _PlayerID: 0
   _IsPlayerMoving: 0
+  _CurrentHealth: 0
   interactionDistance: 6
   hoverMask:
     serializedVersion: 2

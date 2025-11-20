@@ -86,7 +86,7 @@ Material:
     - _Brightness: 1
     - _Cull: 0
     - _Cutoff: 0.5
-    - _EndDitheringFade: 4
+    - _EndDitheringFade: 2
     - _EnvironmentReflections: 1
     - _MaskClipValue: 0.45
     - _NormalStrength: 0
@@ -99,7 +99,7 @@ Material:
     - _SmoothnessStrength: 0.038
     - _SpecularHighlights: 1
     - _SpecularStrength: 0.236
-    - _StartDitheringFade: 1.25
+    - _StartDitheringFade: 1
     - __dirty: 0
     m_Colors:
     - _BaseColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 0}
