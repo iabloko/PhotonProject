@@ -87,6 +87,8 @@ MonoBehaviour:
     - 8add7c2d8188bca499e85ff8f5addda3
     - 4bf1975ac61ff2147be5ce70bde2c06a
     - d663e6c06b9280246a5a49e54362d425
+    - ff03243dd5d5f6948a342c45bccce8b6
+    - 6892c962e9981274b89693dbacaec3a7
     values:
     - iconNameOrGuid: FreeformLayoutGroup Icon
       colorIndex: 0
@@ -377,6 +379,14 @@ MonoBehaviour:
       isIconRecursive: 0
       isColorRecursive: 0
     - iconNameOrGuid: AudioSource Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Texture Icon
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: PreMatCube
       colorIndex: 0
       isIconRecursive: 0
       isColorRecursive: 0

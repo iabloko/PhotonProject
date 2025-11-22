@@ -40,7 +40,7 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
                 SessionName = sessionName,
                 ObjectProvider = customObjectProvider,
                 SceneManager = _sceneManagerDefault,
-                PlayerCount = 20,
+                PlayerCount = 4,
                 Scene = SceneRef.FromIndex(2),
                 OnGameStarted = _ => { Debug.Log("INetworkService Game Started"); },
                 CustomLobbyName = MegamodLobbyName,

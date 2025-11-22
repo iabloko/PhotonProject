@@ -5,14 +5,15 @@ namespace Core.Scripts.Game.ObjectDamageReceiver
 {
     public sealed class HealthOnDamage
     {
+        public bool IsDead => _getHealth() <= 0;
+        
         private readonly Func<int> _getHealth;
         private readonly Action<int> _setHealth;
         private readonly int _maxHealth;
         private readonly Action<DamageInfo> _onDeath;
 
-        public bool IsDead => _getHealth() <= 0;
-
-        public HealthOnDamage(Func<int> getHealth, Action<int> setHealth, int maxHealth, Action<DamageInfo> onDeath)
+        public HealthOnDamage(Func<int> getHealth, Action<int> setHealth, int maxHealth,
+            Action<DamageInfo> onDeath)
         {
             _getHealth = getHealth;
             _setHealth = setHealth;

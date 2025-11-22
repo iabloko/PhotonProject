@@ -46,7 +46,6 @@ namespace Core.Scripts.Game.Player
 
         void IAfterSpawned.AfterSpawned()
         {
-            SetNewSkin();
             SetUpLocalPlayerNickName();
             ChangePlayerNicknameVisibility(!Object.HasStateAuthority);
         }

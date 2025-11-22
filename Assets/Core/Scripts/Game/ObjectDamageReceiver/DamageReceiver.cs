@@ -15,6 +15,7 @@ namespace Core.Scripts.Game.ObjectDamageReceiver
     {
         public bool IsAlive { get; } = true;
 
+        [SerializeField] private Animator animator;
         [SerializeField] private PlayerController player;
         [SerializeField] private ParticleSystem hitParticles;
 
@@ -37,10 +38,7 @@ namespace Core.Scripts.Game.ObjectDamageReceiver
             _vfx = new VfxOnDamage(hitParticles);
         }
 
-        private void OnDeath(DamageInfo info)
-        {
-            player.RPC_PlayerDeathLogic();
-        }
+        private void OnDeath(DamageInfo info) => player.RPC_PlayerDeathLogic();
 
         void IDamageable.TakeDamage(in DamageInfo info)
         {
