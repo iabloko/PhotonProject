@@ -1,4 +1,4 @@
-namespace Core.Scripts.Game.Infrastructure.ModelData.SpawnDataModels
+namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.SpawnPointsLogic
 {
     public enum FacingDirections
     {

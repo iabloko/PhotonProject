@@ -52,7 +52,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
 
         #endregion
 
-
         #region Scenes
 
         public const string TRANSITION_SCENE = "Transition";

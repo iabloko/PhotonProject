@@ -44,7 +44,7 @@ namespace Core.Scripts.Game.Player
             bool copy = curr.Actions.WasPressed(prev.Actions, InputModelData.COPY_BUTTON);
             bool scaleHeld = curr.Actions.IsSet(InputModelData.SCALE_BUTTON);
 
-            // if (pressed) PrepareToDrag();
+            // if (pressed) PrepareToDrag(); 
             // if (held) TickDrag();
             // if (released) EndDrag();
         }

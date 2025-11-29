@@ -1,16 +1,15 @@
-using Core.Scripts.Game.Infrastructure.ModelData.SpawnDataModels;
+using Core.Scripts.Game.Infrastructure.ProjectNetworking.SpawnPointsLogic.Base;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.PlayersSpawner
+namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.SpawnPointsLogic
 {
-    public sealed class SpawnPoint : MonoBehaviour
+    public sealed class PlayerSpawnPoint : SpawnPoint
     {
-        public FacingDirections faceDirection;
         public Quaternion RotateToFaceDirection => Quaternion.Euler(GetDirectionWorld());
-            
-        [SerializeField] private bool showGizmos;
+        public FacingDirections faceDirection;
         
+        [SerializeField] private bool showGizmos;
         [SerializeField, ShowIf("showGizmos")] private int gizmoLength;
         [SerializeField, ShowIf("showGizmos")] private int gizmoRadius;
         

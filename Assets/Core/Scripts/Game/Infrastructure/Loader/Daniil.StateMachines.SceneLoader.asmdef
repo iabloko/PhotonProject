@@ -1,8 +1,8 @@
 {
-    "name": "Template.Game.Settings",
+    "name": "Daniil.StateMachines.SceneLoader",
     "rootNamespace": "",
     "references": [
-        "GUID:3a8528f7e76abb74baee4258f650a672"
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

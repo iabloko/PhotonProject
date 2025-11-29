@@ -4885,8 +4885,7 @@ MonoBehaviour:
   playerVisualData: {fileID: 11400000, guid: 8273443315321904393f1dd62a7e8b57, type: 2}
   playerBaseMovement: {fileID: 7527739642754257948}
   playerMaterial: {fileID: 2100000, guid: f5fe87fc8f513b0468aee2f963ed3e88, type: 2}
-  _SkinVisibility:
-    _value: 0
+  _CurrentHealth: 0
   _PlayerNickName:
     _length: 0
     _data:
@@ -4897,8 +4896,6 @@ MonoBehaviour:
       Data: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   _SkinIndex: 0
   _PlayerID: 0
-  _IsPlayerMoving: 0
-  _CurrentHealth: 0
   interactionDistance: 6
   hoverMask:
     serializedVersion: 2
@@ -4917,6 +4914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95af28cfbc384d168c759efc3da06aaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.ObjectDamageReceiver.DamageReceiver
+  animator: {fileID: 4939131214090676468}
   player: {fileID: 5780648528888376671}
   hitParticles: {fileID: 8251392868227323709}
   audioSource: {fileID: 8529470682501225591}

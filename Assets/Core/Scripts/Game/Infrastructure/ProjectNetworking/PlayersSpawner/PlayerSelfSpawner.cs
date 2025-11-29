@@ -1,4 +1,5 @@
 using System.Linq;
+using Core.Scripts.Game.Infrastructure.ProjectNetworking.SpawnPointsLogic;
 using Cysharp.Threading.Tasks;
 using Fusion;
 using UnityEngine;
@@ -28,13 +29,13 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.PlayersSpawner
                 return;
             }
 
-            var spawnPoint = FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None);
+            var spawnPoint = FindObjectsByType<PlayerSpawnPoint>(FindObjectsSortMode.None);
             int spawnPointIndex = TryToGetSpawnPointIndex(spawnPoint.Length);
             
             SpawnPlayerAsync(player, spawnPoint[spawnPointIndex]).Forget();
         }
 
-        private async UniTaskVoid SpawnPlayerAsync(PlayerRef player, SpawnPoint spawnPoint)
+        private async UniTaskVoid SpawnPlayerAsync(PlayerRef player, PlayerSpawnPoint spawnPoint)
         {
             Vector3 spawnPosition = spawnPoint.transform.position;
             Quaternion spawnRotation = spawnPoint.RotateToFaceDirection;
