@@ -1,5 +1,11 @@
 #if !FUSION_DEV
 
+#if UNITY_6000_2_OR_NEWER
+using InternalHierarchySearchType = UnityEditor.HierarchyIterator;
+#else
+using InternalHierarchySearchType = UnityEditor.HierarchyProperty;
+#endif
+
 #region Assets/Photon/Fusion/Editor/AssetObjectEditor.cs
 
 namespace Fusion.Editor {
@@ -2057,9 +2063,9 @@ namespace Fusion.Editor {
     /// <summary>
     /// Create a new instance of <see cref="NetworkAssetSourceFactoryContext"/>.
     /// </summary>
-    public NetworkAssetSourceFactoryContext(HierarchyProperty hierarchyProperty) {
+    public NetworkAssetSourceFactoryContext(HierarchyIterator hierarchyProperty) {
       AssetGuid = hierarchyProperty.guid;
-      InstanceID = hierarchyProperty.instanceID;
+      InstanceID = hierarchyProperty.entityId;
       AssetName = hierarchyProperty.name;
       IsMainAsset = hierarchyProperty.isMainRepresentation;
     }
@@ -2850,9 +2856,9 @@ namespace Fusion.Editor {
     /// Enumerates assets in the project that match the given search criteria using <see cref="HierarchyProperty"/> API.
     /// Obtained with <see cref="AssetDatabaseUtils.IterateAssets"/>.
     /// </summary>
-    public struct AssetEnumerator : IEnumerator<HierarchyProperty> {
+    public struct AssetEnumerator : IEnumerator<HierarchyIterator> {
 
-      private HierarchyProperty _hierarchyProperty;
+      private HierarchyIterator _hierarchyProperty;
       private int               _rootFolderIndex;
 
       private readonly string[] _rootFolders;
@@ -2866,10 +2872,10 @@ namespace Fusion.Editor {
         if (string.IsNullOrEmpty(root)) {
           // search everywhere
           _rootFolders = s_rootFolders.Value;
-          _hierarchyProperty = new HierarchyProperty(_rootFolders[0]);
+          _hierarchyProperty = new HierarchyIterator(_rootFolders[0]);
         } else {
           _rootFolders       = null;
-          _hierarchyProperty = new HierarchyProperty(root);
+          _hierarchyProperty = new HierarchyIterator(root);
         }
 
         _hierarchyProperty.SetSearchFilter(searchFilter, (int)SearchableEditorWindow.SearchMode.All);
@@ -2888,7 +2894,7 @@ namespace Fusion.Editor {
           return false;
         }
 
-        var newHierarchyProperty = new HierarchyProperty(_rootFolders[++_rootFolderIndex]);
+        var newHierarchyProperty = new HierarchyIterator(_rootFolders[++_rootFolderIndex]);
         UnityInternal.HierarchyProperty.CopySearchFilterFrom(newHierarchyProperty, _hierarchyProperty);
         _hierarchyProperty = newHierarchyProperty;
 
@@ -2909,7 +2915,7 @@ namespace Fusion.Editor {
       /// this will be the same instance as returned the last time, so do not cache
       /// the result - check its properties intestead.
       /// </summary>
-      public HierarchyProperty Current => _hierarchyProperty;
+      public HierarchyIterator Current => _hierarchyProperty;
 
       object IEnumerator.Current => Current;
 
@@ -2943,7 +2949,7 @@ namespace Fusion.Editor {
     /// Enumerable of assets in the project that match the given search criteria.
     /// </summary>
     /// <seealso cref="AssetEnumerator"/>
-    public struct AssetEnumerable : IEnumerable<HierarchyProperty> {
+    public struct AssetEnumerable : IEnumerable<HierarchyIterator> {
 
       private readonly string _root;
       private readonly string _label;
@@ -2963,7 +2969,7 @@ namespace Fusion.Editor {
       /// </summary>
       public AssetEnumerator GetEnumerator() => new AssetEnumerator(_root, _label, _type);
 
-      IEnumerator<HierarchyProperty> IEnumerable<HierarchyProperty>.GetEnumerator() => GetEnumerator();
+      IEnumerator<HierarchyIterator> IEnumerable<HierarchyIterator>.GetEnumerator() => GetEnumerator();
 
       IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
@@ -7537,12 +7543,38 @@ namespace Fusion.Editor {
       public static readonly GetHelpIconDelegate      GetHelpIcon      = typeof(UnityEditor.EditorGUIUtility).CreateMethodDelegate<GetHelpIconDelegate>(nameof(GetHelpIcon));
     }
 
-    [UnityEditor.InitializeOnLoad]
-    public static class HierarchyProperty {
-      public delegate void CopySearchFilterFromDelegate(UnityEditor.HierarchyProperty to, UnityEditor.HierarchyProperty from);
-      public static CopySearchFilterFromDelegate CopySearchFilterFrom = typeof(UnityEditor.HierarchyProperty).CreateMethodDelegate<CopySearchFilterFromDelegate>(nameof(CopySearchFilterFrom), 
-        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-    }
+    //TODO
+[InitializeOnLoad]
+public static class HierarchyProperty {
+
+#if UNITY_6000_2_OR_NEWER
+
+  public delegate void CopySearchFilterFromDelegate(
+    UnityEditor.HierarchyIterator to,
+    UnityEditor.HierarchyIterator from
+  );
+
+  public static readonly CopySearchFilterFromDelegate CopySearchFilterFrom =
+    typeof(UnityEditor.HierarchyIterator).CreateMethodDelegate<CopySearchFilterFromDelegate>(
+      "CopySearchFilterFrom",
+      BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+    );
+
+#else
+
+  public delegate void CopySearchFilterFromDelegate(
+    UnityEditor.HierarchyProperty to,
+    UnityEditor.HierarchyProperty from
+  );
+
+  public static readonly CopySearchFilterFromDelegate CopySearchFilterFrom =
+    typeof(UnityEditor.HierarchyProperty).CreateMethodDelegate<CopySearchFilterFromDelegate>(
+      "CopySearchFilterFrom",
+      BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+    );
+
+#endif
+}
     
     [UnityEditor.InitializeOnLoad]
     public static class ScriptAttributeUtility {
