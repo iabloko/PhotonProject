@@ -1,11 +1,12 @@
 using System.Threading;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
+using Core.Scripts.Game.Player.Inventory;
 using Core.Scripts.Game.Player.Locomotion;
 using Core.Scripts.Game.Player.NetworkInput;
 using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
+using Core.Scripts.Game.Player.VisualData;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
-using Sandbox.Project.Scripts.Player.PlayersSkins;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -13,12 +14,6 @@ using Zenject;
 
 namespace Core.Scripts.Game.Player
 {
-    public enum SensitivityType
-    {
-        Ox,
-        Oy
-    }
-
     public abstract class PlayerData : NetworkBehaviour
     {
         [Title("Data", "", TitleAlignments.Right)]
@@ -26,11 +21,11 @@ namespace Core.Scripts.Game.Player
         
         [SerializeField] protected SimpleKCC kcc;
         [SerializeField] protected PlayerInput input;
-        
-        [SerializeField] protected PlayerVisualData playerVisualData;
+
         [SerializeField] protected PlayerBaseMovement playerBaseMovement;
-        [SerializeField] private Material playerMaterial;
-        
+        [SerializeField] protected Material playerMaterial;
+        [SerializeField] protected PlayerVisual playerVisualData;
+
         protected CancellationTokenSource TokenSource;
         protected Camera MainCamera;
         
@@ -38,26 +33,23 @@ namespace Core.Scripts.Game.Player
         
         protected ICinemachine Cinemachine;
         protected INickNameFadeEffect FadeEffect;
+        protected IPlayerInventory Inventory;
 
         #endregion SERVICES
         
         [Inject]
         public void Constructor(
+            IPlayerInventory inventory,
             ICinemachine cinemachine,
             INickNameFadeEffect nickNameFadeEffect)
         {
+            Inventory = inventory;
             MainCamera = Camera.main;
             
             FadeEffect = nickNameFadeEffect;
             Cinemachine = cinemachine;
             
             FadeEffect.Initialization(MainCamera);
-            
-            // SkinVisibilityController = new RendererVisibilityController(playerRenderers);
-            // SkinService = new SkinService(SaveLoadSystem,
-            //         new JsonSkinAssembler(),
-            //         new ClassicBaker(new PlayerSkinBodyPartMapping()), 
-            //         new RendererSkinApplier(playerRenderers));
         }
         
         public override void Spawned()

@@ -1,4 +1,3 @@
-using Core.Scripts.Game.Infrastructure.Services.KeyHandlerService;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
@@ -29,8 +28,8 @@ namespace Core.Scripts.Game.Player.NetworkInput
         public InputModelData CurrentInput => _currentInput;
         public InputModelData PreviousInput => _previousInput;
 
-        internal float ScrollWheel => KeyHandler.Scroll;
-        internal float ScrollWheelRaw => KeyHandler.ScrollRaw;
+        public float ScrollWheel => KeyHandler.Scroll;
+        public float ScrollWheelRaw => KeyHandler.ScrollRaw;
 
         internal IKeyHandler KeyHandler;
 
@@ -82,21 +81,7 @@ namespace Core.Scripts.Game.Player.NetworkInput
 
             Debug.Log($"PlayerInput Despawned");
         }
-
-        public void ChangeInputSensitivity(SensitivityType type, float value)
-        {
-            if (type == SensitivityType.Oy)
-            {
-                lookSensitivity.y = value;
-            }
-            else
-            {
-                lookSensitivity.x = value;
-            }
-
-            // PlayerInfo.SaveSensitivitySettings(lookSensitivity);
-        }
-
+        
         void IBeforeUpdate.BeforeUpdate()
         {
             // if (HasStateAuthority == false || ProjectSettings.IsCursorLocked == false) return;

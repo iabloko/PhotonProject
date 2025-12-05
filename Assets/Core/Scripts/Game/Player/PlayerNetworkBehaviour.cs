@@ -1,4 +1,5 @@
 using System;
+using Core.Scripts.Game.Player.VisualData;
 using Fusion;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -10,9 +11,9 @@ namespace Core.Scripts.Game.Player
         [Title("Network Behaviour", subtitle: "", TitleAlignments.Right), Networked, UnitySerializeField]
         public int CurrentHealth { get; protected set; }
         [Networked, UnitySerializeField] protected internal NetworkString<_16> PlayerNickName { get; protected set; }
-        [Networked, UnitySerializeField] protected internal NetworkString<_32> PlayerSkin { get; protected set; }
-        [Networked, UnitySerializeField] protected internal int SkinIndex { get; protected set; }
-        [Networked, UnitySerializeField] protected internal int PlayerID { get; protected set; }
+        
+        [Networked, UnitySerializeField]
+        protected internal PlayerVisualNetwork VisualNetwork { get; protected set; } = default;
 
         private ChangeDetector _changeDetector;
 
@@ -22,8 +23,12 @@ namespace Core.Scripts.Game.Player
         public override void Spawned()
         {
             base.Spawned();
-            CurrentHealth = 100;
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+
+            if (Object.HasStateAuthority)
+            {
+                CurrentHealth = 100;
+            }
         }
 
         public override void Render()
@@ -37,12 +42,33 @@ namespace Core.Scripts.Game.Player
                 {
                     case nameof(PlayerNickName):
                         SetUpLocalPlayerNickName();
-                        break;                    
+                        break;
                     case nameof(CurrentHealth):
                         HealthChanged();
+                        break;                    
+                    case nameof(VisualNetwork):
+                        SkinChanged();
                         break;
                 }
             }
+        }
+
+        private void SkinChanged()
+        {
+            for (int i = 0; i < playerVisualData.hair.Length; i++)
+                playerVisualData.hair[i].SetActive(i == VisualNetwork.hairID);            
+            
+            for (int i = 0; i < playerVisualData.heads.Length; i++)
+                playerVisualData.heads[i].SetActive(i == VisualNetwork.headID);            
+            
+            for (int i = 0; i < playerVisualData.eyes.Length; i++)
+                playerVisualData.eyes[i].SetActive(i == VisualNetwork.eyeID);            
+            
+            for (int i = 0; i < playerVisualData.mouth.Length; i++)
+                playerVisualData.mouth[i].SetActive(i == VisualNetwork.mountID);            
+            
+            for (int i = 0; i < playerVisualData.bodies.Length; i++)
+                playerVisualData.bodies[i].SetActive(i == VisualNetwork.bodyID);
         }
 
         public void ChangeHealth(int value)
@@ -52,7 +78,6 @@ namespace Core.Scripts.Game.Player
 
         protected void HealthChanged()
         {
-            
         }
 
         protected void ChangePlayerNicknameVisibility(bool status) => nickNameText.gameObject.SetActive(status);
@@ -62,7 +87,7 @@ namespace Core.Scripts.Game.Player
             try
             {
 #if UNITY_EDITOR
-                string playerName = string.Concat(PlayerNickName.Value, "_", PlayerID);
+                string playerName = string.Concat(PlayerNickName.Value, "_", Object.Id);
 #elif !UNITY_EDITOR && UNITY_WEBGL
                 string playerName = string.Concat(PlayerNickName.Value);
 #endif
@@ -71,8 +96,8 @@ namespace Core.Scripts.Game.Player
             }
             catch (Exception e)
             {
-                Debug.LogError($"Player Room Enter Player ID {PlayerID} ERROR {e}");
-                Debug.LogError($"Player Room Enter Player ID {PlayerID} ERROR {e.Message}");
+                Debug.LogError($"Player Room Enter Player ID {Object.Id} ERROR {e}");
+                Debug.LogError($"Player Room Enter Player ID {Object.Id} ERROR {e.Message}");
             }
         }
     }

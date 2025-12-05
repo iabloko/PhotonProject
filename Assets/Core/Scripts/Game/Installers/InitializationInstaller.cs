@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using Core.Scripts.Game.Infrastructure.Bootstrapper;
 using Core.Scripts.Game.Infrastructure.ProjectNetworking.Provider;
 using Core.Scripts.Game.Infrastructure.ProjectNetworking.Service;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
-using Core.Scripts.Game.Infrastructure.Services.KeyHandlerService;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States;
+using Core.Scripts.Game.Player.NetworkInput;
 using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
 using UnityEngine;
 using Zenject;

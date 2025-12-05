@@ -1,5 +1,6 @@
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States;
+using Core.Scripts.Game.Player.Inventory;
 using Zenject;
 
 namespace Core.Scripts.Game.Installers
@@ -8,9 +9,15 @@ namespace Core.Scripts.Game.Installers
     {
         public override void InstallBindings()
         {
+            BindGameServices();
             BindGameStateMachine();
         }
-        
+
+        private void BindGameServices()
+        {
+            Container.Bind<IPlayerInventory>().To<PlayerInventory>().AsSingle().NonLazy();
+        }
+
         private void BindGameStateMachine()
         {
             Container.Bind<GameMenuUIDescriptionState>().AsSingle();

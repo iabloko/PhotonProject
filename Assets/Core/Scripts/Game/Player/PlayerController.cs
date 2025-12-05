@@ -2,6 +2,7 @@ using Core.Scripts.Game.Infrastructure.RequiresInjection;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Player.Locomotion;
 using Core.Scripts.Game.Player.NetworkInput;
+using Core.Scripts.Game.Player.VisualData;
 using Fusion;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -28,12 +29,9 @@ namespace Core.Scripts.Game.Player
 
             if (Object.HasStateAuthority)
             {
-                // _layerPlayer = LayerMask.NameToLayer(PLAYER_LAYER);
-                // _layerIgnoreRendering = LayerMask.NameToLayer(IGNORE_RENDERING_LAYER);
-
                 SubscribeOnEvents();
 
-                ChangeNetworkSkinIndex();
+                ChangeNetworkPlayerVisualData();
                 ChangeNetworkPlayerNickName();
 
                 SetUpNetworkLocalPlayer();
@@ -94,7 +92,16 @@ namespace Core.Scripts.Game.Player
             transform.name = PLAYER_LAYER;
         }
 
-        private void ChangeNetworkSkinIndex() => SkinIndex = Random.Range(0, playerVisualData.skins.Length - 1);
+        private void ChangeNetworkPlayerVisualData()
+        {
+            int hairId = Random.Range(0, playerVisualData.hair.Length);
+            int headId = Random.Range(0, playerVisualData.heads.Length);
+            int eyeId = Random.Range(0, playerVisualData.eyes.Length);
+            int mouthId = Random.Range(0, playerVisualData.mouth.Length);
+            int bodyId = Random.Range(0, playerVisualData.bodies.Length);
+            
+            VisualNetwork = new PlayerVisualNetwork(hairId, headId, eyeId, mouthId, bodyId);
+        }
 
         private void PrepareToKccTeleportation(Vector3 p, Quaternion r)
         {
@@ -110,7 +117,6 @@ namespace Core.Scripts.Game.Player
         private void SetUpNetworkLocalPlayer()
         {
             Runner.SetPlayerObject(Runner.LocalPlayer, networkObject);
-            PlayerID = Runner.LocalPlayer.PlayerId;
         }
 
         #region ANALYTICS
@@ -141,13 +147,11 @@ namespace Core.Scripts.Game.Player
 
         private void SubscribeOnEvents()
         {
-            // GameProgress.OnPlayerFinishedGame += PlayerFinished;
             Cinemachine.OnStateChange += CameraStateChanged;
         }
 
         private void UnSubscribeOnEvent()
         {
-            // GameProgress.OnPlayerFinishedGame -= PlayerFinished;
             Cinemachine.OnStateChange -= CameraStateChanged;
         }
 

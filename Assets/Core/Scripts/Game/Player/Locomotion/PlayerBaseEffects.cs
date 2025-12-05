@@ -11,7 +11,7 @@ namespace Core.Scripts.Game.Player.Locomotion
         private ParticleSystem footprintParticles;
 
         [SerializeField] private ParticleSystem onGroundParticles;
-        [SerializeField] private MovementEffects movementEffects;
+        [SerializeField] private Effects.MovementEffects movementEffects;
 
         private PlayerTeleportationData _playerTeleportationData;
 
@@ -21,7 +21,7 @@ namespace Core.Scripts.Game.Player.Locomotion
 
         public override void Spawned()
         {
-            movementEffects = new MovementEffects(kcc);
+            movementEffects = new Effects.MovementEffects(kcc);
             movementEffects.CreateMovementEffects(animator, footprintParticles);
 
             if (!Object.HasStateAuthority) return;
