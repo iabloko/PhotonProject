@@ -35,6 +35,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.LoadHelper.Chains
 
         protected override async UniTask<Mesh> ExecuteLogic(string prefabId)
         {
+            await UniTask.Yield();
             return null;
             
             // const string query = "?isPreview=false";

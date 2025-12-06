@@ -28,7 +28,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.LoadHelper.Chains
 
         protected override async UniTask<Mesh> ExecuteLogic(string id)
         {
-            throw new System.NotImplementedException();
+            await UniTask.Yield();
+            return null;
         }
     }
 }

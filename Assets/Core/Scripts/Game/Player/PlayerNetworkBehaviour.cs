@@ -1,7 +1,9 @@
 using System;
 using Core.Scripts.Game.Player.VisualData;
+using Core.Scripts.Game.ScriptableObjects.Items;
 using Fusion;
 using Sirenix.OdinInspector;
+using UniRx;
 using UnityEngine;
 
 namespace Core.Scripts.Game.Player
@@ -11,9 +13,8 @@ namespace Core.Scripts.Game.Player
         [Title("Network Behaviour", subtitle: "", TitleAlignments.Right), Networked, UnitySerializeField]
         public int CurrentHealth { get; protected set; }
         [Networked, UnitySerializeField] protected internal NetworkString<_16> PlayerNickName { get; protected set; }
-        
-        [Networked, UnitySerializeField]
-        protected internal PlayerVisualNetwork VisualNetwork { get; protected set; } = default;
+        [Networked, UnitySerializeField] protected internal int PlayerWeaponId { get; protected set; }
+        [Networked, UnitySerializeField] protected internal PlayerVisualNetwork VisualNetwork { get; protected set; }
 
         private ChangeDetector _changeDetector;
 
@@ -25,6 +26,11 @@ namespace Core.Scripts.Game.Player
             base.Spawned();
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
+            Inventory.CurrentWeapon
+                .Where(w => w != null)
+                .Subscribe(SetWeaponInHand)
+                .AddTo(Disposables);
+            
             if (Object.HasStateAuthority)
             {
                 CurrentHealth = 100;
@@ -45,28 +51,51 @@ namespace Core.Scripts.Game.Player
                         break;
                     case nameof(CurrentHealth):
                         HealthChanged();
-                        break;                    
+                        break;
                     case nameof(VisualNetwork):
                         SkinChanged();
                         break;
+                    case nameof(PlayerWeaponId):
+                        WeaponChanged();
+                        break;
                 }
+            }
+        }
+
+        private void WeaponChanged()
+        {
+            for (int i = 0; i < weaponData.Length; i++)
+            {
+                if (weaponData[i].weaponConfig.id != PlayerWeaponId) continue;
+                EnableWeapon(weaponData[i]);
+                break;
+            }
+        }
+
+        private void EnableWeapon(WeaponData data)
+        {
+            Debug.Log($"[PlayerNetworkBehaviour] WeaponChanged to {PlayerWeaponId} | {data.weaponConfig.itemName}");
+            
+            for (int i = 0; i < data.visuals.Length; i++)
+            {
+                data.visuals[i].prefab.SetActive(true);
             }
         }
 
         private void SkinChanged()
         {
             for (int i = 0; i < playerVisualData.hair.Length; i++)
-                playerVisualData.hair[i].SetActive(i == VisualNetwork.hairID);            
-            
+                playerVisualData.hair[i].SetActive(i == VisualNetwork.hairID);
+
             for (int i = 0; i < playerVisualData.heads.Length; i++)
-                playerVisualData.heads[i].SetActive(i == VisualNetwork.headID);            
-            
+                playerVisualData.heads[i].SetActive(i == VisualNetwork.headID);
+
             for (int i = 0; i < playerVisualData.eyes.Length; i++)
-                playerVisualData.eyes[i].SetActive(i == VisualNetwork.eyeID);            
-            
+                playerVisualData.eyes[i].SetActive(i == VisualNetwork.eyeID);
+
             for (int i = 0; i < playerVisualData.mouth.Length; i++)
-                playerVisualData.mouth[i].SetActive(i == VisualNetwork.mountID);            
-            
+                playerVisualData.mouth[i].SetActive(i == VisualNetwork.mountID);
+
             for (int i = 0; i < playerVisualData.bodies.Length; i++)
                 playerVisualData.bodies[i].SetActive(i == VisualNetwork.bodyID);
         }
@@ -98,6 +127,15 @@ namespace Core.Scripts.Game.Player
             {
                 Debug.LogError($"Player Room Enter Player ID {Object.Id} ERROR {e}");
                 Debug.LogError($"Player Room Enter Player ID {Object.Id} ERROR {e.Message}");
+            }
+        }
+        
+        private void SetWeaponInHand(Weapon weapon)
+        {
+            if (Object.HasStateAuthority)
+            {
+                Debug.Log($"[PlayerNetworkBehaviour] SetWeaponInHand {weapon.id}");
+                PlayerWeaponId = weapon.id;
             }
         }
     }

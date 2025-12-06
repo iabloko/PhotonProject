@@ -17,11 +17,8 @@ namespace Core.Scripts.Game.Player
         [SerializeField] private Transform playerModel;
         
         public bool RequiresInjection { get; set; } = true;
-
-        // private int _layerPlayer;
-        // private int _layerIgnoreRendering;
+        
         private const string PLAYER_LAYER = "Player";
-        private const string IGNORE_RENDERING_LAYER = "IgnoreRendering";
 
         public override void Spawned()
         {

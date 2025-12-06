@@ -23,6 +23,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.ObjectCreator.Creat
                     $"ObjectAsciiArt error: prefabId='{prefabId}', expected='{AssetPaths.ASCII}'");
                 return;
             }
+            
+            await UniTask.Yield();
 
             // ObjectAsciiArt created = await CreateSpecialObject<ObjectAsciiArt>(Reference, p, r, s, parent);
             //

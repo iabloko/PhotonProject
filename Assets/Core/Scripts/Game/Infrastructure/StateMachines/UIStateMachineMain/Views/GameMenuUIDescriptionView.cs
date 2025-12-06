@@ -16,10 +16,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
         
         protected override void OnBeforeOpen() => SetupStartLogic();
 
-        protected override void OnBeforeClosed()
-        {
-            startGame.onClick.RemoveAllListeners();
-        }
+        protected override void OnBeforeClosed() => startGame.onClick.RemoveAllListeners();
 
         private void SetupStartLogic()
         {

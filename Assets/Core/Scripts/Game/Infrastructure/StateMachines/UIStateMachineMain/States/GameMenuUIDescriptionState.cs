@@ -39,7 +39,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
 
         protected override void OnEntered()
         {
-            StateMachine.FadeLogic(1, 0).Forget();
+            StateMachine.FadeLogic(startValue: 1, endValue: 0).Forget();
             base.OnEntered();
         }
 
@@ -47,7 +47,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
 
         private async UniTaskVoid PrepareToStartGameAsync()
         {
-            await StateMachine.CloseStateMachine();
+            await StateMachine.EnterAsync<GameMenuUIGamePlayState>();
             
             _settings.ChangeGamePauseStatus(false);
             _settings.SetCursor(false);

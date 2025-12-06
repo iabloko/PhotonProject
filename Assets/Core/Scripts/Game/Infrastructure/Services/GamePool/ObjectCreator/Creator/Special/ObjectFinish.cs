@@ -24,6 +24,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.ObjectCreator.Creat
                 return;
             }
             
+            await UniTask.Yield();
+            
             // await CreateSpecialObject<NetworkDraggable>(Reference, p, r, s, parent);
         }
     }

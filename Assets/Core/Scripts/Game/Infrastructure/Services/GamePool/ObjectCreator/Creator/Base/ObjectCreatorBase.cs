@@ -13,8 +13,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.ObjectCreator.Creat
         {
             Vector3 propScale = scale ?? Vector3.one;
             Quaternion propRotation = rotation ?? Quaternion.identity;
+            await UniTask.Yield();
             return null;
-
             // NetworkObject created = await PlayerInfo.CurrentRunner.SpawnAsync(
             //     prototype,
             //     position,
@@ -34,6 +34,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.ObjectCreator.Creat
         {
             Vector3 propScale = scale ?? Vector3.one;
             Quaternion propRotation = rotation ?? Quaternion.identity;
+            await UniTask.Yield();
+            
             return null;
             // return await PlayerInfo.CurrentRunner.SpawnAsync(
             //     prototype,
@@ -58,6 +60,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.ObjectCreator.Creat
         {
             Vector3 propScale = scale ?? Vector3.one;
             Quaternion propRotation = rotation ?? Quaternion.identity;
+            await UniTask.Yield();
             
             return null;
             
@@ -81,6 +84,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool.ObjectCreator.Creat
         {
             Vector3 propScale = scale ?? Vector3.one;
             Quaternion propRotation = rotation ?? Quaternion.identity;
+            await UniTask.Yield();
             
             // await PlayerInfo.CurrentRunner.SpawnAsync(
             //     prototype,
