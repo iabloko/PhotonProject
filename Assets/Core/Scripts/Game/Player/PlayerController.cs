@@ -1,7 +1,6 @@
 using Core.Scripts.Game.Infrastructure.RequiresInjection;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
-using Core.Scripts.Game.Player.Locomotion;
-using Core.Scripts.Game.Player.NetworkInput;
+using Core.Scripts.Game.Player.Movement;
 using Core.Scripts.Game.Player.VisualData;
 using Fusion;
 using Sirenix.OdinInspector;
@@ -10,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace Core.Scripts.Game.Player
 {
-    public sealed class PlayerController : PlayerInteractor, IAfterSpawned, IBeforeTick, IRequiresInjection
+    public sealed class PlayerController : PlayerInteractor, IAfterSpawned, IRequiresInjection
     {
         [Title("Controller", subtitle: "", TitleAlignments.Right), SerializeField]
         private NetworkObject networkObject;
@@ -45,20 +44,11 @@ namespace Core.Scripts.Game.Player
             ChangePlayerNicknameVisibility(!Object.HasStateAuthority);
         }
         
-        void IBeforeTick.BeforeTick()
-        {
-            if (!Object.HasStateAuthority) return;
-
-            InputModelData curr = input.CurrentInput;
-            InputModelData prev = input.PreviousInput;
-
-            InteractWithObjects(curr, prev);
-        }
-        
         public override void FixedUpdateNetwork()
         {
-            if (!Object.HasStateAuthority) return;
             base.FixedUpdateNetwork();
+            
+            if (!Object.HasStateAuthority) return;
             FadeEffect.Update();
         }
 
@@ -120,6 +110,7 @@ namespace Core.Scripts.Game.Player
 
         private void SendAnalyticEventOnDead()
         {
+            //TODO ADD AnalyticAPI
             // AnalyticAPI.SendEvents(AnalyticType.All,
             //     new IEventData[]
             //     {
@@ -129,8 +120,8 @@ namespace Core.Scripts.Game.Player
 
         private void SendAnalyticEventOnCheckPoint(int achievedCheckPoints)
         {
+            //TODO ADD AnalyticAPI
             // AmplitudeEvents.Client_Games_Start_CheckPoint_Properties properties = new(achievedCheckPoints);
-            //
             // AnalyticAPI.SendEvents(AnalyticType.All,
             //     new IEventData[]
             //     {

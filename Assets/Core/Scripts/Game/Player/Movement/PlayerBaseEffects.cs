@@ -1,9 +1,7 @@
-using Core.Scripts.Game.Player.NetworkInput;
-using Core.Scripts.Game.Player.PlayerEffects;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Core.Scripts.Game.Player.Locomotion
+namespace Core.Scripts.Game.Player.Movement
 {
     public abstract class PlayerBaseEffects : PlayerBaseRotation
     {
@@ -54,12 +52,11 @@ namespace Core.Scripts.Game.Player.Locomotion
 
         protected override void LateUpdate()
         {
+            base.LateUpdate();
+            
             bool showPlayerEffect = IsPlayerShifting && kcc.IsGrounded;
             movementEffects.UpdatePlayerEffects(showPlayerEffect);
             movementEffects.UpdateMovementEffects();
-
-            if (!Object.HasStateAuthority) return;
-            base.LateUpdate();
         }
 
         protected void StartTeleportation()

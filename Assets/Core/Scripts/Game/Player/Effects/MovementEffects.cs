@@ -1,4 +1,4 @@
-using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
+using Core.Scripts.Game.Player.Effects.SimpleEffects;
 using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
 using UnityEngine;

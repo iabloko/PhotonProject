@@ -4767,6 +4767,7 @@ GameObject:
   - component: {fileID: 3878796264648749870}
   - component: {fileID: 7527739642754257948}
   - component: {fileID: 5780648528888376671}
+  - component: {fileID: -2216158195282683156}
   - component: {fileID: 124113639190605752}
   m_Layer: 7
   m_Name: PlayerTinyHero
@@ -4844,6 +4845,7 @@ MonoBehaviour:
   - {fileID: 3878796264648749870}
   - {fileID: 7527739642754257948}
   - {fileID: 5780648528888376671}
+  - {fileID: -2216158195282683156}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &2321000454154143944
 MonoBehaviour:
@@ -5003,23 +5005,11 @@ MonoBehaviour:
     - {fileID: 185436151556600152}
     - {fileID: 104686326880994323}
     - {fileID: 8853967298588946590}
-  weaponData:
-  - weaponConfig: {fileID: 11400000, guid: be8a55a70e827d848a09eaebb000fee4, type: 2}
-    visuals:
-    - slot: 0
-      prefab: {fileID: 7456679672268195111}
-  - weaponConfig: {fileID: 11400000, guid: 00ff90a89185d784592c317cdbcd6be6, type: 2}
-    visuals:
-    - slot: 0
-      prefab: {fileID: 473100678524604335}
-    - slot: 1
-      prefab: {fileID: 3592214941347796169}
   _CurrentHealth: 0
   _PlayerNickName:
     _length: 0
     _data:
       Data: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  _PlayerWeaponId: 0
   _VisualNetwork:
     hairID: 0
     headID: 0
@@ -5032,6 +5022,33 @@ MonoBehaviour:
     m_Bits: 64
   networkObject: {fileID: 55043166928495184}
   playerModel: {fileID: 3603846932566480250}
+--- !u!114 &-2216158195282683156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539067381167240438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35b76c3673a341dd908ddecf37355fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.Player.Combat.PlayerCombat
+  baseAnimation: {fileID: 7527739642754257948}
+  weaponData:
+  - weaponConfig: {fileID: 11400000, guid: be8a55a70e827d848a09eaebb000fee4, type: 2}
+    visuals:
+    - slot: 0
+      prefab: {fileID: 7456679672268195111}
+    - slot: 1
+      prefab: {fileID: 852282661286057806}
+  - weaponConfig: {fileID: 11400000, guid: 00ff90a89185d784592c317cdbcd6be6, type: 2}
+    visuals:
+    - slot: 0
+      prefab: {fileID: 473100678524604335}
+    - slot: 1
+      prefab: {fileID: 3592214941347796169}
+  _PlayerWeaponId: 0
 --- !u!114 &124113639190605752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17245,7 +17262,7 @@ Animator:
   m_GameObject: {fileID: 6979595919292856113}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 0308cf4e83cf517488b60af58b290fe0, type: 3}
-  m_Controller: {fileID: 9100000, guid: c81054898f5a18f48a2405205006d442, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7d272d633b8d7d84384075e56e1dbd9b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

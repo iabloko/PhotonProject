@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Core.Scripts.Game.Player.PlayerEffects.SimpleEffects
+namespace Core.Scripts.Game.Player.Effects.SimpleEffects
 {
     public sealed class FakePlayerDeathEffect : MonoBehaviour
     {

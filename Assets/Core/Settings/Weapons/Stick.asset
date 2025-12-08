@@ -16,3 +16,4 @@ MonoBehaviour:
   itemName: Stick
   addressableLink: WeaponPrefabs/Stick.prefab
   icon: {fileID: 21300000, guid: db74ff3e323937340bed6fbe51e1e791, type: 3}
+  weaponAnimations: {fileID: 22100000, guid: c74be15c16e8bf64ca45efdcbc0fc930, type: 2}

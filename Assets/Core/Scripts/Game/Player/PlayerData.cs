@@ -1,9 +1,9 @@
 using System.Threading;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
+using Core.Scripts.Game.Player.Effects.SimpleEffects;
 using Core.Scripts.Game.Player.Inventory;
-using Core.Scripts.Game.Player.Locomotion;
+using Core.Scripts.Game.Player.Movement;
 using Core.Scripts.Game.Player.NetworkInput;
-using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
 using Core.Scripts.Game.Player.VisualData;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
@@ -26,27 +26,20 @@ namespace Core.Scripts.Game.Player
         [SerializeField] protected PlayerBaseMovement playerBaseMovement;
         [SerializeField] protected Material playerMaterial;
         [SerializeField] protected PlayerVisual playerVisualData;
-        [SerializeField, TableList] protected WeaponData[] weaponData;
-
+        
         protected CancellationTokenSource TokenSource;
         protected Camera MainCamera;
-        protected CompositeDisposable Disposables;
         
         #region SERVICES
         
         protected ICinemachine Cinemachine;
         protected INickNameFadeEffect FadeEffect;
-        protected IPlayerInventory Inventory;
-
+        
         #endregion SERVICES
         
         [Inject]
-        public void Constructor(
-            IPlayerInventory inventory,
-            ICinemachine cinemachine,
-            INickNameFadeEffect nickNameFadeEffect)
+        public void Constructor(ICinemachine cinemachine, INickNameFadeEffect nickNameFadeEffect)
         {
-            Inventory = inventory;
             MainCamera = Camera.main;
             
             FadeEffect = nickNameFadeEffect;
@@ -59,14 +52,12 @@ namespace Core.Scripts.Game.Player
         {
             base.Spawned();
             TokenSource = new CancellationTokenSource();
-            Disposables = new CompositeDisposable();
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
             base.Despawned(runner, hasState);
             FadeEffect.Dispose();
-            Disposables.Clear();
         }
     }
 }

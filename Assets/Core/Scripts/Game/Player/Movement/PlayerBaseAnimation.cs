@@ -2,7 +2,7 @@ using Core.Scripts.Game.Player.Animations;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Core.Scripts.Game.Player.Locomotion
+namespace Core.Scripts.Game.Player.Movement
 {
     public abstract class PlayerBaseAnimation : PlayerBaseData
     {
@@ -21,7 +21,12 @@ namespace Core.Scripts.Game.Player.Locomotion
             base.Spawned();
             _animationController = new AnimationController(animator);
         }
-        
+
+        public void OverrideAnimatorController(AnimatorOverrideController controller)
+        {
+            _animationController.OverrideAnimatorController(controller);
+        }
+
         protected virtual void LateUpdate()
         {
             if (ProjectSettings.IsGamePaused)
@@ -41,7 +46,7 @@ namespace Core.Scripts.Game.Player.Locomotion
         }
 
         protected void JumpAnimation() => _animationController.PlayJump(true);
-        
+
         private void RestartPlayerAnimations()
         {
             _animationController.PlayJump(kcc.IsGrounded);

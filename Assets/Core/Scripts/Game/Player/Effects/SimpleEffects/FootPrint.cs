@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Scripts.Game.Player.PlayerEffects.SimpleEffects
+namespace Core.Scripts.Game.Player.Effects.SimpleEffects
 {
     public sealed class FootPrint : IPlayerEffect
     {

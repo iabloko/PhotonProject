@@ -3,7 +3,7 @@ using Fusion;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Core.Scripts.Game.Player.Locomotion
+namespace Core.Scripts.Game.Player.Movement
 {
     public abstract class PlayerBaseRotation : PlayerBaseAnimation
     {

@@ -16,3 +16,4 @@ MonoBehaviour:
   itemName: WoodBow
   addressableLink: WeaponPrefabs/WoodBow.prefab
   icon: {fileID: 21300000, guid: 1ee0a5866240eb14eb8ae2c6caa03896, type: 3}
+  weaponAnimations: {fileID: 22100000, guid: 3f93a28248766e54b978c12123c4818c, type: 2}

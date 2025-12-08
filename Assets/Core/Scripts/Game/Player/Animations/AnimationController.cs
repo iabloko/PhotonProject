@@ -35,5 +35,10 @@ namespace Core.Scripts.Game.Player.Animations
         {
             _animator.SetFloat(Horizontal, value);
         }
+
+        public void OverrideAnimatorController(AnimatorOverrideController controller)
+        {
+            _animator.runtimeAnimatorController = controller;
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace Core.Scripts.Game.Player.PlayerEffects.SimpleEffects
+namespace Core.Scripts.Game.Player.Effects.SimpleEffects
 {
     public interface INickNameFadeEffect : IDisposable
     {

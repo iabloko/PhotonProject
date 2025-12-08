@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
-using Core.Scripts.Game.Player.PlayerEffects.SimpleEffects;
+using Core.Scripts.Game.Player.Effects.SimpleEffects;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;

@@ -7,5 +7,5 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BowAnimations
-  m_Controller: {fileID: 9100000, guid: c81054898f5a18f48a2405205006d442, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7d272d633b8d7d84384075e56e1dbd9b, type: 2}
   m_Clips: []
