@@ -1,17 +1,20 @@
 using System;
-using Core.Scripts.Game.Infrastructure.ModelData;
-using Core.Scripts.Game.Infrastructure.RequiresInjection;
-using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
-using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
-using Core.Scripts.Game.PlayerLogic.Movement;
-using Core.Scripts.Game.PlayerLogic.NetworkInput;
-using Core.Scripts.Game.PlayerLogic.Visual;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using Zenject;
+using Core.Scripts.Game.Infrastructure.ModelData;
+using Core.Scripts.Game.Infrastructure.RequiresInjection;
+using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
+using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
+using Core.Scripts.Game.PlayerLogic.ContextLogic;
+using Core.Scripts.Game.PlayerLogic.Movement;
+using Core.Scripts.Game.PlayerLogic.NetworkInput;
+using Core.Scripts.Game.PlayerLogic.Visual;
+
+using Animation = Core.Scripts.Game.PlayerLogic.Movement.Animation;
 using Random = UnityEngine.Random;
 
 namespace Core.Scripts.Game.PlayerLogic
@@ -42,10 +45,10 @@ namespace Core.Scripts.Game.PlayerLogic
         private IProjectSettings _projectSettings;
 
         private PlayerContext _ctx;
-        private MovementAnimation _anim;
-        private PlayerRotation _rotation;
-        private PlayerMovementEffects _effects;
-        private Movement.Movement _movement;
+        private Animation _anim;
+        private Rotation _rotation;
+        private Effects _effects;
+        private Moving _moving;
         private INickNameFadeEffect _nickNameFadeEffect;
         private ChangeDetector _changeDetector;
 
@@ -76,16 +79,16 @@ namespace Core.Scripts.Game.PlayerLogic
 
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
             _ctx = new PlayerContext(kcc, input, roomData, _projectSettings, Runner, Object.HasStateAuthority);
-            _effects = new PlayerMovementEffects(footprintParticles, onGroundParticles, _ctx);
+            _effects = new Effects(footprintParticles, onGroundParticles, _ctx);
 
             if (Object.HasStateAuthority)
             {
                 ChangeNetworkPlayerVisualData();
                 ChangeNetworkPlayerNickName();
 
-                _anim = new MovementAnimation(_ctx, animator, _projectSettings, roomData);
-                _rotation = new PlayerRotation(_ctx, _cinemachine, _projectSettings, previewRotation, 2f);
-                _movement = new Movement.Movement(_ctx, _projectSettings, JumpAnimation);
+                _anim = new Animation(_ctx, animator, _projectSettings, roomData);
+                _rotation = new Rotation(_ctx, _cinemachine, _projectSettings, previewRotation, 2f);
+                _moving = new Moving(_ctx, _projectSettings, JumpAnimation);
             }
             else
             {
@@ -131,7 +134,7 @@ namespace Core.Scripts.Game.PlayerLogic
             if (Object.HasInputAuthority)
             {
                 _rotation.AfterSpawned();
-                _movement.AfterSpawned();
+                _moving.AfterSpawned();
             }
             else
             {
@@ -147,7 +150,7 @@ namespace Core.Scripts.Game.PlayerLogic
         void IAfterTick.AfterTick()
         {
             if (Object.HasStateAuthority)
-                _movement.AfterTick();
+                _moving.AfterTick();
         }
 
         public override void FixedUpdateNetwork()
@@ -157,7 +160,7 @@ namespace Core.Scripts.Game.PlayerLogic
             if (Object.HasStateAuthority)
             {
                 _rotation.FixedUpdateNetwork();
-                _movement.FixedUpdateNetwork();
+                _moving.FixedUpdateNetwork();
             }
             
             _effects.OnGroundEffect();

@@ -1,10 +1,11 @@
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
+using Core.Scripts.Game.PlayerLogic.ContextLogic;
 using Core.Scripts.Game.PlayerLogic.NetworkInput;
 using UnityEngine;
 
 namespace Core.Scripts.Game.PlayerLogic.Movement
 {
-    public sealed class Movement
+    public sealed class Moving
     {
         private readonly PlayerContext _ctx;
         private readonly IProjectSettings _projectSettings;
@@ -16,8 +17,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private float _jumpImpulse;
         private float _acceleration;
         
-        public Movement(
-            PlayerContext ctx, IProjectSettings settings, System.Action jump)
+        public Moving(PlayerContext ctx, IProjectSettings settings, System.Action jump)
         {
             _ctx = ctx;
             _projectSettings = settings;

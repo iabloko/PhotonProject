@@ -1,10 +1,11 @@
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
+using Core.Scripts.Game.PlayerLogic.ContextLogic;
 using UnityEngine;
 
 namespace Core.Scripts.Game.PlayerLogic.Movement
 {
-    public sealed class PlayerRotation
+    public sealed class Rotation
     {
         private readonly PlayerContext _ctx;
         private readonly ICinemachine _cinemachine;
@@ -20,14 +21,14 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private bool _isFpsMode = false;
         private readonly IProjectSettings _projectSettings;
 
-        public PlayerRotation(PlayerContext ctx,
+        public Rotation(PlayerContext ctx,
             ICinemachine cinemachine,
             IProjectSettings projectSettings,
             Transform previewRotation,
             float rotationSpeed)
         {
-            _projectSettings = projectSettings;
             _ctx = ctx;
+            _projectSettings = projectSettings;
             _cinemachine = cinemachine;
             _previewRotation = previewRotation;
             _rotationSpeed = rotationSpeed;

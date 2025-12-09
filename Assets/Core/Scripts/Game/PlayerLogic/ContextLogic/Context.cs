@@ -3,7 +3,7 @@ using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 
-namespace Core.Scripts.Game.PlayerLogic.Movement
+namespace Core.Scripts.Game.PlayerLogic.ContextLogic
 {
     public class Context
     {

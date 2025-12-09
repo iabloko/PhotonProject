@@ -5,7 +5,7 @@ using Fusion;
 using Fusion.Addons.SimpleKCC;
 using UnityEngine;
 
-namespace Core.Scripts.Game.PlayerLogic.Movement
+namespace Core.Scripts.Game.PlayerLogic.ContextLogic
 {
     public sealed class PlayerContext : Context
     {

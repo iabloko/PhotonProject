@@ -1,10 +1,11 @@
 using Core.Scripts.Game.Infrastructure.ModelData;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
+using Core.Scripts.Game.PlayerLogic.ContextLogic;
 using UnityEngine;
 
 namespace Core.Scripts.Game.PlayerLogic.Movement
 {
-    public sealed class MovementAnimation
+    public sealed class Animation
     {
         private static readonly int Vertical = Animator.StringToHash("Vertical");
         private static readonly int Horizontal = Animator.StringToHash("Horizontal");
@@ -12,8 +13,8 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private static readonly int IsMovement = Animator.StringToHash("IsMovement");
 
         private readonly Animator _animator;
-        private RoomSettings _roomData;
-        private PlayerContext _context;
+        private readonly RoomSettings _roomData;
+        private readonly PlayerContext _context;
         
         private float _horizontal;
         private float _vertical;
@@ -22,8 +23,8 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private const float EPSILON = .01f;
         private const float EPSILON_MAX = 0.99f;
 
-        public MovementAnimation(PlayerContext context, Animator animator, IProjectSettings projectSettings,
-            RoomSettings roomData)
+        public Animation(
+            PlayerContext context, Animator animator, IProjectSettings projectSettings, RoomSettings roomData)
         {
             _projectSettings = projectSettings;
             _context = context;

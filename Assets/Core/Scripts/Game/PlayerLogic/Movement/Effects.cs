@@ -1,3 +1,4 @@
+using Core.Scripts.Game.PlayerLogic.ContextLogic;
 using UnityEngine;
 
 namespace Core.Scripts.Game.PlayerLogic.Movement
@@ -56,7 +57,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private void EffectsOnUpdateLogic() => _footPrintEffect.OnUpdateCall();
     }
     
-    public sealed class PlayerMovementEffects
+    public sealed class Effects
     {
         private PlayerTeleportationData _playerTeleportationData;
 
@@ -68,7 +69,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private readonly ParticleSystem _onGroundParticles;
         private const float ON_GROUND_MIN_THRESHOLD = -25f;
         
-        public PlayerMovementEffects(
+        public Effects(
             ParticleSystem footprintParticles, ParticleSystem onGroundParticles, PlayerContext context)
         {
             _context = context;
