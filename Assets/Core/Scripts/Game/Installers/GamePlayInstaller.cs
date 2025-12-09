@@ -1,6 +1,6 @@
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States;
-using Core.Scripts.Game.Player.Inventory;
+using Core.Scripts.Game.PlayerLogic.Inventory;
 using Zenject;
 
 namespace Core.Scripts.Game.Installers

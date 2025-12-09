@@ -1,0 +1,4 @@
+{
+  "name": "Daniil.Player.Movement",
+  "references":[ "GUID:d7e3496f78393fa409b471a2a934ddc7", "GUID:7186302a80f0483fb8c770739a56b040", "GUID:7dd9a2df7f8d4664bc66992f93946217", "GUID:f97900996ad2419e9dfbaf8c814c95bf" ]
+}

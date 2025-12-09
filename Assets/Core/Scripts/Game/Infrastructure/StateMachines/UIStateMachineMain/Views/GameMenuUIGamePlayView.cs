@@ -1,5 +1,5 @@
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views.Base;
-using Core.Scripts.Game.Player.Inventory;
+using Core.Scripts.Game.PlayerLogic.Inventory;
 using Core.Scripts.Game.ScriptableObjects.Items;
 using UniRx;
 using UnityEngine;

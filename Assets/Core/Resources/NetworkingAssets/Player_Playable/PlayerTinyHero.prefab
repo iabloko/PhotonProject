@@ -4765,10 +4765,7 @@ GameObject:
   - component: {fileID: 55043166928495184}
   - component: {fileID: 2321000454154143944}
   - component: {fileID: 3878796264648749870}
-  - component: {fileID: 7527739642754257948}
-  - component: {fileID: 5780648528888376671}
-  - component: {fileID: -2216158195282683156}
-  - component: {fileID: 124113639190605752}
+  - component: {fileID: 8605145310303629554}
   m_Layer: 7
   m_Name: PlayerTinyHero
   m_TagString: Player
@@ -4843,9 +4840,8 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 2321000454154143944}
   - {fileID: 3878796264648749870}
-  - {fileID: 7527739642754257948}
-  - {fileID: 5780648528888376671}
-  - {fileID: -2216158195282683156}
+  - {fileID: 8605145310303629554}
+  - {fileID: 5192650039107522254}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &2321000454154143944
 MonoBehaviour:
@@ -4897,7 +4893,7 @@ MonoBehaviour:
     StepRequireGroundTarget: 0
     SnapDistance: 0.25
     SnapSpeed: 4
---- !u!114 &7527739642754257948
+--- !u!114 &8605145310303629554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4906,41 +4902,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 1539067381167240438}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cfae6fa0d0d4e98a7e3df5cc84493b4, type: 3}
+  m_Script: {fileID: 11500000, guid: bf977c038e894f489dfcd863808f33e4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.Player.Locomotion.PlayerBaseMovement
-  kcc: {fileID: 3878796264648749870}
-  input: {fileID: 2321000454154143944}
-  roomData: {fileID: 11400000, guid: 6550a4bc9d96cb343ad492eb207f1813, type: 2}
-  animator: {fileID: 4939131214090676468}
-  previewRotation: {fileID: 1650307639158593716}
-  rotationSpeed: 2
-  footprintParticles: {fileID: 5395159144800040331}
-  onGroundParticles: {fileID: 3643857990547805991}
---- !u!114 &5780648528888376671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1539067381167240438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74e6adbf3dcf5874dbcaaabac7a8d4b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.Player.PlayerController
-  nickNameText: {fileID: 2641193017369573492}
-  kcc: {fileID: 3878796264648749870}
-  input: {fileID: 2321000454154143944}
-  playerBaseMovement: {fileID: 7527739642754257948}
-  playerMaterial: {fileID: 2100000, guid: f5fe87fc8f513b0468aee2f963ed3e88, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.Player.New.Player
+  _PlayerNickName:
+    _length: 0
+    _data:
+      Data: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  _CurrentHealth: 0
+  _VisualNetwork:
+    hairID: 0
+    headID: 0
+    eyeID: 0
+    mountID: 0
+    bodyID: 0
   playerVisualData:
     hair:
     - {fileID: 1303466657628783406}
+    - {fileID: 7289645946466296669}
     - {fileID: 2140838032233440555}
     - {fileID: 1109134466846083239}
     - {fileID: 5545944036614276013}
+    - {fileID: 1288395723407908577}
+    - {fileID: 8967831708001889733}
+    - {fileID: 4132031751167827563}
+    - {fileID: 1147313082885964944}
+    - {fileID: 1816194695072419039}
     - {fileID: 5755796483182189619}
+    - {fileID: 6249824161802098742}
     - {fileID: 1908541175779778143}
     heads:
     - {fileID: 7050373799682882472}
@@ -5005,67 +4994,15 @@ MonoBehaviour:
     - {fileID: 185436151556600152}
     - {fileID: 104686326880994323}
     - {fileID: 8853967298588946590}
-  _CurrentHealth: 0
-  _PlayerNickName:
-    _length: 0
-    _data:
-      Data: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  _VisualNetwork:
-    hairID: 0
-    headID: 0
-    eyeID: 0
-    mountID: 0
-    bodyID: 0
-  interactionDistance: 6
-  hoverMask:
-    serializedVersion: 2
-    m_Bits: 64
-  networkObject: {fileID: 55043166928495184}
-  playerModel: {fileID: 3603846932566480250}
---- !u!114 &-2216158195282683156
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1539067381167240438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35b76c3673a341dd908ddecf37355fe1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.Player.Combat.PlayerCombat
-  baseAnimation: {fileID: 7527739642754257948}
-  weaponData:
-  - weaponConfig: {fileID: 11400000, guid: be8a55a70e827d848a09eaebb000fee4, type: 2}
-    visuals:
-    - slot: 0
-      prefab: {fileID: 7456679672268195111}
-    - slot: 1
-      prefab: {fileID: 852282661286057806}
-  - weaponConfig: {fileID: 11400000, guid: 00ff90a89185d784592c317cdbcd6be6, type: 2}
-    visuals:
-    - slot: 0
-      prefab: {fileID: 473100678524604335}
-    - slot: 1
-      prefab: {fileID: 3592214941347796169}
-  _PlayerWeaponId: 0
---- !u!114 &124113639190605752
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1539067381167240438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95af28cfbc384d168c759efc3da06aaf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.ObjectDamageReceiver.DamageReceiver
+  nickNameText: {fileID: 2641193017369573492}
+  playerMaterial: {fileID: 2100000, guid: 047826ac044daa944824bd5fc2d04f15, type: 2}
+  kcc: {fileID: 3878796264648749870}
+  input: {fileID: 2321000454154143944}
+  roomData: {fileID: 11400000, guid: 6550a4bc9d96cb343ad492eb207f1813, type: 2}
   animator: {fileID: 4939131214090676468}
-  player: {fileID: 5780648528888376671}
-  hitParticles: {fileID: 8251392868227323709}
-  audioSource: {fileID: 8529470682501225591}
-  damageSoundSettings: {fileID: 11400000, guid: 4728a7b73213915429f497292a72b8f0, type: 2}
+  previewRotation: {fileID: 1650307639158593716}
+  footprintParticles: {fileID: 5395159144800040331}
+  onGroundParticles: {fileID: 3643857990547805991}
 --- !u!1 &1666604872795780171
 GameObject:
   m_ObjectHideFlags: 0
@@ -17206,6 +17143,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4787882719203760307}
   - component: {fileID: 4939131214090676468}
+  - component: {fileID: 5192650039107522254}
   m_Layer: 7
   m_Name: 'Player_[MODEL]'
   m_TagString: Untagged
@@ -17274,6 +17212,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5192650039107522254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979595919292856113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 506319458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkMecanimAnimator
+  Animator: {fileID: 4939131214090676468}
+  ApplyTiming: 2
+  SyncSettings: 79
+  StateHashes: 00000000700dccc337d158b8446fd75a3df16928debfac7a6a5ae14a47ae09823794354eb1fea0546c78532c
+  TriggerHashes: 00000000
+  TotalWords: 3
 --- !u!1 &7050373799682882472
 GameObject:
   m_ObjectHideFlags: 0
@@ -23912,11 +23868,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc98890f6028f444eaa7789bde5e2eeb, type: 3}
---- !u!198 &8251392868227323709 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 19800000, guid: bc98890f6028f444eaa7789bde5e2eeb, type: 3}
-  m_PrefabInstance: {fileID: 8251392868242917629}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8251392868242526845 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: bc98890f6028f444eaa7789bde5e2eeb, type: 3}

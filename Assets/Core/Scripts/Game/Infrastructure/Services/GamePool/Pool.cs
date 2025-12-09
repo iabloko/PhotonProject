@@ -144,9 +144,4 @@ namespace Core.Scripts.Game.Infrastructure.Services.GamePool
         public UniTaskVoid CreateLoadedItems(string[] lines);
         // public UniTaskVoid CreateLoadedServer(RoomData roomData);
     }
-
-    public interface IRequiresInjection
-    {
-        public bool RequiresInjection { get; set; }
-    }
 }

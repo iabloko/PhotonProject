@@ -1,4 +1,4 @@
-using Core.Scripts.Game.Player;
+using Core.Scripts.Game.PlayerLogic;
 using Core.Scripts.Game.ScriptableObjects.Sound;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace Core.Scripts.Game.ObjectDamageReceiver
         public bool IsAlive { get; } = true;
 
         [SerializeField] private Animator animator;
-        [SerializeField] private PlayerController player;
+        // [SerializeField] private PlayerController player;
         [SerializeField] private ParticleSystem hitParticles;
 
         [SerializeField] private AudioSource audioSource;
@@ -28,25 +28,25 @@ namespace Core.Scripts.Game.ObjectDamageReceiver
 
         private void Awake()
         {
-            _health = new HealthOnDamage(
-                getHealth: () => player.CurrentHealth,
-                setHealth: h => player.ChangeHealth(h),
-                maxHealth: 100,
-                onDeath: OnDeath);
+            // _health = new HealthOnDamage(
+            //     getHealth: () => player.CurrentHealth,
+            //     setHealth: h => player.ChangeHealth(h),
+            //     maxHealth: 100,
+            //     onDeath: OnDeath);
 
             _sfx = new SfxOnDamage(audioSource, damageSoundSettings);
             _vfx = new VfxOnDamage(hitParticles);
         }
 
-        private void OnDeath(DamageInfo info) => player.RPC_PlayerDeathLogic();
+        // private void OnDeath(DamageInfo info) => player.RPC_PlayerDeathLogic();
 
         void IDamageable.TakeDamage(in DamageInfo info)
         {
-            if (!player.HasStateAuthority) return;
-
-            _health.OnDamage(info);
-            _sfx.OnDamage(info);
-            _vfx.OnDamage(info);
+            // if (!player.HasStateAuthority) return;
+            //
+            // _health.OnDamage(info);
+            // _sfx.OnDamage(info);
+            // _vfx.OnDamage(info);
         }
 
         [Button(ButtonSizes.Gigantic)]

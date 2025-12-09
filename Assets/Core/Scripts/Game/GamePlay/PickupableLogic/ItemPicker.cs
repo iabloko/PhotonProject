@@ -1,4 +1,4 @@
-using Core.Scripts.Game.Player.Inventory;
+using Core.Scripts.Game.PlayerLogic.Inventory;
 using Core.Scripts.Game.ScriptableObjects.Items;
 using Sirenix.OdinInspector;
 using UnityEngine;

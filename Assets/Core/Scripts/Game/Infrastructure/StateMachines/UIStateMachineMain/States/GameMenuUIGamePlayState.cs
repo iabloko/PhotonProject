@@ -2,7 +2,7 @@ using Core.Scripts.Game.GameHelpers;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States.Base;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views;
-using Core.Scripts.Game.Player.Inventory;
+using Core.Scripts.Game.PlayerLogic.Inventory;
 using UnityEngine.Scripting;
 using Zenject;
 
