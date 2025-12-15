@@ -26,18 +26,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Resourc
             return request.asset as T;
         }
 
-        public GameObject Instantiate(string path, Transform parent = null, bool instantiateInWorldSpace = true)
-        {
-            GameObject prefab = Load<GameObject>(path);
-            if (prefab == null)
-            {
-                Debug.LogError($"[ResourceProvider] Can't load prefab at path: '{path}'");
-                return null;
-            }
-
-            return Object.Instantiate(prefab, parent, instantiateInWorldSpace);
-        }
-
         public T InstantiateComponent<T>(string path, Transform parent = null, bool dontDestroy = false,
             bool instantiateInWorldSpace = true) where T : Component
         {
@@ -48,8 +36,8 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Resourc
             T component = instance.GetComponent<T>();
             if (component == null)
             {
-                Debug.LogError(
-                    $"[ResourceProvider] Prefab at '{path}' does not contain component {typeof(T).Name}. Destroying instance.");
+                Debug.LogError($"[ResourceProvider] Prefab at '{path}' does not contain component " +
+                               $"{typeof(T).Name}. Destroying instance.");
                 Object.Destroy(instance);
                 return null;
             }
@@ -57,6 +45,18 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Resourc
             if (dontDestroy) Object.DontDestroyOnLoad(instance);
 
             return component;
+        }
+
+        public GameObject Instantiate(string path, Transform parent = null, bool instantiateInWorldSpace = true)
+        {
+            GameObject prefab = Load<GameObject>(path);
+            if (prefab == null)
+            {
+                Debug.LogError($"[ResourceProvider] Can't load prefab at path: '{path}'");
+                return null;
+            }
+
+            return Object.Instantiate(prefab, parent, instantiateInWorldSpace);
         }
     }
 }

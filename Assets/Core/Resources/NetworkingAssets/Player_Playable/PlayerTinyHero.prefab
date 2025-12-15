@@ -4916,6 +4916,7 @@ MonoBehaviour:
     eyeID: 0
     mountID: 0
     bodyID: 0
+  _PlayerWeaponId: 0
   playerVisualData:
     hair:
     - {fileID: 1303466657628783406}
@@ -4994,6 +4995,19 @@ MonoBehaviour:
     - {fileID: 185436151556600152}
     - {fileID: 104686326880994323}
     - {fileID: 8853967298588946590}
+  weaponData:
+  - weaponConfig: {fileID: 11400000, guid: be8a55a70e827d848a09eaebb000fee4, type: 2}
+    visuals:
+    - slot: 0
+      prefab: {fileID: 287863323404235878}
+    - slot: 1
+      prefab: {fileID: 852282661286057806}
+  - weaponConfig: {fileID: 11400000, guid: 00ff90a89185d784592c317cdbcd6be6, type: 2}
+    visuals:
+    - slot: 0
+      prefab: {fileID: 473100678524604335}
+    - slot: 1
+      prefab: {fileID: 3592214941347796169}
   nickNameText: {fileID: 2641193017369573492}
   playerMaterial: {fileID: 2100000, guid: 047826ac044daa944824bd5fc2d04f15, type: 2}
   kcc: {fileID: 3878796264648749870}
@@ -17227,9 +17241,9 @@ MonoBehaviour:
   Animator: {fileID: 4939131214090676468}
   ApplyTiming: 2
   SyncSettings: 79
-  StateHashes: 00000000700dccc337d158b8446fd75a3df16928debfac7a6a5ae14a47ae09823794354eb1fea0546c78532c
-  TriggerHashes: 00000000
-  TotalWords: 3
+  StateHashes: 00000000700dccc337d158b8446fd75a3df16928debfac7a6a5ae14a47ae09823794354eb1fea0546c78532c4ce6cd4e9d3a8404
+  TriggerHashes: 000000000d286c40
+  TotalWords: 4
 --- !u!1 &7050373799682882472
 GameObject:
   m_ObjectHideFlags: 0

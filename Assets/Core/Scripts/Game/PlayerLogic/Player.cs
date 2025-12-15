@@ -10,10 +10,12 @@ using Core.Scripts.Game.Infrastructure.RequiresInjection;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.PlayerLogic.ContextLogic;
+using Core.Scripts.Game.PlayerLogic.Inventory;
 using Core.Scripts.Game.PlayerLogic.Movement;
 using Core.Scripts.Game.PlayerLogic.NetworkInput;
 using Core.Scripts.Game.PlayerLogic.Visual;
-
+using Core.Scripts.Game.ScriptableObjects.Items;
+using UniRx;
 using Animation = Core.Scripts.Game.PlayerLogic.Movement.Animation;
 using Random = UnityEngine.Random;
 
@@ -27,9 +29,11 @@ namespace Core.Scripts.Game.PlayerLogic
         public NetworkString<_16> PlayerNickName { get; set; }
         [Networked, UnitySerializeField] public int CurrentHealth { get; set; }
         [Networked, UnitySerializeField] public PlayerVisualNetwork VisualNetwork { get; set; }
+        [Networked, UnitySerializeField] public int PlayerWeaponId { get; set; }
 
         [Title("Local Behavior", subtitle: "", TitleAlignments.Right), SerializeField]
         private PlayerVisual playerVisualData;
+        [SerializeField, TableList] private WeaponData[] weaponData;
         [SerializeField] private TMP_Text nickNameText;
         [SerializeField] private Material playerMaterial;
         [SerializeField] private SimpleKCC kcc;
@@ -37,7 +41,9 @@ namespace Core.Scripts.Game.PlayerLogic
         [SerializeField] private RoomSettings roomData;
         [SerializeField] private Animator animator;
         [SerializeField] private Transform previewRotation;
-        [SerializeField] private ParticleSystem footprintParticles;
+        
+        [Title("Effects Behavior", subtitle: "", TitleAlignments.Right), SerializeField]
+        private ParticleSystem footprintParticles;
         [SerializeField] private ParticleSystem onGroundParticles;
 
         private Camera _mainCamera;
@@ -51,6 +57,8 @@ namespace Core.Scripts.Game.PlayerLogic
         private Moving _moving;
         private INickNameFadeEffect _nickNameFadeEffect;
         private ChangeDetector _changeDetector;
+        private IPlayerInventory _inventory;
+        private CompositeDisposable _disposables;
 
         private const string PLAYER_LAYER = "Player";
 
@@ -58,15 +66,16 @@ namespace Core.Scripts.Game.PlayerLogic
 
         [Inject]
         public void Constructor(
-            ICinemachine cinemachine, IProjectSettings projectSettings, INickNameFadeEffect nickNameFadeEffect)
+            ICinemachine c, IProjectSettings p, INickNameFadeEffect n, IPlayerInventory i)
         {
-            Debug.Log($"[Player] Constructor {cinemachine} | {projectSettings} | {nickNameFadeEffect}");
-            _cinemachine = cinemachine;
-            _projectSettings = projectSettings;
+            _cinemachine = c;
+            _projectSettings = p;
+            _inventory = i;
 
             _mainCamera = Camera.main;
-            _nickNameFadeEffect = nickNameFadeEffect;
+            _nickNameFadeEffect = n;
             _nickNameFadeEffect.Initialization(_mainCamera);
+            _disposables = new CompositeDisposable();
         }
 
         #endregion
@@ -89,6 +98,11 @@ namespace Core.Scripts.Game.PlayerLogic
                 _anim = new Animation(_ctx, animator, _projectSettings, roomData);
                 _rotation = new Rotation(_ctx, _cinemachine, _projectSettings, previewRotation, 2f);
                 _moving = new Moving(_ctx, _projectSettings, JumpAnimation);
+                
+                _inventory.CurrentWeapon
+                    .Where(w => w != null)
+                    .Subscribe(SetWeaponInHand)
+                    .AddTo(_disposables);
             }
             else
             {
@@ -122,6 +136,9 @@ namespace Core.Scripts.Game.PlayerLogic
                         break;
                     case nameof(VisualNetwork):
                         SkinChanged();
+                        break;
+                    case nameof(PlayerWeaponId):
+                        WeaponChanged();
                         break;
                 }
             }
@@ -220,7 +237,7 @@ namespace Core.Scripts.Game.PlayerLogic
         }
 
         private void ChangePlayerNicknameVisibility(bool status) => nickNameText.gameObject.SetActive(status);
-
+        
         private void SetUpLocalPlayerNickName()
         {
             try
@@ -238,6 +255,38 @@ namespace Core.Scripts.Game.PlayerLogic
                 Debug.LogError($"Player Room Enter Player ID {Object.Id} ERROR {e}");
                 Debug.LogError($"Player Room Enter Player ID {Object.Id} ERROR {e.Message}");
             }
+        }
+        
+        private void WeaponChanged()
+        {
+            for (int i = 0; i < weaponData.Length; i++)
+            {
+                if (weaponData[i].weaponConfig.id != PlayerWeaponId) continue;
+                EnableWeapon(weaponData[i]);
+                ChangeAnimatorController(weaponData[i].weaponConfig.weaponAnimations);
+                break;
+            }
+        }
+        
+        private void EnableWeapon(WeaponData data)
+        {
+            for (int i = 0; i < data.visuals.Length; i++)
+            {
+                data.visuals[i].prefab.SetActive(true);
+            }
+        }
+
+        private void SetWeaponInHand(Weapon weapon)
+        {
+            if (Object.HasStateAuthority)
+            {
+                PlayerWeaponId = weapon.id;
+            }
+        }
+        
+        private void ChangeAnimatorController(AnimatorOverrideController controller)
+        {
+            _anim.OverrideAnimatorController(controller);
         }
     }
 }

@@ -9,7 +9,7 @@ using Zenject;
 
 namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
 {
-    public sealed class Cinemachine : ICinemachine
+    public sealed class Cinemachine : ICinemachine, IDisposable
     {
         private const int ACTIVE_PRIORITY = 20;
         private const int INACTIVE_PRIORITY = 10;
@@ -18,7 +18,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
         private CancellationTokenSource _token;
 
         private Transform _root;
-        private bool _initialized;
 
         private readonly Dictionary<CinemachineState, CinemachineVirtualRig> _virtualRigs = new(4);
 
@@ -26,8 +25,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
         private CinemachineCamera _vcamFps;
         private CinemachineCamera _vcamPrev;
         private CinemachineCamera _vcamTps;
-
-        private Transform _player;
 
         public int PreviewDirection { get; private set; } = 1;
         public CinemachineState CurrentState { get; private set; } = CinemachineState.Preview;
@@ -39,6 +36,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
         public Cinemachine(IAssetProvider provider)
         {
             _provider = provider;
+            _token = new CancellationTokenSource();
         }
 
         void ICinemachine.ChangeCamFarClipPlane(int newFarClip)
@@ -53,11 +51,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
 
         void ICinemachine.Register(Transform player, Transform previewRotation, Vector2 pitchYawDeg)
         {
-            _token = new CancellationTokenSource();
-
-            if (_initialized) return;
-
-            _player = player;
             _root = new GameObject("Virtual_Cameras").transform;
 
             _vcam3Rd = CreateVcam(AssetPaths.PLAYER_VIRTUAL_CAMERA_3_RD, "VCam_3rd");
@@ -83,14 +76,10 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
             CurrentState = CinemachineState.Preview;
 
             SubscribeCameraActivationEvents();
-
-            _initialized = true;
         }
 
         void ICinemachine.ChangeCinemachineState(CinemachineState state)
         {
-            EnsureInitialized();
-
             CurrentState = state;
 
             if (state == CinemachineState.Preview)
@@ -111,8 +100,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
 
         void ICinemachine.UpdateVCam(Vector2 pitchYawDeg)
         {
-            if (!_initialized) return;
-            
             foreach (CinemachineVirtualRig rig in _virtualRigs.Values.Where(r => r.Pov != null))
             {
                 rig.Pov.PanAxis.Value = pitchYawDeg.y;
@@ -153,8 +140,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
         
         void ICinemachine.ChangeVCamDistance(float distance)
         {
-            if (!_initialized) return;
-
             if (!_virtualRigs.TryGetValue(CinemachineState.Normal3Rd, out CinemachineVirtualRig rig3Rd) ||
                 rig3Rd.Transposer == null) return;
 
@@ -185,7 +170,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
             _vcamTps = null;
 
             _virtualRigs.Clear();
-            _initialized = false;
         }
         
         private void SubscribeCameraActivationEvents()
@@ -200,8 +184,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
 
         private void OnCameraActivated(ICinemachineCamera.ActivationEventParams args)
         {
-            if (!_initialized) return;
-
             if (ReferenceEquals(args.IncomingCamera, _vcam3Rd))
             {
                 OnStateChange?.Invoke(CinemachineState.Normal3Rd);
@@ -222,10 +204,10 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
         
         private CinemachineCamera CreateVcam(string assetPath, string name)
         {
-            CinemachineCamera vcam = _provider.InstantiateObject<CinemachineCamera>(assetPath, _root);
-            vcam.transform.name = name;
-            vcam.Priority = INACTIVE_PRIORITY;
-            return vcam;
+            CinemachineCamera vCam = _provider.InstantiateObject<CinemachineCamera>(assetPath, _root, dontDestroy: false);
+            vCam.transform.name = name;
+            vCam.Priority = INACTIVE_PRIORITY;
+            return vCam;
         }
 
         private static void ConfigurePov(CinemachinePanTilt pov, Vector2 pitchYawDeg)
@@ -242,10 +224,10 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
                 rig.SetPriority(value);
         }
 
-        private void EnsureInitialized()
+        public void Dispose()
         {
-            if (_initialized) return;
-            throw new InvalidOperationException("CinemachineService is not initialized. Call Register() first.");
+            _token.Cancel();
+            _token.Dispose();
         }
     }
 }

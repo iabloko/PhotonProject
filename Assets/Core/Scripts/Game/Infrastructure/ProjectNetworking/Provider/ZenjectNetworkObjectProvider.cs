@@ -29,8 +29,6 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Provider
             if (context == null) Debug.Log("[ZenjectNetworkObjectProvider] error, context not found!");
             
             prefab.TryGetComponent(out IRequiresInjection injection);
-
-            Debug.Log($"[ZenjectNetworkObjectProvider] {prefab} | {injection} | {injection?.RequiresInjection}");
             
             GameObject go;
             

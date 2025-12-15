@@ -37,7 +37,7 @@ namespace Core.Scripts.Game.PlayerLogic.Inventory
         {
             if (weapon == null) return;
             
-            Debug.Log($"[IPlayerInventory] PickWeapon {weapon.ToString()}");
+            Debug.Log($"[IPlayerInventory] PickWeapon {weapon}");
 
             Weapons.Add(weapon);
             

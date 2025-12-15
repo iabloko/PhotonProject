@@ -67,23 +67,15 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
         #endregion
 
         #region SYNCHRONOUSLY
-
-        T IAssetProvider.InstantiateObject<T>(string path, Transform parent, bool dontDestroy,
-            bool instantiateInWorldSpace)
+        
+        T IAssetProvider.InstantiateObject<T>(string path, Transform parent, bool dontDestroy, bool instantiateInWorldSpace)
         {
-            T instance = _resources.InstantiateComponent<T>(path, parent, instantiateInWorldSpace);
-            
+            T instance = _resources.InstantiateComponent<T>(path, parent, dontDestroy, instantiateInWorldSpace);
             if (instance == null) return null;
-            if (dontDestroy)
-            {
-                Debug.Log($"InstantiateObject DontDestroyOnLoad {path}");
-                Object.DontDestroyOnLoad(instance);
-            }
-
             instance.transform.name = path.CleanAssetName();
             return instance;
         }
-
+        
         #endregion
 
         #region RELEASE

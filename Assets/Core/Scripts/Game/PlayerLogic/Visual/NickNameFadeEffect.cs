@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.PlayerLogic.Visual
 {
-    public interface INickNameFadeEffect : IDisposable
+    public interface INickNameFadeEffect
     {
         public void Initialization(Camera c);
         public void RegisterNickName(TMP_Text nickName);
@@ -14,7 +14,7 @@ namespace Core.Scripts.Game.PlayerLogic.Visual
         public void FixedUpdateNetwork();
     }
     
-    public sealed class NickNameFadeEffect : INickNameFadeEffect
+    public sealed class NickNameFadeEffect : INickNameFadeEffect, IDisposable
     {
         private List<TMP_Text> _names;
 
