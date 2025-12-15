@@ -1,3 +1,4 @@
+using System;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.PlayerLogic.ContextLogic;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.PlayerLogic.Movement
 {
-    public sealed class Rotation
+    public sealed class Rotation : IDisposable
     {
         private readonly PlayerContext _ctx;
         private readonly ICinemachine _cinemachine;
@@ -68,7 +69,10 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
             RotateCameraAfkMode();
         }
 
-        public void Dispose() => _cinemachine.Dispose();
+        public void Dispose()
+        {
+            _cinemachine.Dispose();
+        }
 
         private void SetNormalCamera() => _mainCamera = Camera.main;
 

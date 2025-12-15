@@ -41,7 +41,7 @@ namespace Core.Scripts.Game.PlayerLogic
         [SerializeField] private RoomSettings roomData;
         [SerializeField] private Animator animator;
         [SerializeField] private Transform previewRotation;
-        
+
         [Title("Effects Behavior", subtitle: "", TitleAlignments.Right), SerializeField]
         private ParticleSystem footprintParticles;
         [SerializeField] private ParticleSystem onGroundParticles;
@@ -65,8 +65,7 @@ namespace Core.Scripts.Game.PlayerLogic
         #region ZENJECT
 
         [Inject]
-        public void Constructor(
-            ICinemachine c, IProjectSettings p, INickNameFadeEffect n, IPlayerInventory i)
+        public void Constructor(ICinemachine c, IProjectSettings p, INickNameFadeEffect n, IPlayerInventory i)
         {
             _cinemachine = c;
             _projectSettings = p;
@@ -75,7 +74,6 @@ namespace Core.Scripts.Game.PlayerLogic
             _mainCamera = Camera.main;
             _nickNameFadeEffect = n;
             _nickNameFadeEffect.Initialization(_mainCamera);
-            _disposables = new CompositeDisposable();
         }
 
         #endregion
@@ -98,7 +96,8 @@ namespace Core.Scripts.Game.PlayerLogic
                 _anim = new Animation(_ctx, animator, _projectSettings, roomData);
                 _rotation = new Rotation(_ctx, _cinemachine, _projectSettings, previewRotation, 2f);
                 _moving = new Moving(_ctx, _projectSettings, JumpAnimation);
-                
+
+                _disposables = new CompositeDisposable();
                 _inventory.CurrentWeapon
                     .Where(w => w != null)
                     .Subscribe(SetWeaponInHand)
@@ -117,7 +116,10 @@ namespace Core.Scripts.Game.PlayerLogic
             _nickNameFadeEffect.UnregisterNickName(nickNameText);
 
             if (Object.HasInputAuthority)
+            {
+                _disposables?.Dispose();
                 _rotation.Dispose();
+            }
         }
 
         public override void Render()
@@ -179,7 +181,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 _rotation.FixedUpdateNetwork();
                 _moving.FixedUpdateNetwork();
             }
-            
+
             _effects.OnGroundEffect();
             _nickNameFadeEffect.FixedUpdateNetwork();
         }
@@ -189,9 +191,9 @@ namespace Core.Scripts.Game.PlayerLogic
         private void LateUpdate()
         {
             _effects.LateUpdate();
-            
+
             if (!Object.HasInputAuthority) return;
-            
+
             _rotation.LateUpdate();
             _anim.LateUpdate();
         }
@@ -237,7 +239,7 @@ namespace Core.Scripts.Game.PlayerLogic
         }
 
         private void ChangePlayerNicknameVisibility(bool status) => nickNameText.gameObject.SetActive(status);
-        
+
         private void SetUpLocalPlayerNickName()
         {
             try
@@ -256,7 +258,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 Debug.LogError($"Player Room Enter Player ID {Object.Id} ERROR {e.Message}");
             }
         }
-        
+
         private void WeaponChanged()
         {
             for (int i = 0; i < weaponData.Length; i++)
@@ -267,7 +269,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 break;
             }
         }
-        
+
         private void EnableWeapon(WeaponData data)
         {
             for (int i = 0; i < data.visuals.Length; i++)
@@ -283,7 +285,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 PlayerWeaponId = weapon.id;
             }
         }
-        
+
         private void ChangeAnimatorController(AnimatorOverrideController controller)
         {
             _anim.OverrideAnimatorController(controller);
