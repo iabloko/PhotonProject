@@ -11,6 +11,8 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private static readonly int Horizontal = Animator.StringToHash("Horizontal");
         private static readonly int IsAirborne = Animator.StringToHash("IsAirborne");
         private static readonly int IsMovement = Animator.StringToHash("IsMovement");
+        private static readonly int IsCombat = Animator.StringToHash("InCombat");
+        private static readonly int AttackSequence = Animator.StringToHash("AttackSequence");
 
         private readonly Animator _animator;
         private readonly RoomSettings _roomData;
@@ -23,13 +25,12 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private const float EPSILON = .01f;
         private const float EPSILON_MAX = 0.99f;
 
-        public Animation(
-            PlayerContext context, Animator animator, IProjectSettings projectSettings, RoomSettings roomData)
+        public Animation(PlayerContext c, Animator a, IProjectSettings p, RoomSettings r)
         {
-            _projectSettings = projectSettings;
-            _context = context;
-            _roomData = roomData;
-            _animator = animator;
+            _projectSettings = p;
+            _context = c;
+            _roomData = r;
+            _animator = a;
         }
 
         public void PlayJump(bool status)
@@ -58,6 +59,16 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
             PlayMovement(_context.IsMovingOrFalling);
             PlayVertical(_vertical);
             PlayHorizontal(_horizontal);
+        }
+        
+        public void SetCombatStatus(bool isInCombat)
+        {
+            _animator.SetBool(IsCombat, isInCombat);
+        }
+        
+        public void SetAttackAnimation(int attackSequence)
+        {
+            _animator.SetInteger(AttackSequence, attackSequence);
         }
 
         private void PlayMovement(bool status)

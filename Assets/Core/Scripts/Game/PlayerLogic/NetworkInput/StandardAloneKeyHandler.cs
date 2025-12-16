@@ -15,6 +15,7 @@ namespace Core.Scripts.Game.PlayerLogic.NetworkInput
 
         private bool _isJumping;
         private bool _isShifting;
+        private bool _isAttack;
 
         private float _scroll;
 
@@ -23,11 +24,15 @@ namespace Core.Scripts.Game.PlayerLogic.NetworkInput
             get => Input.GetKey(KeyCode.Space);
             set => _isJumping = value;
         }
-        
         public bool IsShifting
         {
             get => Input.GetKey(KeyCode.LeftShift);
             set => _isShifting = value;
+        }
+        public bool IsAttack
+        {
+            get => Input.GetKey(KeyCode.Mouse0);
+            set => _isAttack = value;
         }
 
         public float Scroll

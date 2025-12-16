@@ -4,9 +4,10 @@ using UnityEngine.Scripting;
 
 namespace Core.Scripts.Game.Infrastructure.ModelData.Room
 {
-    [BoxGroup("GAME ROOM SETTINGS"), Serializable, HideLabel, Preserve]
+    [BoxGroup("ROOM SETTINGS"), Serializable, HideLabel, Preserve]
     public struct PhotonRoomSettings
     {
+        [Title("Game Data", subtitle: "")]
         public float walkingSpeed;
         public float runningSpeed;
         public float jumpFactor;
@@ -14,16 +15,17 @@ namespace Core.Scripts.Game.Infrastructure.ModelData.Room
         public bool shiftMode;
         public bool autoRun;
 
-        [BoxGroup("Local Data")] public float upGravity;
-        [BoxGroup("Local Data")] public float downGravity;
-        [BoxGroup("Local Data")] public float groundAcceleration;
-        [BoxGroup("Local Data")] public float groundDeceleration;
-        [BoxGroup("Local Data")] public float airAcceleration;
-        [BoxGroup("Local Data")] public float airDeceleration;
-        [BoxGroup("Local Data")] public float speedUpBoost;
-        [BoxGroup("Local Data")] public float localJumpForce;
-        [BoxGroup("Local Data")] public float jumpPadAirDeceleration;
-        [BoxGroup("Local Data")] public float jumpPadAirDecelerationMovement;
+        [Title("Local Data", subtitle: "")]
+        public float upGravity;
+        public float downGravity;
+        public float groundAcceleration;
+        public float groundDeceleration;
+        public float airAcceleration;
+        public float airDeceleration;
+        public float speedUpBoost;
+        public float localJumpForce;
+        public float jumpPadAirDeceleration;
+        public float jumpPadAirDecelerationMovement;
 
         public static PhotonRoomSettings CreateDefault() => new()
         {

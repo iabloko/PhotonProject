@@ -9,6 +9,7 @@ using Core.Scripts.Game.Infrastructure.ModelData;
 using Core.Scripts.Game.Infrastructure.RequiresInjection;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
+using Core.Scripts.Game.PlayerLogic.Combat;
 using Core.Scripts.Game.PlayerLogic.ContextLogic;
 using Core.Scripts.Game.PlayerLogic.Inventory;
 using Core.Scripts.Game.PlayerLogic.Movement;
@@ -30,35 +31,41 @@ namespace Core.Scripts.Game.PlayerLogic
         [Networked, UnitySerializeField] public int CurrentHealth { get; set; }
         [Networked, UnitySerializeField] public PlayerVisualNetwork VisualNetwork { get; set; }
         [Networked, UnitySerializeField] public int PlayerWeaponId { get; set; }
+        [Networked, UnitySerializeField] public int AttackSequence { get; set; }
+        [Networked, UnitySerializeField] public int LastAttackTick { get; set; }
 
         [Title("Local Behavior", subtitle: "", TitleAlignments.Right), SerializeField]
-        private PlayerVisual playerVisualData;
-        [SerializeField, TableList] private WeaponData[] weaponData;
-        [SerializeField] private TMP_Text nickNameText;
-        [SerializeField] private Material playerMaterial;
-        [SerializeField] private SimpleKCC kcc;
-        [SerializeField] private PlayerInput input;
-        [SerializeField] private RoomSettings roomData;
-        [SerializeField] private Animator animator;
-        [SerializeField] private Transform previewRotation;
+        private PlayerVisual _playerVisualData;
+        [SerializeField, TableList] private WeaponData[] _weaponData;
+        [SerializeField] private TMP_Text _nickNameText;
+        [SerializeField] private Material _playerMaterial;
+        [SerializeField] private SimpleKCC _kcc;
+        [SerializeField] private PlayerInput _input;
+        [SerializeField] private RoomSettings _roomData;
+        [SerializeField] private Animator _animator;
+        [SerializeField] private Transform _previewRotation;
 
         [Title("Effects Behavior", subtitle: "", TitleAlignments.Right), SerializeField]
-        private ParticleSystem footprintParticles;
-        [SerializeField] private ParticleSystem onGroundParticles;
+        private ParticleSystem _footprintParticles;
+        [SerializeField] private ParticleSystem _onGroundParticles;
+        
+        private const float COMBAT_RESET_SECONDS = .5f;
 
-        private Camera _mainCamera;
         private ICinemachine _cinemachine;
         private IProjectSettings _projectSettings;
+        private IPlayerInventory _inventory;
+        private INickNameFadeEffect _nickNameFadeEffect;
 
         private PlayerContext _ctx;
         private Animation _anim;
         private Rotation _rotation;
         private Effects _effects;
         private Moving _moving;
-        private INickNameFadeEffect _nickNameFadeEffect;
         private ChangeDetector _changeDetector;
-        private IPlayerInventory _inventory;
         private CompositeDisposable _disposables;
+        private PlayerCombat _combat;
+
+        private Camera _mainCamera;
 
         private const string PLAYER_LAYER = "Player";
 
@@ -85,16 +92,17 @@ namespace Core.Scripts.Game.PlayerLogic
             base.Spawned();
 
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-            _ctx = new PlayerContext(kcc, input, roomData, _projectSettings, Runner, Object.HasStateAuthority);
-            _effects = new Effects(footprintParticles, onGroundParticles, _ctx);
+            _ctx = new PlayerContext(_kcc, _input, _roomData, _projectSettings, Runner, Object.HasStateAuthority);
+            _effects = new Effects(_footprintParticles, _onGroundParticles, _ctx);
 
             if (Object.HasStateAuthority)
             {
                 ChangeNetworkPlayerVisualData();
                 ChangeNetworkPlayerNickName();
 
-                _anim = new Animation(_ctx, animator, _projectSettings, roomData);
-                _rotation = new Rotation(_ctx, _cinemachine, _projectSettings, previewRotation, 2f);
+                _anim = new Animation(_ctx, _animator, _projectSettings, _roomData);
+                _combat = new PlayerCombat(_ctx, _projectSettings, CombatLogic);
+                _rotation = new Rotation(_ctx, _cinemachine, _projectSettings, _previewRotation, 2f);
                 _moving = new Moving(_ctx, _projectSettings, JumpAnimation);
 
                 _disposables = new CompositeDisposable();
@@ -105,7 +113,7 @@ namespace Core.Scripts.Game.PlayerLogic
             }
             else
             {
-                _nickNameFadeEffect.RegisterNickName(nickNameText);
+                _nickNameFadeEffect.RegisterNickName(_nickNameText);
             }
         }
 
@@ -113,11 +121,12 @@ namespace Core.Scripts.Game.PlayerLogic
         {
             base.Despawned(runner, hasState);
 
-            _nickNameFadeEffect.UnregisterNickName(nickNameText);
+            _nickNameFadeEffect.UnregisterNickName(_nickNameText);
 
             if (Object.HasInputAuthority)
             {
                 _disposables?.Dispose();
+                _combat.Dispose();
                 _rotation.Dispose();
             }
         }
@@ -141,6 +150,9 @@ namespace Core.Scripts.Game.PlayerLogic
                         break;
                     case nameof(PlayerWeaponId):
                         WeaponChanged();
+                        break;
+                    case nameof(AttackSequence):
+                        AttackSequenceChanged();
                         break;
                 }
             }
@@ -180,10 +192,24 @@ namespace Core.Scripts.Game.PlayerLogic
             {
                 _rotation.FixedUpdateNetwork();
                 _moving.FixedUpdateNetwork();
+                _combat.FixedUpdateNetwork();
+                CombatTimer_TickBased();
             }
 
             _effects.OnGroundEffect();
             _nickNameFadeEffect.FixedUpdateNetwork();
+        }
+        
+        private void CombatTimer_TickBased()
+        {
+            if (AttackSequence == 0) return;
+            
+            int ticksForReset = Mathf.CeilToInt(COMBAT_RESET_SECONDS / Runner.DeltaTime);
+
+            int now = Runner.Tick;
+            int last = LastAttackTick;
+
+            if ((now - last) >= ticksForReset) AttackSequence = 0;
         }
 
         #endregion
@@ -198,6 +224,22 @@ namespace Core.Scripts.Game.PlayerLogic
             _anim.LateUpdate();
         }
 
+        private void CombatLogic()
+        {
+            LastAttackTick = Runner.Tick;
+            ChangeAttackSequence();
+        }
+
+        private void ChangeAttackSequence()
+        {
+            int currentAttack = AttackSequence;
+            currentAttack++;
+            currentAttack = currentAttack > 3 ? 1 : currentAttack;
+            AttackSequence = currentAttack;
+        }
+
+        private void ResetAttackSequence() => AttackSequence = 0;
+
         private void JumpAnimation() => _anim.PlayJump(true);
 
         private void ChangeNetworkPlayerNickName()
@@ -211,34 +253,34 @@ namespace Core.Scripts.Game.PlayerLogic
 
         private void ChangeNetworkPlayerVisualData()
         {
-            int hairId = Random.Range(0, playerVisualData.hair.Length - 1);
-            int headId = Random.Range(0, playerVisualData.heads.Length - 1);
-            int eyeId = Random.Range(0, playerVisualData.eyes.Length - 1);
-            int mouthId = Random.Range(0, playerVisualData.mouth.Length - 1);
-            int bodyId = Random.Range(0, playerVisualData.bodies.Length - 1);
+            int hairId = Random.Range(0, _playerVisualData.hair.Length - 1);
+            int headId = Random.Range(0, _playerVisualData.heads.Length - 1);
+            int eyeId = Random.Range(0, _playerVisualData.eyes.Length - 1);
+            int mouthId = Random.Range(0, _playerVisualData.mouth.Length - 1);
+            int bodyId = Random.Range(0, _playerVisualData.bodies.Length - 1);
 
             VisualNetwork = new PlayerVisualNetwork(hairId, headId, eyeId, mouthId, bodyId);
         }
 
         private void SkinChanged()
         {
-            for (int i = 0; i < playerVisualData.hair.Length; i++)
-                playerVisualData.hair[i].SetActive(i == VisualNetwork.hairID);
+            for (int i = 0; i < _playerVisualData.hair.Length; i++)
+                _playerVisualData.hair[i].SetActive(i == VisualNetwork.hairID);
 
-            for (int i = 0; i < playerVisualData.heads.Length; i++)
-                playerVisualData.heads[i].SetActive(i == VisualNetwork.headID);
+            for (int i = 0; i < _playerVisualData.heads.Length; i++)
+                _playerVisualData.heads[i].SetActive(i == VisualNetwork.headID);
 
-            for (int i = 0; i < playerVisualData.eyes.Length; i++)
-                playerVisualData.eyes[i].SetActive(i == VisualNetwork.eyeID);
+            for (int i = 0; i < _playerVisualData.eyes.Length; i++)
+                _playerVisualData.eyes[i].SetActive(i == VisualNetwork.eyeID);
 
-            for (int i = 0; i < playerVisualData.mouth.Length; i++)
-                playerVisualData.mouth[i].SetActive(i == VisualNetwork.mountID);
+            for (int i = 0; i < _playerVisualData.mouth.Length; i++)
+                _playerVisualData.mouth[i].SetActive(i == VisualNetwork.mountID);
 
-            for (int i = 0; i < playerVisualData.bodies.Length; i++)
-                playerVisualData.bodies[i].SetActive(i == VisualNetwork.bodyID);
+            for (int i = 0; i < _playerVisualData.bodies.Length; i++)
+                _playerVisualData.bodies[i].SetActive(i == VisualNetwork.bodyID);
         }
 
-        private void ChangePlayerNicknameVisibility(bool status) => nickNameText.gameObject.SetActive(status);
+        private void ChangePlayerNicknameVisibility(bool status) => _nickNameText.gameObject.SetActive(status);
 
         private void SetUpLocalPlayerNickName()
         {
@@ -249,7 +291,7 @@ namespace Core.Scripts.Game.PlayerLogic
 #elif !UNITY_EDITOR && UNITY_WEBGL
                 string playerName = string.Concat(PlayerNickName.Value);
 #endif
-                nickNameText.text = playerName;
+                _nickNameText.text = playerName;
                 transform.name = playerName;
             }
             catch (Exception e)
@@ -261,13 +303,20 @@ namespace Core.Scripts.Game.PlayerLogic
 
         private void WeaponChanged()
         {
-            for (int i = 0; i < weaponData.Length; i++)
+            for (int i = 0; i < _weaponData.Length; i++)
             {
-                if (weaponData[i].weaponConfig.id != PlayerWeaponId) continue;
-                EnableWeapon(weaponData[i]);
-                ChangeAnimatorController(weaponData[i].weaponConfig.weaponAnimations);
+                if (_weaponData[i].weaponConfig.id != PlayerWeaponId) continue;
+                EnableWeapon(_weaponData[i]);
+                ChangeAnimatorController(_weaponData[i].weaponConfig.weaponAnimations);
                 break;
             }
+        }
+
+        private void AttackSequenceChanged()
+        {
+            bool inCombat = AttackSequence != 0;
+            _anim.SetCombatStatus(inCombat);
+            _anim.SetAttackAnimation(AttackSequence);
         }
 
         private void EnableWeapon(WeaponData data)

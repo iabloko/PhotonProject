@@ -6,6 +6,7 @@ namespace Core.Scripts.Game.PlayerLogic.NetworkInput
     {
         public bool IsJumping { get; set; }
         public bool IsShifting { get; set; }
+        public bool IsAttack { get; set; }
         
         public float Scroll { get; }
         public float ScrollRaw { get; }

@@ -13,6 +13,7 @@ namespace Core.Scripts.Game.PlayerLogic.NetworkInput
         public const int COPY_BUTTON = 3;
         public const int SCALE_BUTTON = 4;
         public const int SHIFT_BUTTON = 5;
+        public const int ATTACK_BUTTON = 6;
         
         public float DragZoomDelta;
         
@@ -45,10 +46,7 @@ namespace Core.Scripts.Game.PlayerLogic.NetworkInput
         private Vector2Accumulator _lookRotationAccumulator;
         
         [Inject]
-        public void Constructor(IKeyHandler keyHandler)
-        {
-            KeyHandler = keyHandler;
-        }
+        public void Constructor(IKeyHandler keyHandler) => KeyHandler = keyHandler;
 
         public override void Spawned()
         {
@@ -84,7 +82,6 @@ namespace Core.Scripts.Game.PlayerLogic.NetworkInput
         
         void IBeforeUpdate.BeforeUpdate()
         {
-            // if (HasStateAuthority == false || ProjectSettings.IsCursorLocked == false) return;
             if (!Object.HasInputAuthority) return;
             
             if (_resetAccumulatedInput)
@@ -109,6 +106,7 @@ namespace Core.Scripts.Game.PlayerLogic.NetworkInput
             
             _accumulatedInput.Actions.Set(InputModelData.JUMP_BUTTON, KeyHandler.IsJumping);
             _accumulatedInput.Actions.Set(InputModelData.SHIFT_BUTTON, KeyHandler.IsShifting);
+            _accumulatedInput.Actions.Set(InputModelData.ATTACK_BUTTON, KeyHandler.IsAttack);
         }
 
         void IBeforeTick.BeforeTick()
