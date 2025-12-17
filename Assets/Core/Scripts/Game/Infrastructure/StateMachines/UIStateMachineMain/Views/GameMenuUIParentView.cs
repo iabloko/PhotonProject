@@ -1,7 +1,9 @@
 using System;
 using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
+using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Data;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views
 {
@@ -10,18 +12,14 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
         [SerializeField] private RectTransform bodyRT;
 
         [SerializeField] private Canvas canvas;
-        [SerializeField] public CanvasGroup canvasGroup;
+        [SerializeField] private CanvasGroup canvasGroup;
 
-        private MainGameUIStateMachine _stateMachine;
-
-        public void Setup(MainGameUIStateMachine gameMenuUIStateMachine)
+        [SerializeField] internal GameMenuUIFadeConfig fadeConfig;
+        [SerializeField] internal Image fadeImage;
+        
+        public void Setup()
         {
-            _stateMachine = gameMenuUIStateMachine;
-        }
-
-        public void ChangeSortOrder(int order)
-        {
-            canvas.sortingOrder = order;
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         }
 
         internal void Close(bool withAnimation, Action closed = null)

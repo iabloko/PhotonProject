@@ -1,48 +1,83 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Core.Scripts.Game.GameHelpers;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
+using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using UnityEngine;
+using Zenject;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public sealed class MainGameUIStateMachine : UIAsyncStateMachineBase
+    public sealed class MainGameUIStateMachine : UIAsyncStateMachineBase, IDisposable
     {
-        private GameMenuUIParentView MainView;
+        private GameMenuUIParentView _mainView;
+        private CancellationTokenSource _cts;
 
-        public MainGameUIStateMachine(IAssetProvider assetProvider) : base(assetProvider)
+        private readonly IProjectSettings _settings;
+
+        [Inject]
+        public MainGameUIStateMachine(
+            IAssetProvider assetProvider,
+            IProjectSettings projectSettings,
+            GameMenuUIDescriptionState.Factory descriptionFactory,
+            GameMenuUIGamePlayState.Factory gamePlayFactory) : base(assetProvider)
         {
-            MainView = CreateMainView();
-            MainView.Setup(this);
-
-            CreateStates();
+            _settings = projectSettings;
+            SetUpStateMachine(descriptionFactory, gamePlayFactory).Forget();
         }
 
         protected override string MainViewPath => GameConstant.GAME_UI_MAIN_VIEW;
 
-        public override void SetUIStateView(UIAsyncPayloadView stateView) => MainView.SetChildView(stateView);
-
-        protected override void SubscribeEvents()
+        void IDisposable.Dispose()
         {
+            _cts.Cancel();
+            _cts.Dispose();
         }
 
-        protected override void UnSubscribeEvents()
+        private async UniTaskVoid SetUpStateMachine(
+            GameMenuUIDescriptionState.Factory descriptionFactory,
+            GameMenuUIGamePlayState.Factory gamePlayFactory)
         {
-        }
+            _settings.ChangeGamePauseStatus(true);
+            _settings.SetCursor(true);
+            
+            _cts = new CancellationTokenSource();
+            _mainView = await CreateMainView();
+            _mainView.Setup();
 
-        private void CreateStates()
-        {
             States = new Dictionary<Type, IAsyncExitState>
             {
-                [typeof(GameMenuUICharacterState)] = new GameMenuUICharacterState(this, AssetProvider),
-                [typeof(GameMenuUIGamePlayState)] = new GameMenuUIGamePlayState(this, AssetProvider),
+                [typeof(GameMenuUIDescriptionState)] = descriptionFactory.Create(this),
+                [typeof(GameMenuUIGamePlayState)] = gamePlayFactory.Create(this),
             };
+
+            EnterAsync<GameMenuUIDescriptionState>().Forget();
         }
 
-        private GameMenuUIParentView CreateMainView() => AssetProvider
-            .InstantiateObject<GameMenuUIParentView>(MainViewPath, null, true);
+        public override void SetUIStateView(UIAsyncPayloadView stateView) => 
+            _mainView.SetChildView(stateView);
+
+        private UniTask<GameMenuUIParentView> CreateMainView() => 
+            AssetProvider.InstantiateAsync<GameMenuUIParentView>(MainViewPath, _cts);
+
+        public async UniTask FadeLogic(int startValue, int endValue, float delay = 0)
+        {
+            _mainView.fadeImage.raycastTarget = true;
+
+            _mainView.fadeImage.color = new Color(_mainView.fadeImage.color.r, _mainView.fadeImage.color.g,
+                _mainView.fadeImage.color.b, startValue);
+
+            await _mainView.fadeImage.DOFade(endValue, _mainView.fadeConfig.duration)
+                .SetEase(_mainView.fadeConfig.easeType).SetDelay(delay).ToUniTask();
+
+            _mainView.fadeImage.raycastTarget = false;
+        }
     }
 }

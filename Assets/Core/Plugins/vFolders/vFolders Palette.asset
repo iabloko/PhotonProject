@@ -93,6 +93,7 @@ MonoBehaviour:
     - Sprite Icon
     - Font Icon
     - AnimationClip Icon
+    - Particle Effect
     enabled: 1
   - builtinIcons: []
     customIcons:

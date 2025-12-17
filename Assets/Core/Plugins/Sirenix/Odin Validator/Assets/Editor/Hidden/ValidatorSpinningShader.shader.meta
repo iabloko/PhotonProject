@@ -11,6 +11,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 227861
   packageName: Odin Validator
-  packageVersion: 3.3.1.14
+  packageVersion: 4.0.1.0
   assetPath: Assets/Core/Plugins/Sirenix/Odin Validator/Assets/Editor/Hidden/ValidatorSpinningShader.shader
-  uploadId: 804650
+  uploadId: 819720

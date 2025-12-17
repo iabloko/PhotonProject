@@ -1,0 +1,4 @@
+{
+  "name": "Daniil.Player.Combat",
+  "references":[ "GUID:7dd9a2df7f8d4664bc66992f93946217", "GUID:df9a4b6ff89b4efbad6f8e9e6c640779", "GUID:7186302a80f0483fb8c770739a56b040" ]
+}

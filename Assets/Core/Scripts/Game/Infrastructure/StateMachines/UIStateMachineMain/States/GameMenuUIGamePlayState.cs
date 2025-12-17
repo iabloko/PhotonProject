@@ -1,28 +1,40 @@
 using Core.Scripts.Game.GameHelpers;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
-using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States.Base;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views;
+using Core.Scripts.Game.PlayerLogic.Inventory;
+using UnityEngine.Scripting;
+using Zenject;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States
 {
-    public struct GameMenuUIGamePlayData : IPayload
-    {
-    }
-
     public sealed class
-        GameMenuUIGamePlayState : GameMenuUISimpleStateBase<GameMenuUIGamePlayView, GameMenuUIGamePlayData>
+        GameMenuUIGamePlayState : GameMenuUISimpleStateBase<GameMenuUIGamePlayView>
     {
-        public GameMenuUIGamePlayState(MainGameUIStateMachine stateMachine, IAssetProvider assetProvider) : base(
-            stateMachine, assetProvider)
-        {
-        }
+        private readonly IPlayerInventory _inventory;
 
-        protected override void OnEntered()
+        public GameMenuUIGamePlayState(MainGameUIStateMachine stateMachine, IAssetProvider assetProvider, IPlayerInventory inventory) 
+            : base(stateMachine, assetProvider)
         {
+            _inventory = inventory;
         }
 
         public override string StateName => "GameMenuUIGamePlayState";
         protected override string ViewPath => GameConstant.GAME_UI_GAME_PLAY_VIEW;
+        
+        protected override void OnEntered()
+        {
+            base.OnEntered();
+            _stateView.SetInventoryLogic(_inventory);
+        }
+        
+        [Preserve]
+        public class Factory : PlaceholderFactory<MainGameUIStateMachine, GameMenuUIGamePlayState>
+        {
+            [Preserve]
+            public Factory()
+            {
+            }
+        }
     }
 }

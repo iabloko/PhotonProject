@@ -6,7 +6,7 @@ namespace Core.Scripts.Game.ScriptableObjects.Settings
     [CreateAssetMenu(menuName = "Settings/Configs/GameGlobalSettings", fileName = "GameGlobalSettings")]
     public sealed class GameGlobalSettings : ScriptableObject
     {
-        [Title("GAME", "Settings", TitleAlignments.Right)]
+        [Title("Game Settings", "")]
         public GameGlobalSettingsData settings;
 
         public void ApplyGameGlobalSettings()

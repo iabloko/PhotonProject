@@ -1,160 +1,97 @@
 using System;
 using System.Threading;
+using Core.Scripts.Game.Infrastructure.Services.AssetProviderService.AddressablesProviderLogic;
+using Core.Scripts.Game.Infrastructure.Services.AssetProviderService.ResourceProviderLogic;
 using Cysharp.Threading.Tasks;
+using Sandbox.Project.Scripts.Helpers.BetterSpaceStringHelper;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using Object = UnityEngine.Object;
 
 namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
 {
+    // ReSharper disable once ConvertConstructorToMemberInitializers
+    // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class AssetProvider : IAssetProvider
     {
+        private readonly IAddressableAssetProvider _addressables;
+        private readonly IResourceProvider _resources;
+
+        public AssetProvider()
+        {
+            _addressables = new AddressableAssetProvider();
+            _resources = new ResourceProvider();
+        }
+
         #region ASYNCHRONOUSLY
 
         async UniTask<T> IAssetProvider.InstantiateAsync<T>(string path,
-            CancellationTokenSource cancellationTokenSource, Transform parent, bool dontDestroy,
-            bool instantiateInWorldSpace, bool trackHandle)
+            CancellationTokenSource cts, Transform parent, bool dontDestroy, bool inWorldSpace, bool trackHandle)
         {
-            T createdObject;
+            if (cts == null) throw new ArgumentNullException(nameof(cts));
 
-            try
+            GameObject createdObject =
+                await _addressables.InstantiateAsync(path, parent, inWorldSpace, trackHandle, cts);
+            
+            if (createdObject == null) return null;
+
+            createdObject.TryGetComponent(out T component);
+            if (component == null)
             {
-                createdObject =
-                    (await Addressables.InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle))
-                    .GetComponent<T>();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"{path}");
-                Debug.LogError($"{e.Message}");
-                return default;
-            }
-
-            if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
-
-            return createdObject;
-        }
-
-        async UniTask<GameObject> IAssetProvider.InstantiateObjectAsync(GameObject creatableObject,
-            CancellationTokenSource cancellationTokenSource, Transform parent,
-            bool dontDestroy, bool instantiateInWorldSpace, bool trackHandle)
-        {
-            GameObject createdObject;
-            try
-            {
-                createdObject =
-                    (await Addressables.InstantiateAsync(creatableObject, parent, instantiateInWorldSpace, trackHandle))
-                    .gameObject;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"{e.Message}");
-                return default;
-            }
-
-            if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
-
-            return createdObject;
-        }
-
-        async UniTask<GameObject> IAssetProvider.InstantiateObjectAsync(string path,
-            CancellationTokenSource cancellationTokenSource, Transform parent, bool dontDestroy,
-            bool instantiateInWorldSpace, bool trackHandle)
-        {
-            GameObject createdObject = null;
-
-            try
-            {
-                createdObject =
-                    (await Addressables.InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle));
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"{path}");
-                Debug.LogError($"{e.Message}");
+                ReleaseInstance(createdObject);
+                Debug.LogError(
+                    $"[AssetProvider] InstantiateAsync<{typeof(T).Name}>: prefab at '{path}' does not contain requested component. Releasing instance.");
                 return null;
             }
 
             if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
-
-            return createdObject;
+            createdObject.transform.name = path.CleanAssetName();
+            return component;
         }
 
-        async UniTask<T> IAssetProvider.LoadAsync<T>(string path, CancellationTokenSource cancellationTokenSource)
-            => (await Addressables.LoadAssetAsync<T>(path));
+        async UniTask<GameObject> IAssetProvider.InstantiateObjectAsync(string path,
+            CancellationTokenSource cts, Transform parent, bool dontDestroy,
+            bool instantiateInWorldSpace, bool trackHandle)
+        {
+            if (cts == null) throw new ArgumentNullException(nameof(cts));
+
+            GameObject createdObject =
+                await _addressables.InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle, cts);
+            
+            if (createdObject == null) return null;
+            if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
+
+            createdObject.transform.name = path.CleanAssetName();
+            return createdObject;
+        }
 
         #endregion
 
         #region SYNCHRONOUSLY
-
-        GameObject IAssetProvider.Instantiate(GameObject creatableObject, Transform parent, bool dontDestroy)
+        
+        T IAssetProvider.InstantiateObject<T>(string path, Transform parent, bool dontDestroy, bool instantiateInWorldSpace)
         {
-            GameObject create = Object.Instantiate(creatableObject, parent);
-            if (dontDestroy) Object.DontDestroyOnLoad(create);
-            return create;
+            T instance = _resources.InstantiateComponent<T>(path, parent, dontDestroy, instantiateInWorldSpace);
+            if (instance == null) return null;
+            instance.transform.name = path.CleanAssetName();
+            return instance;
         }
-
-        public T InstantiateComponent<T>(T reference, Transform parent = null, bool dontDestroy = false)
-            where T : Component
-        {
-            T create = Object.Instantiate(reference, parent);
-            if (dontDestroy) Object.DontDestroyOnLoad(create);
-            return create;
-        }
-
-        GameObject IAssetProvider.Instantiate(string path, Transform parent, bool dontDestroy,
-            bool instantiateInWorldSpace, bool trackHandle)
-        {
-            GameObject createdObject = null;
-
-            try
-            {
-                createdObject = Addressables
-                    .InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle)
-                    .WaitForCompletion();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"{e.Message}");
-                return null;
-            }
-
-            if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
-
-            return createdObject;
-        }
-
-        T IAssetProvider.InstantiateObject<T>(string path, Transform parent, bool dontDestroy,
-            bool instantiateInWorldSpace, bool trackHandle)
-        {
-            T createdObject = null;
-
-            try
-            {
-                createdObject = Addressables
-                    .InstantiateAsync(path, parent, instantiateInWorldSpace, trackHandle)
-                    .WaitForCompletion()
-                    .GetComponent<T>();
-                createdObject.name = typeof(T).Name;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"{path}");
-                Debug.LogError($"{e.Message}");
-                return null;
-            }
-
-            if (dontDestroy) Object.DontDestroyOnLoad(createdObject);
-
-            return createdObject;
-        }
-
-        T IAssetProvider.Load<T>(string path)
-            => Addressables.LoadAssetAsync<T>(path).WaitForCompletion();
-
+        
         #endregion
 
-        void IAssetProvider.ReleaseObject(Object obj) => Addressables.Release(obj);
-        void IAssetProvider.ReleaseInstance(GameObject obj) => Addressables.ReleaseInstance(obj);
+        #region RELEASE
+
+        public void ReleaseObject(Object obj)
+        {
+            if (obj == null) return;
+            _addressables.Release(obj);
+        }
+
+        public void ReleaseInstance(GameObject obj)
+        {
+            if (obj == null) return;
+            _addressables.ReleaseInstance(obj);
+        }
+
+        #endregion
     }
 }
