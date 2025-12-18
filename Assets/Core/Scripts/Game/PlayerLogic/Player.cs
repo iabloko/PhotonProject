@@ -41,7 +41,7 @@ namespace Core.Scripts.Game.PlayerLogic
         [SerializeField] private Material _playerMaterial;
         [SerializeField] private SimpleKCC _kcc;
         [SerializeField] private PlayerInput _input;
-        [SerializeField] private RoomSettings _roomData;
+        [SerializeField] private GameplaySettings _gameplayData;
         [SerializeField] private Animator _animator;
         [SerializeField] private Transform _previewRotation;
 
@@ -92,7 +92,7 @@ namespace Core.Scripts.Game.PlayerLogic
             base.Spawned();
 
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-            _ctx = new PlayerContext(_kcc, _input, _roomData, _projectSettings, Runner, Object.HasStateAuthority);
+            _ctx = new PlayerContext(_kcc, _input, _gameplayData, _projectSettings, Runner, Object.HasStateAuthority);
             _effects = new Effects(_footprintParticles, _onGroundParticles, _ctx);
 
             if (Object.HasStateAuthority)
@@ -100,7 +100,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 ChangeNetworkPlayerVisualData();
                 ChangeNetworkPlayerNickName();
 
-                _anim = new Animation(_ctx, _animator, _projectSettings, _roomData);
+                _anim = new Animation(_ctx, _animator, _projectSettings, _gameplayData);
                 _combat = new PlayerCombat(_ctx, _projectSettings, CombatLogic);
                 _rotation = new Rotation(_ctx, _cinemachine, _projectSettings, _previewRotation, 2f);
                 _moving = new Moving(_ctx, _projectSettings, JumpAnimation);
@@ -127,7 +127,6 @@ namespace Core.Scripts.Game.PlayerLogic
             {
                 _disposables?.Dispose();
                 _combat.Dispose();
-                _rotation.Dispose();
             }
         }
 

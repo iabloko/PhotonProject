@@ -10,7 +10,7 @@ namespace Core.Scripts.Game.ScriptableObjects.Configs
         [MenuItem("GameMenu/SelectGameConfig")]
         private static void SelectGameConfig()
         {
-            const string assetPath = "Assets/Settings/Configs/GameConfig.asset";
+            const string assetPath = "Assets/Core/Settings/Configs/GameConfig.asset";
 
             try
             {

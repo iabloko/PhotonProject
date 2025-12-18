@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States;
+using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
 using UnityEngine;
 using Zenject;
 
@@ -9,13 +10,17 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain
 {
     public sealed class GameStateMachine : GameStateMachineBase
     {
+        private readonly GameLogger _logger;
+
         [Inject]
         public GameStateMachine(
             BootStrapState.Factory bootFactory,
             LoadLevelState.Factory loadLevelFactory,
             PhotonLobbyState.Factory photonFactory,
-            GamePlayState.Factory gamePlayFactory)
+            GamePlayState.Factory gamePlayFactory,
+            GameLogger logger)
         {
+            _logger = logger;
             States = new Dictionary<Type, IExitState>
             {
                 [typeof(BootStrapState)] = bootFactory.Create(this),
@@ -27,14 +32,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain
 
         protected override void ShowLog<TState>(string message)
         {
-            try
-            {
-                Debug.Log($"{message}");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"{ex.Message}");
-            }
+            _logger.Log<TState>(LogLevel.Info, message);
         }
     }
 }

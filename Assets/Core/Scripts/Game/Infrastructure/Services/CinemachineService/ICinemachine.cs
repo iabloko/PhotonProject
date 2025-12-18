@@ -24,7 +24,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
         public void ChangeCamFarClipPlane(int newValue);
         
         public void Register(Transform player, Transform previewRotation, Vector2 pitchRotation);
-        public void Dispose();
         public void UpdateVCam(Vector2 pitchRotation);
     }
 }

@@ -1,3 +1,18 @@
 {
-	"name": "Daniil.Game.Configuration"
+    "name": "Daniil.Game.Configuration",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9bdfbca8a04000046a8e31fc37540a69",
+        "GUID:d7e3496f78393fa409b471a2a934ddc7",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

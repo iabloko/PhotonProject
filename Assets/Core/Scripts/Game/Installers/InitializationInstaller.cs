@@ -30,9 +30,9 @@ namespace Core.Scripts.Game.Installers
             Container.Bind<IAssetProvider>().To<AssetProvider>().AsSingle().NonLazy();
             Container.Bind<IProjectSettings>().To<ProjectSettings>().AsSingle().NonLazy();
 
-            Container.Bind<INickNameFadeEffect>().To<NickNameFadeEffect>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<NickNameFadeEffect>().AsSingle().NonLazy();
             Container.Bind<IKeyHandler>().To<StandardAloneKeyHandler>().AsSingle().NonLazy();
-            Container.Bind<ICinemachine>().To<Cinemachine>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<Cinemachine>().AsSingle().NonLazy();
             
             Container.BindInterfacesAndSelfTo<ZenjectNetworkObjectProvider>()
                 .FromNewComponentOn(networkObjectProvider.gameObject)

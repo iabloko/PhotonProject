@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Core.Scripts.Game.Installers
 {
-    [CreateAssetMenu(fileName = "GameGlobalSettingsInstaller", menuName = "Isekai/Installers/GameGlobalSettingsInstaller")]
+    [CreateAssetMenu(fileName = "GameGlobalSettingsInstaller", menuName = "Daniil/Installers/GameGlobalSettingsInstaller")]
     public sealed class GameGlobalSettingsInstaller : ScriptableObjectInstaller<GameGlobalSettingsInstaller>
     {
         [OdinSerialize] public GameGlobalSettings gameGlobalSettings;

@@ -15,7 +15,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private static readonly int AttackSequence = Animator.StringToHash("AttackSequence");
 
         private readonly Animator _animator;
-        private readonly RoomSettings _roomData;
+        private readonly GameplaySettings _gameplayData;
         private readonly PlayerContext _context;
         
         private float _horizontal;
@@ -25,11 +25,11 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
         private const float EPSILON = .01f;
         private const float EPSILON_MAX = 0.99f;
 
-        public Animation(PlayerContext c, Animator a, IProjectSettings p, RoomSettings r)
+        public Animation(PlayerContext c, Animator a, IProjectSettings p, GameplaySettings r)
         {
             _projectSettings = p;
             _context = c;
-            _roomData = r;
+            _gameplayData = r;
             _animator = a;
         }
 
@@ -88,7 +88,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
 
         private float CalculateVertical()
         {
-            if (_roomData.settings.autoRun) return 1;
+            if (_gameplayData.settings.autoRun) return 1;
 
             float vertical = Mathf.Lerp(_vertical, _context.Input.CurrentInput.MoveDirection.y, 0.1f);
 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Core.Scripts.Game.ScriptableObjects.Configs;
+using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -11,16 +13,21 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Address
 {
     public sealed class AddressableAssetProvider : IAddressableAssetProvider
     {
-        private const bool IS_LOGGING = true;
+        private readonly GameLogger _logger;
 
         private readonly Dictionary<string, AsyncOperationHandle> _assetHandles = new();
         private readonly Dictionary<string, int> _addressRefCounts = new();
-        
+
+        public AddressableAssetProvider(GameLogger logger)
+        {
+            _logger = logger;
+        }
+
         async UniTask<GameObject> IAddressableAssetProvider.InstantiateAsync(string path, Transform parent,
             bool instantiateInWorldSpace, bool trackHandle, CancellationTokenSource cts)
         {
             GameObject createdObject = null;
-            Log<GameObject>(path);
+            _logger.Log<AddressableAssetProvider>(LogLevel.Info, path);
 
             try
             {
@@ -41,7 +48,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Address
         async UniTask<IAssetReference> IAddressableAssetProvider.LoadAsync<T>(
             string address, CancellationToken token)
         {
-            Log<T>(address);
+            _logger.Log<T>(LogLevel.Info, address);
 
             if (_assetHandles.TryGetValue(address, out AsyncOperationHandle existing))
             {
@@ -94,7 +101,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Address
                 if (handle.IsValid())
                 {
                     Addressables.Release(handle);
-                    Log<T>($"Unload {address}");
+                    _logger.Log<T>(LogLevel.Info, $"Unload {address}");
                 }
 
                 _assetHandles.Remove(address);
@@ -105,23 +112,15 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService.Address
                 if (handle.IsValid())
                 {
                     Addressables.Release(handle);
-                    Log<T>($"Unload {address}");
+                    _logger.Log<T>(LogLevel.Info, $"Unload {address}");
                 }
             }
         }
 
-        void IAddressableAssetProvider.ReleaseInstance(GameObject gameObject) => 
+        void IAddressableAssetProvider.ReleaseInstance(GameObject gameObject) =>
             Addressables.ReleaseInstance(gameObject);
 
-        void IAddressableAssetProvider.Release(Object instance) => 
+        void IAddressableAssetProvider.Release(Object instance) =>
             Addressables.Release(instance);
-
-        private void Log<T>(string path)
-        {
-#if UNITY_EDITOR
-            if (IS_LOGGING)
-                Debug.Log($"<color=white>EDITOR LOG => {typeof(T).Name}: {path} </color>");
-#endif
-        }
     }
 }

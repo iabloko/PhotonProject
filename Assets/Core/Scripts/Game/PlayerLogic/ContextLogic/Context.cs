@@ -9,18 +9,18 @@ namespace Core.Scripts.Game.PlayerLogic.ContextLogic
     {
         protected readonly bool Authority;
 
-        protected Context(bool authority, SimpleKCC kcc, NetworkRunner runner, RoomSettings roomData, IProjectSettings projectSettings)
+        protected Context(bool authority, SimpleKCC kcc, NetworkRunner runner, GameplaySettings gameplayData, IProjectSettings projectSettings)
         {
             Authority = authority;
             Kcc = kcc;
             Runner = runner;
-            RoomData = roomData;
+            GameplayData = gameplayData;
             ProjectSettings = projectSettings;
         }
 
         public SimpleKCC Kcc { get; }
         public NetworkRunner Runner { get; }
-        public RoomSettings RoomData { get; }
+        public GameplaySettings GameplayData { get; }
         public IProjectSettings ProjectSettings { get; }
     }
 }

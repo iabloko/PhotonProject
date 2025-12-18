@@ -12,23 +12,8 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.PlayersSpawner
 
         public void PlayerJoined(PlayerRef player)
         {
-            Debug.Log($"PlayerSpawner PlayerJoined - {player}");
-
-            if (player != Runner.LocalPlayer) return;
-
-            if (!playerPrefab.IsValid)
-            {
-                Debug.LogError(
-                    "PlayerSelfSpawner: playerPrefabRef is INVALID. Rebuild Object Table and assign the ref.");
-                return;
-            }
-
-            if (Runner.TryGetPlayerObject(player, out _))
-            {
-                Debug.LogError($"PlayerSelfSpawner: PlayerObject for {player} already exists. Skip spawn.");
-                return;
-            }
-
+            if (player != Runner.LocalPlayer || !playerPrefab.IsValid) return;
+            
             var spawnPoint = FindObjectsByType<PlayerSpawnPoint>(FindObjectsSortMode.None);
             int spawnPointIndex = TryToGetSpawnPointIndex(spawnPoint.Length);
             

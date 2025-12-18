@@ -2,6 +2,8 @@ using System;
 using System.Threading;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService.AddressablesProviderLogic;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService.ResourceProviderLogic;
+using Core.Scripts.Game.ScriptableObjects.Configs;
+using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
 using Cysharp.Threading.Tasks;
 using Sandbox.Project.Scripts.Helpers.BetterSpaceStringHelper;
 using UnityEngine;
@@ -16,9 +18,9 @@ namespace Core.Scripts.Game.Infrastructure.Services.AssetProviderService
         private readonly IAddressableAssetProvider _addressables;
         private readonly IResourceProvider _resources;
 
-        public AssetProvider()
+        public AssetProvider(GameLogger logger)
         {
-            _addressables = new AddressableAssetProvider();
+            _addressables = new AddressableAssetProvider(logger);
             _resources = new ResourceProvider();
         }
 

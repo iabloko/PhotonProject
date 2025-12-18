@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using Core.Scripts.Game.Infrastructure.ProjectNetworking.Provider;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
+using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
 using Cysharp.Threading.Tasks;
 using Fusion;
 using UnityEngine;
 using Zenject;
+using LogLevel = Core.Scripts.Game.ScriptableObjects.Configs.Logger.LogLevel;
 
 namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
 {
@@ -33,31 +35,33 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
         private readonly IAssetProvider _assetProvider;
         private readonly ZenjectNetworkObjectProvider _customObjectProvider;
         private readonly List<SessionInfo> _cachedSessions = new();
+        private readonly GameLogger _logger;
 
 
         [Inject]
         public NetworkService(
             IAssetProvider assetProvider,
-            ZenjectNetworkObjectProvider objectProvider)
+            ZenjectNetworkObjectProvider objectProvider,
+            GameLogger logger)
         {
+            _logger = logger;
             _assetProvider = assetProvider;
             _customObjectProvider = objectProvider;
 
-            _networkSessionHelper = new NetworkSessionHelper(assetProvider);
-            _networkEventsHandler = new NetworkRunnerEventsHandler(this);
+            _networkSessionHelper = new NetworkSessionHelper(assetProvider, logger);
+            _networkEventsHandler = new NetworkRunnerEventsHandler(this, logger);
         }
 
         IReadOnlyList<SessionInfo> INetworkService.GetSessionsSnapshot() => _cachedSessions;
 
         async UniTask INetworkService.ManualDisconnect(ShutdownReason reason)
         {
-            Debug.Log("INetworkService Manual Disconnect");
             await RunnerInstance.Shutdown(destroyGameObject: true, reason, forceShutdownProcedure: true);
         }
 
         async UniTask INetworkService.Connect()
         {
-            _networkEventsHandler.MegamodSessionListUpdated += HandleSessionListUpdated;
+            _networkEventsHandler.SessionListUpdated += HandleSessionListUpdated;
             await ConnectToLobby(SessionLobby.Custom, _networkSessionHelper.MegamodLobbyName);
         }
 
@@ -82,30 +86,35 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
 
                 if (!joinLobbyResult.Ok)
                 {
-                    ErrorRaised?.Invoke($"INetworkService Failed to join lobby: {joinLobbyResult.ShutdownReason}");
-                    Debug.LogError($"INetworkService Join lobby failed: {joinLobbyResult.ShutdownReason}");
-
+                    string message = $"INetworkService Join lobby failed: {joinLobbyResult.ShutdownReason}";
+                    
+                    ErrorRaised?.Invoke(message);
+                    _logger.Log<NetworkService>(LogLevel.Error, message);
+                    
                     await ShutdownAndCleanupAsync(ShutdownReason.Error, force: true);
                     Reconnect(ShutdownReason.Error);
                     return false;
                 }
 
                 SetState(NetUiState.InLobby);
-
-                Debug.Log(
-                    $"INetworkService Joined lobby {lobbyType}{(lobbyType == SessionLobby.Custom ? $":{customLobbyName}" : "")}");
                 return true;
             }
             catch (OperationCanceledException oce)
             {
-                Debug.LogWarning($"INetworkService ConnectToLobby canceled: {oce.Message}");
+                string message = $"INetworkService ConnectToLobby canceled: {oce.Message}";
+                
+                _logger.Log<NetworkService>(LogLevel.Warning, message);
+                
                 await ShutdownAndCleanupAsync(ShutdownReason.Ok, force: true);
                 return false;
             }
             catch (Exception e)
             {
-                ErrorRaised?.Invoke($"INetworkService ConnectToLobby exception: {e.Message}");
-                Debug.LogError($"INetworkService ConnectToLobby exception: {e}");
+                string message = ($"INetworkService ConnectToLobby exception: {e.Message}");
+                
+                ErrorRaised?.Invoke(message);
+                _logger.Log<NetworkService>(LogLevel.Error, message);
+                
                 SetState(NetUiState.Error);
 
                 await ShutdownAndCleanupAsync(ShutdownReason.Error, force: true);
@@ -132,11 +141,12 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
 
                 if (!startResult.Ok)
                 {
-                    ErrorRaised?.Invoke(
-                        $"INetworkService StartGame failed: {startResult.ShutdownReason}\n{startResult.ErrorMessage}");
+                    string message = $"INetworkService StartGame failed: {startResult.ShutdownReason}\n{startResult.ErrorMessage}";
+                
+                    ErrorRaised?.Invoke(message);
+                    _logger.Log<NetworkService>(LogLevel.Error, message);
+                    
                     SetState(NetUiState.Error);
-                    Debug.LogError(
-                        $"INetworkService StartGame failed: {startResult.ShutdownReason}\n{startResult.ErrorMessage}");
 
                     await ShutdownAndCleanupAsync(ShutdownReason.Error, force: true);
                     Reconnect(ShutdownReason.Error);
@@ -144,23 +154,26 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
                 }
 
                 SetState(NetUiState.InSession);
-                _networkEventsHandler.MegamodSessionListUpdated -= HandleSessionListUpdated;
-                Debug.Log($"INetworkService StartGame OK. Joined session '{sessionName}'");
-
+                _networkEventsHandler.SessionListUpdated -= HandleSessionListUpdated;
+                
                 return true;
             }
             catch (OperationCanceledException oce)
             {
-                ErrorRaised?.Invoke($"INetworkService ConnectToSession exception: {oce.Message}");
+                string message = $"INetworkService ConnectToSession exception: {oce.Message}";
+                
+                ErrorRaised?.Invoke(message);
+                _logger.Log<NetworkService>(LogLevel.Warning, message);
+                
                 SetState(NetUiState.Error);
-
-                Debug.LogWarning($"INetworkService ConnectToSession canceled: {oce.Message}");
                 await ShutdownAndCleanupAsync(ShutdownReason.Ok, force: true);
                 return false;
             }
             catch (Exception e)
             {
-                Debug.LogError($"INetworkService ConnectToSession exception: {e}");
+                string message = $"INetworkService ConnectToSession exception: {e.Message}";
+                _logger.Log<NetworkService>(LogLevel.Error, message);
+                
                 await ShutdownAndCleanupAsync(ShutdownReason.Error, force: true);
                 Reconnect(ShutdownReason.Error);
                 return false;
@@ -172,9 +185,7 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
             RunnerInstance = _assetProvider.InstantiateObject<NetworkRunner>(
                 AssetPaths.NETWORK_RUNNER, dontDestroy: true);
             RunnerInstance.ProvideInput = true;
-
-            Debug.Log(
-                $"[INetworkService] Runner ProvideInput={RunnerInstance.ProvideInput}, Mode={RunnerInstance.GameMode}, IsRunning={RunnerInstance.IsRunning}");
+            
             _networkEventsHandler.RegisterCallbacks(RunnerInstance);
         }
 
@@ -190,7 +201,8 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"INetworkService Runner Shutdown exception: {e}");
+                string message = $"INetworkService Runner Shutdown exception: {e.Message}";
+                _logger.Log<NetworkService>(LogLevel.Warning, message);
             }
             finally
             {
@@ -207,7 +219,8 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.Service
 
         private void Reconnect(ShutdownReason shutdownReason)
         {
-            Debug.LogError($"INetworkService ERROR TO CONNECT TO ROOM / LOBBY / SESSION {shutdownReason}");
+            string message = $"INetworkService ERROR TO CONNECT TO ROOM / LOBBY / SESSION {shutdownReason}";
+            _logger.Log<NetworkService>(LogLevel.Error, message);
         }
 
         private void SetState(NetUiState s) => StateChanged?.Invoke(s);

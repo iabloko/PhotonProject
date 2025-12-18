@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07eb843ecffd5e846990511c542a4ae0, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  transitionSceneType: 0
-  settings:
-    verticalSync: 1
-    fpsLock: 60
-  charactersList: {fileID: 11400000, guid: eebba1cde57e19041aff6ddfd958f017, type: 2}
+  logger: {fileID: 11400000, guid: 625a58b2a3ab7e94ca7e0544fb2b62e7, type: 2}
+  globalSettings: {fileID: 11400000, guid: 8bafd5e52b79ab4499d6f1ce8a37ce85, type: 2}
+  gameplaySettings: {fileID: 11400000, guid: 6550a4bc9d96cb343ad492eb207f1813, type: 2}
+  cinemachineBlenderSettings: {fileID: 11400000, guid: 1b32c6b3fe085b54b837af3488059b09, type: 2}
+  networkAppSettings: {fileID: 11400000, guid: f0c6682fd541e514590cf294b645cbaa, type: 2}

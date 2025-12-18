@@ -147,7 +147,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
             CurrentCameraDistance = distance;
         }
         
-        void ICinemachine.Dispose()
+        void IDisposable.Dispose()
         {
             if (_token != null)
             {
@@ -222,12 +222,6 @@ namespace Core.Scripts.Game.Infrastructure.Services.CinemachineService
         {
             foreach (CinemachineVirtualRig rig in _virtualRigs.Values)
                 rig.SetPriority(value);
-        }
-
-        public void Dispose()
-        {
-            _token.Cancel();
-            _token.Dispose();
         }
     }
 }

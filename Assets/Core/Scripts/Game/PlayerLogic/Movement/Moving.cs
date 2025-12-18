@@ -36,13 +36,13 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
 
         public void FixedUpdateNetwork()
         {
-            _ctx.Kcc.SetGravity(_ctx.Kcc.RealVelocity.y >= 0 ? _ctx.RoomData.settings.upGravity : _ctx.RoomData.settings.downGravity);
+            _ctx.Kcc.SetGravity(_ctx.Kcc.RealVelocity.y >= 0 ? _ctx.GameplayData.settings.upGravity : _ctx.GameplayData.settings.downGravity);
             
             if (_projectSettings.IsGamePaused)
             {
                 _moveVelocity = _desiredMoveDirection = Vector3.zero;
                 _ctx.Kcc.ResetVelocity();
-                _ctx.Kcc.Move(_ctx.Kcc.IsGrounded ? Vector3.zero : new Vector3(0, _ctx.RoomData.settings.downGravity, 0));
+                _ctx.Kcc.Move(_ctx.Kcc.IsGrounded ? Vector3.zero : new Vector3(0, _ctx.GameplayData.settings.downGravity, 0));
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
             if (inputDirection.sqrMagnitude > 1f)
                 inputDirection.Normalize();
 
-            _desiredMoveDirection = _ctx.RoomData.settings.autoRun ? _ctx.Kcc.TransformDirection : inputDirection;
+            _desiredMoveDirection = _ctx.GameplayData.settings.autoRun ? _ctx.Kcc.TransformDirection : inputDirection;
             _desiredMoveDirection *= currentSpeed;
 
             if (_ctx.Kcc.ProjectOnGround(_desiredMoveDirection, projectedVector: out Vector3 moveVelocity))
@@ -81,7 +81,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
 
             if (_ctx.Input.CurrentInput.Actions.WasPressed(_ctx.Input.PreviousInput.Actions, InputModelData.JUMP_BUTTON))
             {
-                _jumpImpulse = _ctx.RoomData.settings.localJumpForce * _ctx.RoomData.settings.jumpFactor;
+                _jumpImpulse = _ctx.GameplayData.settings.localJumpForce * _ctx.GameplayData.settings.jumpFactor;
                 _onJumpAnimation?.Invoke();
             }
         }
@@ -91,14 +91,14 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
             if (_desiredMoveDirection == Vector3.zero)
             {
                 _acceleration = _ctx.Kcc.IsGrounded
-                    ? _ctx.RoomData.settings.groundDeceleration
-                    : _ctx.RoomData.settings.airDeceleration;
+                    ? _ctx.GameplayData.settings.groundDeceleration
+                    : _ctx.GameplayData.settings.airDeceleration;
             }
             else
             {
                 _acceleration = _ctx.Kcc.IsGrounded
-                    ? _ctx.RoomData.settings.groundAcceleration
-                    : _ctx.RoomData.settings.airAcceleration;
+                    ? _ctx.GameplayData.settings.groundAcceleration
+                    : _ctx.GameplayData.settings.airAcceleration;
             }
         }
 
@@ -107,7 +107,7 @@ namespace Core.Scripts.Game.PlayerLogic.Movement
 
         private float CalculateSpeed()
         {
-            float currentSpeed = _ctx.IsPlayerShifting ? _ctx.RoomData.settings.runningSpeed : _ctx.RoomData.settings.walkingSpeed;
+            float currentSpeed = _ctx.IsPlayerShifting ? _ctx.GameplayData.settings.runningSpeed : _ctx.GameplayData.settings.walkingSpeed;
             return currentSpeed;
         }
     }

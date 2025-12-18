@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.ScriptableObjects.Settings
 {
-    [CreateAssetMenu(menuName = "Settings/Configs/GameGlobalSettings", fileName = "GameGlobalSettings")]
+    [CreateAssetMenu(menuName = "Settings/Configs/GameGlobalSettings", fileName = "GameGlobalSettings"), InlineEditor, HideLabel]
     public sealed class GameGlobalSettings : ScriptableObject
     {
-        [Title("Game Settings", "")]
         public GameGlobalSettingsData settings;
 
         public void ApplyGameGlobalSettings()

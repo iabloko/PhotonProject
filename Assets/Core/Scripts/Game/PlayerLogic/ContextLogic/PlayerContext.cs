@@ -22,13 +22,13 @@ namespace Core.Scripts.Game.PlayerLogic.ContextLogic
         public PlayerContext(
             SimpleKCC kcc,
             PlayerInput input,
-            RoomSettings roomData,
+            GameplaySettings gameplayData,
             IProjectSettings projectSettings,
             NetworkRunner runner,
-            bool authority) : base(authority, kcc, runner, roomData, projectSettings) => Input = input;
+            bool authority) : base(authority, kcc, runner, gameplayData, projectSettings) => Input = input;
 
         private bool IsMovingByInput() =>
-            RoomData.settings.autoRun ||
+            GameplayData.settings.autoRun ||
             !Mathf.Approximately(Input.CurrentInput.MoveDirection.x, 0) ||
             !Mathf.Approximately(Input.CurrentInput.MoveDirection.y, 0);
 
@@ -44,7 +44,7 @@ namespace Core.Scripts.Game.PlayerLogic.ContextLogic
         {
             InputModelData curr = Input.CurrentInput;
             bool isShiftButtonPressed = curr.Actions.IsSet(InputModelData.SHIFT_BUTTON);
-            return RoomData.settings.shiftMode && isShiftButtonPressed;
+            return GameplayData.settings.shiftMode && isShiftButtonPressed;
         }
     }
 }

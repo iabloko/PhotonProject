@@ -5014,7 +5014,7 @@ MonoBehaviour:
   _playerMaterial: {fileID: 2100000, guid: f323cced30244554986ee5e9f5dd8b67, type: 2}
   _kcc: {fileID: 3878796264648749870}
   _input: {fileID: 2321000454154143944}
-  _roomData: {fileID: 11400000, guid: 6550a4bc9d96cb343ad492eb207f1813, type: 2}
+  _gameplayData: {fileID: 11400000, guid: 6550a4bc9d96cb343ad492eb207f1813, type: 2}
   _animator: {fileID: 4939131214090676468}
   _previewRotation: {fileID: 1650307639158593716}
   _footprintParticles: {fileID: 5395159144800040331}
@@ -17263,7 +17263,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6039384301153543019
 Transform:
   m_ObjectHideFlags: 0
@@ -18384,7 +18384,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6304898911726343886
 Transform:
   m_ObjectHideFlags: 0
@@ -19403,7 +19403,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6577413420728570380
 Transform:
   m_ObjectHideFlags: 0
@@ -20789,7 +20789,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3997486108964938752
 Transform:
   m_ObjectHideFlags: 0
