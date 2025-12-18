@@ -1,6 +1,6 @@
+using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States;
-using Core.Scripts.Game.PlayerLogic.Inventory;
 using Zenject;
 
 namespace Core.Scripts.Game.Installers
@@ -15,7 +15,7 @@ namespace Core.Scripts.Game.Installers
 
         private void BindGameServices()
         {
-            Container.Bind<IPlayerInventory>().To<PlayerInventory>().AsSingle().NonLazy();
+            Container.Bind<IInventory>().To<PlayerInventory>().AsSingle().NonLazy();
         }
 
         private void BindGameStateMachine()

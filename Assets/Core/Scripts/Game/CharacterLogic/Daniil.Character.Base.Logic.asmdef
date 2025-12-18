@@ -1,0 +1,20 @@
+{
+    "name": "Daniil.Character.Base.Logic",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d7e3496f78393fa409b471a2a934ddc7",
+        "GUID:7186302a80f0483fb8c770739a56b040",
+        "GUID:ab72fcfa24834c71a033056c4aba3608",
+        "GUID:f97900996ad2419e9dfbaf8c814c95bf",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

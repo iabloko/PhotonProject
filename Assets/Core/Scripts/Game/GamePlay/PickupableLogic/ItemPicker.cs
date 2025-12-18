@@ -1,5 +1,5 @@
-using Core.Scripts.Game.PlayerLogic.Inventory;
-using Core.Scripts.Game.ScriptableObjects.Items;
+using Core.Scripts.Game.GamePlay.UsableItems;
+using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Zenject;
@@ -11,10 +11,10 @@ namespace Core.Scripts.Game.GamePlay.PickupableLogic
         [SerializeField, InlineEditor, HideLabel] 
         internal Weapon pickUpItem;
         private const string PLAYER = "Player";
-        private IPlayerInventory _inventory;
+        private IInventory _inventory;
 
         [Inject]
-        public void Constructor(IPlayerInventory inventory) => _inventory = inventory;
+        public void Constructor(IInventory inventory) => _inventory = inventory;
 
         private void OnTriggerEnter(Collider other)
         {

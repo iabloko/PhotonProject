@@ -1,6 +1,6 @@
+using Core.Scripts.Game.GamePlay.UsableItems;
+using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views.Base;
-using Core.Scripts.Game.PlayerLogic.Inventory;
-using Core.Scripts.Game.ScriptableObjects.Items;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +18,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
     public sealed class GameMenuUIGamePlayView : GameMenuUIViewBase
     {
         [SerializeField] private InventorySlot[] inventorySlots;
-        private IPlayerInventory _inventory;
+        private IInventory _inventory;
         
         protected override void OnBeforeOpen()
         {
@@ -26,7 +26,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
                 inventorySlots[i].parent.SetActive(false);
         }
 
-        public void SetInventoryLogic(IPlayerInventory inventory)
+        public void SetInventoryLogic(IInventory inventory)
         {
             _inventory = inventory;
             _inventory.CurrentWeapon

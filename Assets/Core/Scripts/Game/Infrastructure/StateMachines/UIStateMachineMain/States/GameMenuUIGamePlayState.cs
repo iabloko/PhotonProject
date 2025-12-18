@@ -1,8 +1,8 @@
 using Core.Scripts.Game.GameHelpers;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
+using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States.Base;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views;
-using Core.Scripts.Game.PlayerLogic.Inventory;
 using UnityEngine.Scripting;
 using Zenject;
 
@@ -11,9 +11,9 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
     public sealed class
         GameMenuUIGamePlayState : GameMenuUISimpleStateBase<GameMenuUIGamePlayView>
     {
-        private readonly IPlayerInventory _inventory;
+        private readonly IInventory _inventory;
 
-        public GameMenuUIGamePlayState(MainGameUIStateMachine stateMachine, IAssetProvider assetProvider, IPlayerInventory inventory) 
+        public GameMenuUIGamePlayState(MainGameUIStateMachine stateMachine, IAssetProvider assetProvider, IInventory inventory) 
             : base(stateMachine, assetProvider)
         {
             _inventory = inventory;
