@@ -16,12 +16,10 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
 
         private Camera _cam;
         private bool _isFps;
-        private readonly SimpleKCC _kcc;
 
-        public CameraPresenter(SimpleKCC kcc, ICharacterMotor motor, ICharacterInput input, ICinemachine cinemachine,
+        public CameraPresenter(ICharacterMotor motor, ICharacterInput input, ICinemachine cinemachine,
             IProjectSettings projectSettings, Transform preview, float rotationSpeed)
         {
-            _kcc = kcc;
             _motor = motor;
             _input = input;
             _cinemachine = cinemachine;
@@ -33,7 +31,7 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
         public void AfterSpawned()
         {
             _cam = Camera.main;
-            _cinemachine.Register(_motor.Transform, _preview, _kcc.GetLookRotation(pitch: true, yaw: true));
+            _cinemachine.Register(_motor.Transform, _preview, _motor.GetLookRotation(pitch: true, yaw: true));
             _cinemachine.ChangeCinemachineState(CinemachineState.Normal3Rd);
             SyncPreviewToCamera();
             _isFps = false;

@@ -95,8 +95,6 @@ namespace Core.Scripts.Game.CharacterLogic
 
         public void Dispose()
         {
-            // тут только то, что runtime реально владеет/создаёт
-            // если у тебя CameraPresenter/Effects имеют свои disposables — освободи тут
         }
     }
 }

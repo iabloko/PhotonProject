@@ -4,14 +4,14 @@ namespace Core.Scripts.Game.CharacterLogic
 {
     public interface ICharacterInput
     {
-        Vector2 Move { get; }
-        Vector2 LookDelta { get; }
-        float Scroll { get; }
-        bool SprintHeld { get; }
+        public Vector2 Move { get; }
+        public Vector2 LookDelta { get; }
+        public float Scroll { get; }
+        public bool SprintHeld { get; }
 
-        bool JumpPressed { get; }
-        bool AttackPressed { get; }
+        public bool JumpPressed { get; }
+        public bool AttackPressed { get; }
 
-        bool ToggleFpsPressed { get; }
+        public bool ToggleFpsPressed { get; }
     }
 }

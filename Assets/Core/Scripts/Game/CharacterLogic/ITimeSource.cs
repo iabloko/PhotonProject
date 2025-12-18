@@ -2,7 +2,7 @@ namespace Core.Scripts.Game.CharacterLogic
 {
     public interface ITimeSource
     {
-        int Tick { get; }
-        float DeltaTime { get; }
+        public int Tick { get; }
+        public float DeltaTime { get; }
     }
 }

@@ -112,8 +112,7 @@ namespace Core.Scripts.Game.PlayerLogic
             SkinPresenter skin = new(_characterVisualData);
             WeaponPresenter weapons = new(_weaponData, anim);
 
-            CameraPresenter cameraPresenter = new(_kcc, _motor, _charInput, _cinemachine, _projectSettings, _previewRotation,
-                2f);
+            CameraPresenter cameraPresenter = new(_motor, _charInput, _cinemachine, _projectSettings, _previewRotation, 2f);
 
             MoveSimulation moveSim = null;
             LookSimulation lookSim = null;

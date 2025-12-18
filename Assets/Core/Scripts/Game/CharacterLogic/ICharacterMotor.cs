@@ -4,22 +4,22 @@ namespace Core.Scripts.Game.CharacterLogic
 {
     public interface ICharacterMotor
     {
-        Transform Transform { get; }
-        Vector3 Position { get; }
-        Vector3 RealVelocity { get; }
-        bool IsGrounded { get; }
+        public Transform Transform { get; }
+        public Vector3 Position { get; }
+        public Vector3 RealVelocity { get; }
+        public bool IsGrounded { get; }
 
-        Quaternion TransformRotation { get; }
-        Vector3 TransformDirection { get; }
+        public Quaternion TransformRotation { get; }
+        public Vector3 TransformDirection { get; }
 
-        void SetMaxGroundAngle(float angle);
-        void SetGravity(float gravity);
-        void ResetVelocity();
-        void Move(Vector3 velocity, float jumpImpulse = 0f);
+        public void SetMaxGroundAngle(float angle);
+        public void SetGravity(float gravity);
+        public void ResetVelocity();
+        public void Move(Vector3 velocity, float jumpImpulse = 0f);
 
-        void AddLookRotation(Vector2 delta);
-        Vector2 GetLookRotation(bool pitch = true, bool yaw = true);
+        public void AddLookRotation(Vector2 delta);
+        public Vector2 GetLookRotation(bool pitch = true, bool yaw = true);
 
-        bool ProjectOnGround(Vector3 vector, out Vector3 projectedVector);
+        public bool ProjectOnGround(Vector3 vector, out Vector3 projectedVector);
     }
 }
