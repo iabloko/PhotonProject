@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Zenject;
 
-namespace Core.Scripts.Game.PlayerLogic.Input
+namespace Core.Scripts.Game.PlayerLogic.InputLogic
 {
     public struct InputModelData : INetworkInput
     {

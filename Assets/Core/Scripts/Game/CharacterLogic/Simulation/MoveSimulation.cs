@@ -35,7 +35,8 @@ namespace Core.Scripts.Game.CharacterLogic.Simulation
 
         public void FixedTick()
         {
-            _motor.SetGravity(_motor.RealVelocity.y >= 0 ? _gameplay.settings.upGravity : _gameplay.settings.downGravity);
+            _motor.SetGravity(
+                _motor.RealVelocity.y >= 0 ? _gameplay.settings.upGravity : _gameplay.settings.downGravity);
 
             if (_projectSettings.IsGamePaused)
             {
@@ -55,9 +56,9 @@ namespace Core.Scripts.Game.CharacterLogic.Simulation
 
         private void CalcDesired()
         {
-            float speed = _gameplay.settings.autoRun
+            float speed = _gameplay.settings.autoRun && _input.SprintHeld
                 ? _gameplay.settings.runningSpeed
-                : (_input.SprintHeld ? _gameplay.settings.runningSpeed : _gameplay.settings.walkingSpeed);
+                : _gameplay.settings.walkingSpeed;
 
             Vector3 inputDir = _motor.TransformRotation * new Vector3(_input.Move.x, 0f, _input.Move.y);
             if (inputDir.sqrMagnitude > 1f) inputDir.Normalize();
@@ -65,7 +66,7 @@ namespace Core.Scripts.Game.CharacterLogic.Simulation
             _desired = _gameplay.settings.autoRun ? _motor.TransformDirection : inputDir;
             _desired *= speed;
 
-            if (_motor.ProjectOnGround(_desired, out var projected))
+            if (_motor.ProjectOnGround(_desired, out Vector3 projected))
                 _desired = Vector3.ClampMagnitude(projected.normalized * speed, speed);
         }
 

@@ -47,41 +47,41 @@ namespace Core.Scripts.Game.CharacterLogic
 
         public void AfterSpawnedLocal()
         {
-            _camera?.AfterSpawned();
+            _camera.AfterSpawned();
         }
 
         public void BeforeTick()
         {
-            _effects?.BeforeTick();
+            _effects.BeforeTick();
         }
 
         public void AfterTick()
         {
-            _moveSim?.AfterTick();
+            _moveSim.AfterTick();
         }
 
         public void FixedTickSimulation()
         {
-            _lookSim?.FixedTick();
-            _moveSim?.FixedTick();
-            _combatSim?.FixedTick();
-            _combatState?.FixedUpdate();
+            _lookSim.FixedTick();
+            _moveSim.FixedTick();
+            _combatSim.FixedTick();
+            _combatState.FixedUpdate();
         }
 
         public void FixedTickPresentation()
         {
-            _effects?.OnGroundEffect();
+            _effects.OnGroundEffect();
         }
 
         public void LateTickPresentation()
         {
-            _effects?.LateUpdate();
-            _anim?.LateUpdate();
+            _effects.LateUpdate();
+            _anim.LateUpdate();
         }
 
         public void LateTickLocal()
         {
-            _camera?.LateUpdate();
+            _camera.LateUpdate();
         }
 
         public void ApplySkin(CharacterVisualNetwork visual) => _skin.Apply(visual);

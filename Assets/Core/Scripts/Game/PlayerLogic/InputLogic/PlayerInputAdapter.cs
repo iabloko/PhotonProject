@@ -1,7 +1,7 @@
 using Core.Scripts.Game.CharacterLogic;
 using UnityEngine;
 
-namespace Core.Scripts.Game.PlayerLogic.Input
+namespace Core.Scripts.Game.PlayerLogic.InputLogic
 {
     public sealed class PlayerInputAdapter : ICharacterInput
     {
@@ -13,8 +13,9 @@ namespace Core.Scripts.Game.PlayerLogic.Input
         public Vector2 LookDelta => _input.CurrentInput.LookRotationDelta;
 
         public float Scroll => _input.ScrollWheel;
-        
-        public bool SprintHeld => UnityEngine.Input.GetKey(KeyCode.LeftShift) || UnityEngine.Input.GetKey(KeyCode.RightShift);
+
+        public bool SprintHeld =>
+            _input.CurrentInput.Actions.WasPressed(_input.PreviousInput.Actions, InputModelData.SHIFT_BUTTON);
 
         public bool JumpPressed =>
             _input.CurrentInput.Actions.WasPressed(_input.PreviousInput.Actions, InputModelData.JUMP_BUTTON);
@@ -22,6 +23,6 @@ namespace Core.Scripts.Game.PlayerLogic.Input
         public bool AttackPressed =>
             _input.CurrentInput.Actions.WasPressed(_input.PreviousInput.Actions, InputModelData.ATTACK_BUTTON);
 
-        public bool ToggleFpsPressed => UnityEngine.Input.GetKeyDown(KeyCode.V);
+        public bool ToggleFpsPressed => Input.GetKeyDown(KeyCode.V);
     }
 }
