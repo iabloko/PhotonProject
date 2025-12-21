@@ -65,8 +65,9 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
         {
             Vector3 localVel = _motor.Transform.InverseTransformDirection(_motor.RealVelocity);
             float maxSpeed = Mathf.Max(_gameplayData.settings.runningSpeed, _gameplayData.settings.walkingSpeed, 0.01f);
-
-            float target = Mathf.Clamp(localVel.z / maxSpeed, -1f, 1f);
+            float to = localVel.z / maxSpeed;
+            
+            float target = Mathf.Clamp(to, -1f, 1f);
             float v = Mathf.Lerp(_vertical, target, 0.1f);
 
             if (Mathf.Abs(v) < EPSILON) return 0f;

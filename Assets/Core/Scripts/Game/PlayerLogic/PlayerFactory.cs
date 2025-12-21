@@ -30,7 +30,7 @@ namespace Core.Scripts.Game.PlayerLogic
             ITimeSource time = new RunnerTimeSource(config.Runner);
 
             CharacterAnimationPresenter anim = CreateAnimationPresenter(motor, config);
-            CharacterEffectsPresenter effects = CreateEffectsPresenter(motor, config);
+            CharacterEffectsPresenter effects = CreateEffectsPresenter(motor, input, config);
             SkinPresenter skin = new(config.VisualData);
             WeaponPresenter weapons = new(config.WeaponData, anim);
             CameraPresenter camera = CreateCameraPresenter(motor, input, config);
@@ -55,11 +55,11 @@ namespace Core.Scripts.Game.PlayerLogic
         private CharacterAnimationPresenter CreateAnimationPresenter(ICharacterMotor motor, PlayerRuntimeConfig config)
             => new(motor, config.Animator, _projectSettings, config.GameplayData);
 
-        private CharacterEffectsPresenter CreateEffectsPresenter(ICharacterMotor motor, PlayerRuntimeConfig config)
-            => new(motor, config.FootprintParticles, config.OnGroundParticles);
+        private CharacterEffectsPresenter CreateEffectsPresenter(ICharacterMotor motor, ICharacterInput input,
+            PlayerRuntimeConfig config)
+            => new(motor, input, config.FootprintParticles, config.OnGroundParticles);
 
-        private CameraPresenter CreateCameraPresenter(ICharacterMotor motor, ICharacterInput input,
-            PlayerRuntimeConfig config) 
+        private CameraPresenter CreateCameraPresenter(ICharacterMotor motor, ICharacterInput input, PlayerRuntimeConfig config) 
             => new(motor, input, _cinemachine, _projectSettings, config.PreviewRotation, CAMERA_ROTATION_SPEED);
 
         private CombatStateMachine CreateCombatStateMachine(PlayerRuntimeConfig config, ITimeSource time)

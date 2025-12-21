@@ -14,8 +14,7 @@ namespace Core.Scripts.Game.PlayerLogic.InputLogic
 
         public float Scroll => _input.ScrollWheel;
 
-        public bool SprintHeld =>
-            _input.CurrentInput.Actions.WasPressed(_input.PreviousInput.Actions, InputModelData.SHIFT_BUTTON);
+        public bool SprintHeld => _input.CurrentInput.Actions.IsSet(InputModelData.SHIFT_BUTTON);
 
         public bool JumpPressed =>
             _input.CurrentInput.Actions.WasPressed(_input.PreviousInput.Actions, InputModelData.JUMP_BUTTON);
@@ -23,6 +22,7 @@ namespace Core.Scripts.Game.PlayerLogic.InputLogic
         public bool AttackPressed =>
             _input.CurrentInput.Actions.WasPressed(_input.PreviousInput.Actions, InputModelData.ATTACK_BUTTON);
 
-        public bool ToggleFpsPressed => Input.GetKeyDown(KeyCode.V);
+        public bool ToggleFpsPressed => 
+            _input.CurrentInput.Actions.WasPressed(_input.PreviousInput.Actions, InputModelData.FIRST_PERSON_BUTTON);
     }
 }

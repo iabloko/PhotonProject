@@ -56,7 +56,7 @@ namespace Core.Scripts.Game.CharacterLogic.Simulation
 
         private void CalcDesired()
         {
-            float speed = _gameplay.settings.autoRun && _input.SprintHeld
+            float speed = _gameplay.settings.autoRun || _input.SprintHeld
                 ? _gameplay.settings.runningSpeed
                 : _gameplay.settings.walkingSpeed;
 

@@ -6,10 +6,11 @@ namespace Core.Scripts.Game.PlayerLogic.PlayerWeaponLogic
 {
     public sealed class WeaponSelection : IDisposable
     {
-        private readonly CompositeDisposable _cd = new();
+        private readonly CompositeDisposable _cd;
 
         public WeaponSelection(IInventory inventory, Action<int> setWeaponId)
         {
+            _cd = new CompositeDisposable();
             inventory.CurrentWeapon
                 .Where(w => w != null)
                 .Subscribe(w => setWeaponId(w.id))

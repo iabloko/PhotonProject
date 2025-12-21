@@ -16,10 +16,8 @@ namespace Core.Scripts.Game.CharacterLogic
         public void SetGravity(float gravity);
         public void ResetVelocity();
         public void Move(Vector3 velocity, float jumpImpulse = 0f);
-
         public void AddLookRotation(Vector2 delta);
         public Vector2 GetLookRotation(bool pitch = true, bool yaw = true);
-
         public bool ProjectOnGround(Vector3 vector, out Vector3 projectedVector);
     }
 }

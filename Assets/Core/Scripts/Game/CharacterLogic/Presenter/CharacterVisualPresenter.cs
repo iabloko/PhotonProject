@@ -19,7 +19,7 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
             int eyeId = Random.Range(0, _visualData.eyes.Length);
             int mouthId = Random.Range(0, _visualData.mouth.Length);
             int bodyId = Random.Range(0, _visualData.bodies.Length);
-
+            
             return new CharacterVisualNetwork(hairId, headId, eyeId, mouthId, bodyId);
         }
 

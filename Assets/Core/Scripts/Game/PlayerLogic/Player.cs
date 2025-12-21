@@ -55,8 +55,7 @@ namespace Core.Scripts.Game.PlayerLogic
         private CharacterVisualPresenter _visualPresenter;
         private ChangeDetector _changeDetector;
         private CompositeDisposable _disposables;
-
-
+        
         [Inject]
         public void Constructor(ICinemachine cinemachine, IProjectSettings projectSettings,
             INickNameFadeEffect nickNameFadeEffect, IInventory inventory)
@@ -76,69 +75,39 @@ namespace Core.Scripts.Game.PlayerLogic
             _visualPresenter = new CharacterVisualPresenter(_characterVisualData);
             _disposables = new CompositeDisposable();
             InitializeRuntime();
-            InitializeNetworkSystems();
         }
 
-        private void InitializeRuntime()
+        public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            PlayerRuntimeConfig config = CreateRuntimeConfig();
-            PlayerFactory factory = new(_cinemachine, _projectSettings);
-            _runtime = factory.CreateRuntime(config);
+            base.Despawned(runner, hasState);
+
+            _nickNameFadeEffect.UnregisterNickName(_nickNameText);
+            _runtime.Dispose();
+            _disposables.Dispose();
         }
 
-        private void InitializeNetworkSystems()
-        {
-            if (!Object.HasStateAuthority) return;
-
-            InitializeNetworkData();
-            
-            WeaponSelection weaponSelection = new(_inventory, id => PlayerWeaponId = id);
-            _disposables.Add(weaponSelection);
-        }
-
-        private void InitializeNetworkData()
-        {
-            VisualNetwork = _visualPresenter.CreateRandomVisual();
-            PlayerNickName = _visualPresenter.CreateDefaultNickname();
-            HideNickname();
-        }
-
-        private PlayerRuntimeConfig CreateRuntimeConfig()
-        {
-            return new PlayerRuntimeConfig(
-                kcc: _kcc,
-                input: _input,
-                animator: _animator,
-                previewRotation: _previewRotation,
-                footprintParticles: _footprintParticles,
-                onGroundParticles: _onGroundParticles,
-                visualData: _characterVisualData,
-                weaponData: _weaponData,
-                gameplayData: _gameplayData,
-                runner: Runner,
-                hasStateAuthority: Object.HasStateAuthority,
-                getAttackSequence: () => AttackSequence,
-                setAttackSequence: v => AttackSequence = v,
-                getLastAttackTick: () => LastAttackTick,
-                setLastAttackTick: v => LastAttackTick = v
-            );
-        }
-        
-        public void AfterSpawned()
+        void IAfterSpawned.AfterSpawned()
         {
             if (Object.HasInputAuthority)
             {
                 _runtime.AfterSpawnedLocal();
+                InitializeNetworkSystems();
             }
             else
             {
                 _nickNameFadeEffect.RegisterNickName(_nickNameText);
             }
         }
-        
-        public void BeforeTick() => _runtime.BeforeTick();
 
-        public void AfterTick() => _runtime.AfterTick();
+        void IBeforeTick.BeforeTick()
+        {
+            _runtime.BeforeTick();
+        }
+
+        void IAfterTick.AfterTick()
+        {
+            _runtime.AfterTick();
+        }
 
         public override void FixedUpdateNetwork()
         {
@@ -149,14 +118,6 @@ namespace Core.Scripts.Game.PlayerLogic
 
             _runtime.FixedTickPresentation();
             _nickNameFadeEffect.FixedUpdateNetwork();
-        }
-        
-        private void LateUpdate()
-        {
-            _runtime.LateTickPresentation();
-
-            if (Object.HasInputAuthority)
-                _runtime.LateTickLocal();
         }
 
         public override void Render()
@@ -184,17 +145,57 @@ namespace Core.Scripts.Game.PlayerLogic
             }
         }
 
-        public override void Despawned(NetworkRunner runner, bool hasState)
+        private void InitializeRuntime()
         {
-            base.Despawned(runner, hasState);
-
-            _nickNameFadeEffect.UnregisterNickName(_nickNameText);
-            _runtime.Dispose();
-            _disposables?.Dispose();
+            PlayerRuntimeConfig config = CreateRuntimeConfig();
+            PlayerFactory factory = new(_cinemachine, _projectSettings);
+            _runtime = factory.CreateRuntime(config);
         }
 
-        private void HideNickname() => _nickNameText.gameObject.SetActive(false);
-        
+        private void InitializeNetworkSystems()
+        {
+            InitializeNetworkData();
+            
+            WeaponSelection weaponSelection = new(_inventory, id => PlayerWeaponId = id);
+            _disposables.Add(weaponSelection);
+        }
+
+        private void InitializeNetworkData()
+        {
+            VisualNetwork = _visualPresenter.CreateRandomVisual();
+            PlayerNickName = _visualPresenter.CreateDefaultNickname();
+            _nickNameText.gameObject.SetActive(false);
+        }
+
+        private PlayerRuntimeConfig CreateRuntimeConfig()
+        {
+            return new PlayerRuntimeConfig(
+                kcc: _kcc,
+                input: _input,
+                animator: _animator,
+                previewRotation: _previewRotation,
+                footprintParticles: _footprintParticles,
+                onGroundParticles: _onGroundParticles,
+                visualData: _characterVisualData,
+                weaponData: _weaponData,
+                gameplayData: _gameplayData,
+                runner: Runner,
+                hasStateAuthority: Object.HasStateAuthority,
+                getAttackSequence: () => AttackSequence,
+                setAttackSequence: v => AttackSequence = v,
+                getLastAttackTick: () => LastAttackTick,
+                setLastAttackTick: v => LastAttackTick = v
+            );
+        }
+
+        private void LateUpdate()
+        {
+            _runtime.LateTickPresentation();
+
+            if (Object.HasInputAuthority)
+                _runtime.LateTickLocal();
+        }
+
         private void ApplyNickname()
         {
             try

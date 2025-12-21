@@ -21,6 +21,8 @@ namespace Core.Scripts.Game.CharacterLogic.Data
             this.mountID = mountID;
             this.bodyID = bodyID;
         }
+
+        public override string ToString() => $"CharacterVisualNetwork Skin Data: {bodyID} | {hairID} | {headID} | {eyeID}";
     }
     
     [System.Serializable, HideLabel]

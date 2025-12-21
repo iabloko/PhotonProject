@@ -4919,7 +4919,7 @@ MonoBehaviour:
   _PlayerWeaponId: 0
   _AttackSequence: 0
   _LastAttackTick: 0
-  _playerVisualData:
+  _characterVisualData:
     hair:
     - {fileID: 1303466657628783406}
     - {fileID: 7289645946466296669}

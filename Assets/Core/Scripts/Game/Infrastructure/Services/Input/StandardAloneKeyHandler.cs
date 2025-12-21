@@ -12,28 +12,13 @@ namespace Core.Scripts.Game.Infrastructure.Services.Input
         private const string MOUSE_SCROLL_WHEEL = "Mouse ScrollWheel";
         private const float MIN_SCROLL = 2;
         private const float MAX_SCROLL = 15;
-
-        private bool _isJumping;
-        private bool _isShifting;
-        private bool _isAttack;
-
+        
         private float _scroll;
 
-        public bool IsJumping
-        {
-            get => UnityEngine.Input.GetKey(KeyCode.Space);
-            set => _isJumping = value;
-        }
-        public bool IsShifting
-        {
-            get => UnityEngine.Input.GetKey(KeyCode.LeftShift);
-            set => _isShifting = value;
-        }
-        public bool IsAttack
-        {
-            get => UnityEngine.Input.GetKey(KeyCode.Mouse0);
-            set => _isAttack = value;
-        }
+        public bool IsJumping => UnityEngine.Input.GetKey(KeyCode.Space);
+        public bool IsShifting => UnityEngine.Input.GetKey(KeyCode.LeftShift);
+        public bool IsAttack => UnityEngine.Input.GetKey(KeyCode.Mouse0);
+        public bool IsFirstPersonButtonPressed => UnityEngine.Input.GetKey(KeyCode.V);
 
         public float Scroll
         {
@@ -68,7 +53,5 @@ namespace Core.Scripts.Game.Infrastructure.Services.Input
                 return new Vector2(x, y);
             }
         }
-
-        public void ResetData() => IsJumping = false;
     }
 }

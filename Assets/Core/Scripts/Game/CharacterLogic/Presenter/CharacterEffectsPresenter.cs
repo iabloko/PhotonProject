@@ -2,38 +2,25 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.CharacterLogic.Presenter
 {
-    public sealed class FootPrint
+    public sealed class MovementEffects
     {
         private readonly ParticleSystem _footprintParticles;
 
-        public FootPrint(ParticleSystem footprintParticles) => _footprintParticles = footprintParticles;
-
-        public void OnPlayerMovement()
+        public MovementEffects(ParticleSystem footprintParticles)
         {
-            if (_footprintParticles == null) return;
-            if (!_footprintParticles.isPlaying) _footprintParticles.Play();
+            _footprintParticles = footprintParticles;
         }
 
-        public void OnUpdateCall()
+        public void PlayFootprintParticles()
         {
-            if (_footprintParticles == null) return;
-            if (_footprintParticles.isPlaying) _footprintParticles.Stop();
-        }
-    }
-
-    public sealed class MovementEffects
-    {
-        private FootPrint _footPrintEffect;
-
-        public void CreateMovementEffects(ParticleSystem footprintParticles)
-        {
-            _footPrintEffect = new FootPrint(footprintParticles);
+            if (!_footprintParticles.isPlaying)
+                _footprintParticles.Play();
         }
 
-        public void UpdatePlayerEffects(bool isMoving)
+        public void StopFootprintParticles()
         {
-            if (isMoving) _footPrintEffect.OnPlayerMovement();
-            else _footPrintEffect.OnUpdateCall();
+            if (_footprintParticles.isPlaying)
+                _footprintParticles.Stop();
         }
     }
 
@@ -43,18 +30,21 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
         private float _lastVerticalVelocity;
 
         private readonly ICharacterMotor _motor;
+        private readonly ICharacterInput _input;
         private readonly MovementEffects _movementEffects;
         private readonly ParticleSystem _onGroundParticles;
 
         private const float ON_GROUND_MIN_THRESHOLD = -25f;
 
-        public CharacterEffectsPresenter(ICharacterMotor motor, ParticleSystem footprintParticles, ParticleSystem onGroundParticles)
+        public CharacterEffectsPresenter(
+            ICharacterMotor motor, ICharacterInput input,
+            ParticleSystem footprintParticles,
+            ParticleSystem onGroundParticles)
         {
             _motor = motor;
+            _input = input;
             _onGroundParticles = onGroundParticles;
-
-            _movementEffects = new MovementEffects();
-            _movementEffects.CreateMovementEffects(footprintParticles);
+            _movementEffects = new MovementEffects(footprintParticles);
         }
 
         public void BeforeTick()
@@ -74,8 +64,9 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
 
         public void LateUpdate()
         {
-            bool moving = _motor.IsGrounded && _motor.RealVelocity.sqrMagnitude > 0.02f;
-            _movementEffects.UpdatePlayerEffects(moving);
+            bool moving = _motor.IsGrounded && _input.SprintHeld && _motor.RealVelocity.sqrMagnitude > 0.02f;
+            if (moving) _movementEffects.PlayFootprintParticles();
+            else _movementEffects.StopFootprintParticles();
         }
     }
 }

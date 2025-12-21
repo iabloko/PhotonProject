@@ -10,7 +10,7 @@ namespace Core.Scripts.Game.PlayerLogic.InputLogic
     public struct InputModelData : INetworkInput
     {
         public const int JUMP_BUTTON = 0;
-        public const int DRAG_BUTTON = 2;
+        public const int FIRST_PERSON_BUTTON = 2;
         public const int COPY_BUTTON = 3;
         public const int SCALE_BUTTON = 4;
         public const int SHIFT_BUTTON = 5;
@@ -30,10 +30,10 @@ namespace Core.Scripts.Game.PlayerLogic.InputLogic
         public InputModelData CurrentInput => _currentInput;
         public InputModelData PreviousInput => _previousInput;
 
-        public float ScrollWheel => KeyHandler.Scroll;
-        public float ScrollWheelRaw => KeyHandler.ScrollRaw;
+        public float ScrollWheel => _keyHandler.Scroll;
+        public float ScrollWheelRaw => _keyHandler.ScrollRaw;
 
-        internal IKeyHandler KeyHandler;
+        private IKeyHandler _keyHandler;
 
         [Title("Mouse", "delta multiplier", TitleAlignments.Right), SerializeField]
         private Vector2 lookSensitivity = Vector2.one;
@@ -47,7 +47,7 @@ namespace Core.Scripts.Game.PlayerLogic.InputLogic
         private Vector2Accumulator _lookRotationAccumulator;
         
         [Inject]
-        public void Constructor(IKeyHandler keyHandler) => KeyHandler = keyHandler;
+        public void Constructor(IKeyHandler keyHandler) => _keyHandler = keyHandler;
 
         public override void Spawned()
         {
@@ -88,23 +88,24 @@ namespace Core.Scripts.Game.PlayerLogic.InputLogic
                 _accumulatedInput = default;
             }
 
-            Vector2 mouseDelta = KeyHandler.RotationData * lookSensitivity;
+            Vector2 mouseDelta = _keyHandler.RotationData * lookSensitivity;
 
             Vector2 safeDelta = new(
                 Mathf.Clamp(-mouseDelta.y, -MAX_STEP, MAX_STEP),
                 Mathf.Clamp(mouseDelta.x, -MAX_STEP, MAX_STEP)
             );
             
-            _accumulatedInput.MoveDirection = KeyHandler.MovementData;
+            _accumulatedInput.MoveDirection = _keyHandler.MovementData;
 
             _lookRotationAccumulator.Accumulate(safeDelta);
 
-            _accumulatedInput.MoveDirection = KeyHandler.MovementData;
-            _accumulatedInput.DragZoomDelta = KeyHandler.ScrollRaw;
+            _accumulatedInput.MoveDirection = _keyHandler.MovementData;
+            _accumulatedInput.DragZoomDelta = _keyHandler.ScrollRaw;
             
-            _accumulatedInput.Actions.Set(InputModelData.JUMP_BUTTON, KeyHandler.IsJumping);
-            _accumulatedInput.Actions.Set(InputModelData.SHIFT_BUTTON, KeyHandler.IsShifting);
-            _accumulatedInput.Actions.Set(InputModelData.ATTACK_BUTTON, KeyHandler.IsAttack);
+            _accumulatedInput.Actions.Set(InputModelData.JUMP_BUTTON, _keyHandler.IsJumping);
+            _accumulatedInput.Actions.Set(InputModelData.SHIFT_BUTTON, _keyHandler.IsShifting);
+            _accumulatedInput.Actions.Set(InputModelData.ATTACK_BUTTON, _keyHandler.IsAttack);
+            _accumulatedInput.Actions.Set(InputModelData.FIRST_PERSON_BUTTON, _keyHandler.IsFirstPersonButtonPressed);
         }
 
         void IBeforeTick.BeforeTick()
