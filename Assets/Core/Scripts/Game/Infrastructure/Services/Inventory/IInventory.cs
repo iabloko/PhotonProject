@@ -7,7 +7,7 @@ namespace Core.Scripts.Game.Infrastructure.Services.Inventory
 {
     public interface IInventory
     {
-        public HashSet<Item> Weapons { get; }
+        public IReadOnlyCollection<Item> Weapons { get; }
         public void PickWeapon(Weapon weapon);
         public void RemoveWeapon(Weapon weapon);
         

@@ -1,6 +1,5 @@
 using Core.Scripts.Game.CharacterLogic;
 using Core.Scripts.Game.CharacterLogic.Data;
-using Core.Scripts.Game.CharacterLogic.Presenter;
 using Core.Scripts.Game.GamePlay.UsableItems;
 using Core.Scripts.Game.Infrastructure.ModelData;
 using Core.Scripts.Game.Infrastructure.RequiresInjection;
@@ -49,19 +48,22 @@ namespace Core.Scripts.Game.PlayerLogic
         
         private ICinemachine _cinemachine;
         private IProjectSettings _projectSettings;
-        private IInventory _inventory;
         private INickNameFadeEffect _nickNameFadeEffect;
+        private IInventory _inventory;
         private CharacterRuntime _runtime;
         private ChangeDetector _changeDetector;
         private CompositeDisposable _disposables;
         
         [Inject]
-        public void Constructor(ICinemachine cinemachine, IProjectSettings projectSettings,
-            INickNameFadeEffect nickNameFadeEffect, IInventory inventory)
+        public void Constructor(
+            ICinemachine cinemachine, 
+            IProjectSettings projectSettings, 
+            INickNameFadeEffect nickNameFadeEffect,
+            IInventory inventory)
         {
+            _inventory = inventory;
             _cinemachine = cinemachine;
             _projectSettings = projectSettings;
-            _inventory = inventory;
             _nickNameFadeEffect = nickNameFadeEffect;
         }
 
@@ -71,6 +73,7 @@ namespace Core.Scripts.Game.PlayerLogic
 
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
             _disposables = new CompositeDisposable();
+            _nickNameFadeEffect.Initialization(Camera.main);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
@@ -95,7 +98,6 @@ namespace Core.Scripts.Game.PlayerLogic
             }
             else
             {
-                _nickNameFadeEffect.Initialization(Camera.main);
                 _nickNameFadeEffect.RegisterNickName(_nickNameText);
                 
                 _runtime.ApplySkin(VisualNetwork);
@@ -150,7 +152,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 }
             }
         }
-
+        
         private void InitializeRuntime()
         {
             PlayerRuntimeConfig config = CreateRuntimeConfig();
@@ -160,6 +162,8 @@ namespace Core.Scripts.Game.PlayerLogic
 
         private void InitializeNetworkSystems()
         {
+            CurrentHealth = 100;
+            
             VisualNetwork = _runtime.CreateRandomVisual();
             PlayerNickName = _runtime.CreateDefaultNickname();
             _nickNameText.gameObject.SetActive(false);

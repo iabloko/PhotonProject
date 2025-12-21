@@ -4,6 +4,7 @@ using Core.Scripts.Game.Infrastructure.ProjectNetworking.Service;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Infrastructure.Services.Input;
+using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Core.Scripts.Game.Infrastructure.Services.NickName;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain;

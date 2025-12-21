@@ -93,6 +93,7 @@ namespace Core.Scripts.Game.CharacterLogic
         }
 
         public void ApplySkin(CharacterVisualNetwork visual) => _skin.Apply(visual);
+        
         public void ApplyWeapon(int weaponId) => _weapons.Apply(weaponId);
 
         public void ApplyAttackSequence(int seq)
