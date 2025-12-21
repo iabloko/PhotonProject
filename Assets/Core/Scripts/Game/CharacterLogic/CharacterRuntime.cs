@@ -3,6 +3,7 @@ using Core.Scripts.Game.CharacterLogic.CharacterCombat;
 using Core.Scripts.Game.CharacterLogic.Data;
 using Core.Scripts.Game.CharacterLogic.Presenter;
 using Core.Scripts.Game.CharacterLogic.Simulation;
+using Fusion;
 using CombatSimulation = Core.Scripts.Game.CharacterLogic.Simulation.CombatSimulation;
 
 namespace Core.Scripts.Game.CharacterLogic
@@ -13,6 +14,7 @@ namespace Core.Scripts.Game.CharacterLogic
         private readonly CharacterAnimationPresenter _anim;
         private readonly SkinPresenter _skin;
         private readonly WeaponPresenter _weapons;
+        private readonly CharacterVisualPresenter _visualPresenter;
 
         private readonly CameraPresenter _camera;
 
@@ -20,11 +22,12 @@ namespace Core.Scripts.Game.CharacterLogic
         private readonly LookSimulation _lookSim;
         private readonly CombatSimulation _combatSim;
         private readonly CombatStateMachine _combatState;
+        private readonly CharacterVisualPresenter _visual;
 
-        public CharacterRuntime(
-            CharacterEffectsPresenter effects,
+        public CharacterRuntime(CharacterEffectsPresenter effects,
             CharacterAnimationPresenter anim,
             SkinPresenter skin,
+            CharacterVisualPresenter visual,
             WeaponPresenter weapons,
             CameraPresenter camera,
             MoveSimulation moveSim,
@@ -32,6 +35,7 @@ namespace Core.Scripts.Game.CharacterLogic
             CombatSimulation combatSim,
             CombatStateMachine combatState)
         {
+            _visual = visual;
             _effects = effects;
             _anim = anim;
             _skin = skin;
@@ -44,6 +48,10 @@ namespace Core.Scripts.Game.CharacterLogic
             _combatSim = combatSim;
             _combatState = combatState;
         }
+        
+        public CharacterVisualNetwork CreateRandomVisual() => _visual.CreateRandomVisual();
+        public NetworkString<_16> CreateDefaultNickname() => _visual.CreateDefaultNickname(); 
+        public string FormatNickname(string value, NetworkId objectId) => _visual.FormatNickname(value, objectId);
 
         public void AfterSpawnedLocal()
         {

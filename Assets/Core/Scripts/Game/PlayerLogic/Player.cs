@@ -52,7 +52,6 @@ namespace Core.Scripts.Game.PlayerLogic
         private IInventory _inventory;
         private INickNameFadeEffect _nickNameFadeEffect;
         private CharacterRuntime _runtime;
-        private CharacterVisualPresenter _visualPresenter;
         private ChangeDetector _changeDetector;
         private CompositeDisposable _disposables;
         
@@ -64,7 +63,6 @@ namespace Core.Scripts.Game.PlayerLogic
             _projectSettings = projectSettings;
             _inventory = inventory;
             _nickNameFadeEffect = nickNameFadeEffect;
-            _nickNameFadeEffect.Initialization(Camera.main);
         }
 
         public override void Spawned()
@@ -72,30 +70,36 @@ namespace Core.Scripts.Game.PlayerLogic
             base.Spawned();
 
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-            _visualPresenter = new CharacterVisualPresenter(_characterVisualData);
             _disposables = new CompositeDisposable();
-            InitializeRuntime();
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
             base.Despawned(runner, hasState);
 
-            _nickNameFadeEffect.UnregisterNickName(_nickNameText);
             _runtime.Dispose();
             _disposables.Dispose();
+            
+            if (!Object.HasStateAuthority)
+                _nickNameFadeEffect.UnregisterNickName(_nickNameText);
         }
 
         void IAfterSpawned.AfterSpawned()
         {
-            if (Object.HasInputAuthority)
+            InitializeRuntime();
+            
+            if (Object.HasStateAuthority)
             {
                 _runtime.AfterSpawnedLocal();
                 InitializeNetworkSystems();
             }
             else
             {
+                _nickNameFadeEffect.Initialization(Camera.main);
                 _nickNameFadeEffect.RegisterNickName(_nickNameText);
+                
+                _runtime.ApplySkin(VisualNetwork);
+                ApplyNickname();
             }
         }
 
@@ -114,10 +118,12 @@ namespace Core.Scripts.Game.PlayerLogic
             base.FixedUpdateNetwork();
 
             if (Object.HasStateAuthority)
+            {
                 _runtime.FixedTickSimulation();
+                _nickNameFadeEffect.FixedUpdateNetwork();
+            }
 
             _runtime.FixedTickPresentation();
-            _nickNameFadeEffect.FixedUpdateNetwork();
         }
 
         public override void Render()
@@ -154,17 +160,12 @@ namespace Core.Scripts.Game.PlayerLogic
 
         private void InitializeNetworkSystems()
         {
-            InitializeNetworkData();
+            VisualNetwork = _runtime.CreateRandomVisual();
+            PlayerNickName = _runtime.CreateDefaultNickname();
+            _nickNameText.gameObject.SetActive(false);
             
             WeaponSelection weaponSelection = new(_inventory, id => PlayerWeaponId = id);
             _disposables.Add(weaponSelection);
-        }
-
-        private void InitializeNetworkData()
-        {
-            VisualNetwork = _visualPresenter.CreateRandomVisual();
-            PlayerNickName = _visualPresenter.CreateDefaultNickname();
-            _nickNameText.gameObject.SetActive(false);
         }
 
         private PlayerRuntimeConfig CreateRuntimeConfig()
@@ -192,7 +193,7 @@ namespace Core.Scripts.Game.PlayerLogic
         {
             _runtime.LateTickPresentation();
 
-            if (Object.HasInputAuthority)
+            if (Object.HasStateAuthority)
                 _runtime.LateTickLocal();
         }
 
@@ -200,7 +201,7 @@ namespace Core.Scripts.Game.PlayerLogic
         {
             try
             {
-                string formattedName = _visualPresenter.FormatNickname(PlayerNickName.Value, Object.Id);
+                string formattedName = _runtime.FormatNickname(PlayerNickName.Value, Object.Id);
                 _nickNameText.text = formattedName;
                 transform.name = formattedName;
             }

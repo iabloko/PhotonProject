@@ -23684,7 +23684,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2133308833144400447, guid: 2e6071b80558db946a2952ea13ed4404, type: 3}
       propertyPath: m_text
-      value: 
+      value: "aa aa \u0446\u0446 \u0446\u0446"
       objectReference: {fileID: 0}
     - target: {fileID: 2133308833144400447, guid: 2e6071b80558db946a2952ea13ed4404, type: 3}
       propertyPath: m_fontColor.b
@@ -23699,6 +23699,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2133308833144400447, guid: 2e6071b80558db946a2952ea13ed4404, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 0f1aa689e3962f2408a7c245ae2f2cd6, type: 2}
+    - target: {fileID: 2133308833144400447, guid: 2e6071b80558db946a2952ea13ed4404, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4294967295
       objectReference: {fileID: 0}
@@ -23706,6 +23710,10 @@ PrefabInstance:
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
       objectReference: {fileID: 0}
+    - target: {fileID: 3908691713385660667, guid: 2e6071b80558db946a2952ea13ed4404, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0f1aa689e3962f2408a7c245ae2f2cd6, type: 2}
     - target: {fileID: 7685616769834511622, guid: 2e6071b80558db946a2952ea13ed4404, type: 3}
       propertyPath: m_Name
       value: Name_Prefab_TMP

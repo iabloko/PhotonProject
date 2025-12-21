@@ -16,21 +16,21 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
 {
     public sealed class MatchmakingUIAdapter : MonoBehaviour, IMatchmakingView
     {
-        [SerializeField] private TMP_Text statusText;
-        [SerializeField] private Button createNewSession;
+        [SerializeField] private TMP_Text _statusText;
+        [SerializeField] private Button _createNewSession;
 
-        [Title("Connected", titleAlignment: TitleAlignments.Right), SerializeField]
-        private RectTransform connectedParent;
+        [Title("Connected", titleAlignment: TitleAlignments.Left), SerializeField]
+        private RectTransform _connectedParent;
 
-        [SerializeField] private Transform pagesRoot;
-        [SerializeField] private GameObject spinner;
+        [SerializeField] private Transform _pagesRoot;
+        [SerializeField] private GameObject _spinner;
 
-        [Title("Pagination", titleAlignment: TitleAlignments.Right), SerializeField, Min(1)]
-        private int pageSize = 6;
-        [SerializeField] private Button prevButton;
-        [SerializeField] private Button nextButton;
-        [SerializeField] private TMP_Text pageCounterText;
-        [SerializeField] private GameObject noSessionsPlaceholder;
+        [Title("Pagination", titleAlignment: TitleAlignments.Left), SerializeField, Min(1)]
+        private int _pageSize = 6;
+        [SerializeField] private RectTransform _buttonParent;
+        [SerializeField] private Button _prevButton;
+        [SerializeField] private Button _nextButton;
+        [SerializeField] private TMP_Text _pageCounterText;
 
         private INetworkService _networkService;
         private IAssetProvider _assetProvider;
@@ -59,9 +59,9 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
             _networkService.StateChanged += ShowState;
             _networkService.ErrorRaised += ShowError;
 
-            createNewSession.onClick.AddListener(CreateNewSessionClicked);
-            prevButton.onClick.AddListener(OnPrevClicked);
-            nextButton.onClick.AddListener(OnNextClicked);
+            _createNewSession.onClick.AddListener(CreateNewSessionClicked);
+            _prevButton.onClick.AddListener(OnPrevClicked);
+            _nextButton.onClick.AddListener(OnNextClicked);
 
             UpdatePaginationUI();
         }
@@ -75,9 +75,9 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
                 _networkService.ErrorRaised -= ShowError;
             }
 
-            createNewSession.onClick.RemoveListener(CreateNewSessionClicked);
-            prevButton.onClick.RemoveListener(OnPrevClicked);
-            nextButton.onClick.RemoveListener(OnNextClicked);
+            _createNewSession.onClick.RemoveListener(CreateNewSessionClicked);
+            _prevButton.onClick.RemoveListener(OnPrevClicked);
+            _nextButton.onClick.RemoveListener(OnNextClicked);
 
             _cts.Cancel();
             _cts.Dispose();
@@ -87,17 +87,17 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
 
         public void ShowState(NetUiState state)
         {
-            if (statusText) statusText.text = state.ToString();
+            if (_statusText) _statusText.text = state.ToString();
 
             bool inLobby = state is NetUiState.InLobby;
-            connectedParent.gameObject.SetActive(inLobby);
+            _connectedParent.gameObject.SetActive(inLobby);
 
-            spinner.SetActive(state is NetUiState.ConnectingLobby or NetUiState.ConnectingSession);
+            _spinner.SetActive(state is NetUiState.ConnectingLobby or NetUiState.ConnectingSession);
         }
 
         public void ShowError(string message)
         {
-            if (statusText) statusText.text = $"Error: {message}";
+            if (_statusText) _statusText.text = $"Error: {message}";
         }
 
         public void ShowSessions(IReadOnlyList<SessionInfo> sessions) => ShowSessionsAsync(sessions).Forget();
@@ -107,7 +107,7 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
             _sessionsCache.Clear();
             if (sessions != null) _sessionsCache.AddRange(sessions);
 
-            int requiredPages = Mathf.CeilToInt((_sessionsCache.Count) / (float)pageSize);
+            int requiredPages = Mathf.CeilToInt((_sessionsCache.Count) / (float)_pageSize);
             if (requiredPages == 0) requiredPages = 1;
 
             await EnsurePagePoolAsync(requiredPages);
@@ -116,7 +116,7 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
 
             for (int page = 0; page < requiredPages; page++)
             {
-                var slice = GetSliceForPage(_sessionsCache, page, pageSize);
+                var slice = GetSliceForPage(_sessionsCache, page, _pageSize);
 
                 await _pagePool[page].EnsureCapacityAsync(slice.Count, _assetProvider, _cts);
 
@@ -137,7 +137,7 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
             {
                 pageIndex++;
                 PageView page = await _assetProvider.InstantiateAsync<PageView>(
-                    AssetPaths.MATCHMAKING_PAGE, _cts, pagesRoot);
+                    AssetPaths.MATCHMAKING_PAGE, _cts, _pagesRoot);
 
                 page.gameObject.SetActive(false);
                 page.transform.name = string.Concat("Page_", pageIndex);
@@ -165,27 +165,23 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
         private void UpdatePaginationUI()
         {
             int totalItems = _sessionsCache.Count;
-            int totalPages = Mathf.Max(1, Mathf.CeilToInt(totalItems / (float)pageSize));
+            int totalPages = Mathf.Max(1, Mathf.CeilToInt(totalItems / (float)_pageSize));
 
             bool hasAny = totalItems > 0;
 
-            if (noSessionsPlaceholder)
-                noSessionsPlaceholder.SetActive(!hasAny);
-
             bool showNav = hasAny && totalPages > 1;
-            prevButton.gameObject.SetActive(showNav);
-            nextButton.gameObject.SetActive(showNav);
+            _buttonParent.gameObject.SetActive(showNav);
 
-            prevButton.interactable = showNav && _currentPageIndex > 0;
-            nextButton.interactable = showNav && _currentPageIndex < totalPages - 1;
+            _prevButton.interactable = showNav && _currentPageIndex > 0;
+            _nextButton.interactable = showNav && _currentPageIndex < totalPages - 1;
 
-            if (pageCounterText)
-                pageCounterText.text = hasAny ? $"{_currentPageIndex + 1} / {totalPages}" : "0 / 0";
+            if (_pageCounterText)
+                _pageCounterText.text = hasAny ? $"{_currentPageIndex + 1} / {totalPages}" : "0 / 0";
         }
 
         private void OnPrevClicked()
         {
-            int totalPages = Mathf.Max(1, Mathf.CeilToInt(_sessionsCache.Count / (float)pageSize));
+            int totalPages = Mathf.Max(1, Mathf.CeilToInt(_sessionsCache.Count / (float)_pageSize));
             if (_currentPageIndex <= 0) return;
 
             _currentPageIndex--;
@@ -194,7 +190,7 @@ namespace Core.Scripts.Game.Infrastructure.ProjectNetworking.MatchmakingAdapter
 
         private void OnNextClicked()
         {
-            int totalPages = Mathf.Max(1, Mathf.CeilToInt(_sessionsCache.Count / (float)pageSize));
+            int totalPages = Mathf.Max(1, Mathf.CeilToInt(_sessionsCache.Count / (float)_pageSize));
             if (_currentPageIndex >= totalPages - 1) return;
 
             _currentPageIndex++;

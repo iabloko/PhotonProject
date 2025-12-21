@@ -32,6 +32,7 @@ namespace Core.Scripts.Game.PlayerLogic
             CharacterAnimationPresenter anim = CreateAnimationPresenter(motor, config);
             CharacterEffectsPresenter effects = CreateEffectsPresenter(motor, input, config);
             SkinPresenter skin = new(config.VisualData);
+            CharacterVisualPresenter visual = new(config.VisualData);
             WeaponPresenter weapons = new(config.WeaponData, anim);
             CameraPresenter camera = CreateCameraPresenter(motor, input, config);
 
@@ -49,7 +50,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 combatSim = new CombatSimulation(input, _projectSettings, combatState);
             }
 
-            return new CharacterRuntime(effects, anim, skin, weapons, camera, moveSim, lookSim, combatSim, combatState);
+            return new CharacterRuntime(effects, anim, skin, visual, weapons, camera, moveSim, lookSim, combatSim, combatState);
         }
 
         private CharacterAnimationPresenter CreateAnimationPresenter(ICharacterMotor motor, PlayerRuntimeConfig config)
