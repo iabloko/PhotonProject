@@ -1,7 +1,5 @@
 using Core.Scripts.Game.GamePlay.UsableItems;
-using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views.Base;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,21 +16,11 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.View
     public sealed class GameMenuUIGamePlayView : GameMenuUIViewBase
     {
         [SerializeField] private InventorySlot[] inventorySlots;
-        private IInventory _inventory;
         
         protected override void OnBeforeOpen()
         {
             for (int i = 0; i < inventorySlots.Length; i++)
                 inventorySlots[i].parent.SetActive(false);
-        }
-
-        public void SetInventoryLogic(IInventory inventory)
-        {
-            _inventory = inventory;
-            _inventory.CurrentWeapon
-                .Where(w => w != null)
-                .Subscribe(SetWeaponIcon)
-                .AddTo(this);
         }
 
         private void SetWeaponIcon(Weapon weapon)

@@ -1,8 +1,8 @@
+using Core.Scripts.Game.Constants;
 using Core.Scripts.Game.GamePlay.UsableItems;
-using Core.Scripts.Game.Infrastructure.Services.Inventory;
+using Core.Scripts.Game.PlayerLogic;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using Zenject;
 
 namespace Core.Scripts.Game.GamePlay.PickupableLogic
 {
@@ -10,20 +10,14 @@ namespace Core.Scripts.Game.GamePlay.PickupableLogic
     {
         [SerializeField, InlineEditor, HideLabel] 
         internal Weapon pickUpItem;
-        private const string PLAYER = "Player";
-        private IInventory _inventory;
-
-        [Inject]
-        public void Constructor(IInventory inventory) => _inventory = inventory;
-
+        
         private void OnTriggerEnter(Collider other)
         {
-            Transform parent = other.transform.parent;
+            if (!other.CompareTag(GameConstants.LOCAL_PLAYER)) return;
             
-            if (parent != null && parent.CompareTag(PLAYER))
-            {
-                _inventory.PickWeapon(pickUpItem);
-            }
+            GameObject parent = other.transform.parent.gameObject;
+            parent.TryGetComponent(out IItemPickUpHandler handler);
+            handler?.TryPickUp(pickUpItem);
         }
     }
 }

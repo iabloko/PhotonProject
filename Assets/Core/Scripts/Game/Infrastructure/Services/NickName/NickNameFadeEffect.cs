@@ -36,31 +36,41 @@ namespace Core.Scripts.Game.Infrastructure.Services.NickName
 
         void INickNameFadeEffect.Initialization(Camera c)
         {
+            if (c == null) return;
+            if (_cullingGroup != null) return;
+
             CreateCullingGroup(c);
             BuildDistanceBands();
+
+            if (_names.Count > 0)
+                RebuildSpheres_NoAlloc();
         }
 
         void INickNameFadeEffect.RegisterNickName(TMP_Text nickName)
         {
             if (!nickName) return;
-            
+
             CompactNullNicknames();
 
             if (_names.Contains(nickName)) return;
 
             _names.Add(nickName);
-            
-            RebuildSpheres();
+
+            if (_cullingGroup != null)
+                RebuildSpheres_NoAlloc();
         }
-        
+
         void INickNameFadeEffect.UnregisterNickName(TMP_Text nickName)
         {
             if (!nickName) return;
+
             int idx = _names.IndexOf(nickName);
             if (idx < 0) return;
-            
+
             _names.RemoveAt(idx);
-            RebuildSpheres_NoAlloc();
+
+            if (_cullingGroup != null)
+                RebuildSpheres_NoAlloc();
         }
         
         void INickNameFadeEffect.FixedUpdateNetwork()

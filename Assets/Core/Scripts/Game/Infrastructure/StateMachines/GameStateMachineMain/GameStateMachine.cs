@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Core.Scripts.Game.Infrastructure.StateMachines.BaseData;
 using Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain.States;
 using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
-using UnityEngine;
 using Zenject;
 
 namespace Core.Scripts.Game.Infrastructure.StateMachines.GameStateMachineMain

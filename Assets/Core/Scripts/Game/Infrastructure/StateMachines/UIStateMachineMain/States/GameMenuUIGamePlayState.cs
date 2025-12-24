@@ -1,6 +1,5 @@
 using Core.Scripts.Game.GameHelpers;
 using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
-using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States.Base;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Views;
 using UnityEngine.Scripting;
@@ -11,12 +10,9 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
     public sealed class
         GameMenuUIGamePlayState : GameMenuUISimpleStateBase<GameMenuUIGamePlayView>
     {
-        private readonly IInventory _inventory;
-
-        public GameMenuUIGamePlayState(MainGameUIStateMachine stateMachine, IAssetProvider assetProvider, IInventory inventory) 
+        public GameMenuUIGamePlayState(MainGameUIStateMachine stateMachine, IAssetProvider assetProvider) 
             : base(stateMachine, assetProvider)
         {
-            _inventory = inventory;
         }
 
         public override string StateName => "GameMenuUIGamePlayState";
@@ -25,7 +21,7 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.Stat
         protected override void OnEntered()
         {
             base.OnEntered();
-            _stateView.SetInventoryLogic(_inventory);
+            // _stateView.SetInventoryLogic();
         }
         
         [Preserve]

@@ -1,25 +1,28 @@
 using Core.Scripts.Game.CharacterLogic;
 using Core.Scripts.Game.CharacterLogic.Data;
+using Core.Scripts.Game.Constants;
 using Core.Scripts.Game.GamePlay.UsableItems;
 using Core.Scripts.Game.Infrastructure.ModelData;
 using Core.Scripts.Game.Infrastructure.RequiresInjection;
-using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
-using Core.Scripts.Game.Infrastructure.Services.Inventory;
 using Core.Scripts.Game.Infrastructure.Services.NickName;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.PlayerLogic.InputLogic;
-using Core.Scripts.Game.PlayerLogic.PlayerWeaponLogic;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using Zenject;
 
 namespace Core.Scripts.Game.PlayerLogic
 {
-    public sealed class Player : NetworkBehaviour, IAfterSpawned, IBeforeTick, IAfterTick, IRequiresInjection
+    public interface IItemPickUpHandler
+    {
+        void TryPickUp(Weapon pickUpItem);
+    }
+
+    public sealed class Player : NetworkBehaviour, IAfterSpawned, IBeforeTick, IAfterTick, IRequiresInjection,
+        IItemPickUpHandler
     {
         public bool RequiresInjection { get; set; } = true;
 
@@ -27,87 +30,99 @@ namespace Core.Scripts.Game.PlayerLogic
         public NetworkString<_16> PlayerNickName { get; set; }
 
         [Networked, UnitySerializeField] public int CurrentHealth { get; set; }
-        [Networked, UnitySerializeField] public CharacterVisualNetwork VisualNetwork { get; set; }
         [Networked, UnitySerializeField] public int PlayerWeaponId { get; set; }
         [Networked, UnitySerializeField] public int AttackSequence { get; set; }
         [Networked, UnitySerializeField] public int LastAttackTick { get; set; }
-        
+        [Networked, UnitySerializeField] public CharacterVisualNetwork VisualNetwork { get; set; }
+
         [Title("Visual Data"), SerializeField] private CharacterVisual _characterVisualData;
         [SerializeField, TableList] private WeaponData[] _weaponData;
         [SerializeField] private TMP_Text _nickNameText;
         [SerializeField] private Material _playerMaterial;
 
         [Title("Components"), SerializeField] private SimpleKCC _kcc;
-        [SerializeField] private PlayerInput _input;
+        [SerializeField] private PlayerInput _input; // DO NOT TOUCH (per request)
         [SerializeField] private GameplaySettings _gameplayData;
         [SerializeField] private Animator _animator;
         [SerializeField] private Transform _previewRotation;
 
         [Title("Effects"), SerializeField] private ParticleSystem _footprintParticles;
         [SerializeField] private ParticleSystem _onGroundParticles;
-        
-        private ICinemachine _cinemachine;
+
+        [Title("Local Only"), SerializeField] private PlayerLocalAddon _localAddonPrefab;
+
         private IProjectSettings _projectSettings;
         private INickNameFadeEffect _nickNameFadeEffect;
-        private IInventory _inventory;
+        private DiContainer _container;
+
+        private PlayerLocalAddon _localAddonInstance;
+
         private CharacterRuntime _runtime;
         private ChangeDetector _changeDetector;
-        private CompositeDisposable _disposables;
-        
+
         [Inject]
         public void Constructor(
-            ICinemachine cinemachine, 
-            IProjectSettings projectSettings, 
+            IProjectSettings projectSettings,
             INickNameFadeEffect nickNameFadeEffect,
-            IInventory inventory)
+            DiContainer container)
         {
-            _inventory = inventory;
-            _cinemachine = cinemachine;
             _projectSettings = projectSettings;
             _nickNameFadeEffect = nickNameFadeEffect;
+            _container = container;
         }
 
         public override void Spawned()
         {
             base.Spawned();
-
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-            _disposables = new CompositeDisposable();
-            _nickNameFadeEffect.Initialization(Camera.main);
+        }
+
+        void IAfterSpawned.AfterSpawned()
+        {
+            InitializeRuntime();
+
+            if (Object.HasInputAuthority)
+            {
+                // _kcc.SetColliderLayer(LayerMask.NameToLayer(GameConstants.LOCAL_PLAYER));
+                // _kcc.Collider.transform.tag = GameConstants.LOCAL_PLAYER;
+
+                TryCreateLocalAddon();
+                InitializeNetworkSystems();
+            }
+            else
+            {
+                // _kcc.SetColliderLayer(LayerMask.NameToLayer(GameConstants.REMOTE_PLAYER));
+                // _kcc.Collider.transform.tag = GameConstants.REMOTE_PLAYER;
+
+                _nickNameFadeEffect.RegisterNickName(_nickNameText);
+
+                _runtime.ApplySkin(VisualNetwork);
+                _runtime.ApplyWeapon(PlayerWeaponId);
+                _runtime.ApplyAttackSequence(AttackSequence);
+                ApplyNickname();
+            }
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
             base.Despawned(runner, hasState);
 
-            _runtime.Dispose();
-            _disposables.Dispose();
-            
-            if (!Object.HasStateAuthority)
+            if (!Object.HasInputAuthority)
                 _nickNameFadeEffect.UnregisterNickName(_nickNameText);
-        }
 
-        void IAfterSpawned.AfterSpawned()
-        {
-            InitializeRuntime();
-            
-            if (Object.HasStateAuthority)
+            if (_localAddonInstance != null)
             {
-                _runtime.AfterSpawnedLocal();
-                InitializeNetworkSystems();
+                Destroy(_localAddonInstance.gameObject);
+                _localAddonInstance = null;
             }
-            else
-            {
-                _nickNameFadeEffect.RegisterNickName(_nickNameText);
-                
-                _runtime.ApplySkin(VisualNetwork);
-                ApplyNickname();
-            }
+
+            _runtime?.Dispose();
+            _runtime = null;
         }
 
         void IBeforeTick.BeforeTick()
         {
-            _runtime.BeforeTick();
+            _runtime?.BeforeTick();
         }
 
         void IAfterTick.AfterTick()
@@ -120,16 +135,20 @@ namespace Core.Scripts.Game.PlayerLogic
             base.FixedUpdateNetwork();
 
             if (Object.HasStateAuthority)
-            {
                 _runtime.FixedTickSimulation();
-                _nickNameFadeEffect.FixedUpdateNetwork();
-            }
 
             _runtime.FixedTickPresentation();
         }
 
+        private void LateUpdate()
+        {
+            _runtime.LateTickPresentation();
+        }
+
         public override void Render()
         {
+            if (_runtime == null) return;
+
             foreach (string change in _changeDetector.DetectChanges(this, out _, out _))
             {
                 switch (change)
@@ -152,24 +171,35 @@ namespace Core.Scripts.Game.PlayerLogic
                 }
             }
         }
-        
+
+        void IItemPickUpHandler.TryPickUp(Weapon pickUpItem)
+        {
+            if (Object.HasStateAuthority)
+                PlayerWeaponId = pickUpItem.id;
+        }
+
+        private void TryCreateLocalAddon()
+        {
+            _localAddonInstance =
+                _container.InstantiatePrefabForComponent<PlayerLocalAddon>(_localAddonPrefab, transform);
+            _localAddonInstance.Bind(_kcc, _input, _previewRotation);
+            _localAddonInstance.transform.SetParent(transform);
+        }
+
         private void InitializeRuntime()
         {
             PlayerRuntimeConfig config = CreateRuntimeConfig();
-            PlayerFactory factory = new(_cinemachine, _projectSettings);
+            PlayerFactory factory = new(_projectSettings);
             _runtime = factory.CreateRuntime(config);
         }
 
         private void InitializeNetworkSystems()
         {
             CurrentHealth = 100;
-            
+
             VisualNetwork = _runtime.CreateRandomVisual();
             PlayerNickName = _runtime.CreateDefaultNickname();
             _nickNameText.gameObject.SetActive(false);
-            
-            WeaponSelection weaponSelection = new(_inventory, id => PlayerWeaponId = id);
-            _disposables.Add(weaponSelection);
         }
 
         private PlayerRuntimeConfig CreateRuntimeConfig()
@@ -187,18 +217,9 @@ namespace Core.Scripts.Game.PlayerLogic
                 runner: Runner,
                 hasStateAuthority: Object.HasStateAuthority,
                 getAttackSequence: () => AttackSequence,
-                setAttackSequence: v => AttackSequence = v,
+                setAttackSequence: value => AttackSequence = value,
                 getLastAttackTick: () => LastAttackTick,
-                setLastAttackTick: v => LastAttackTick = v
-            );
-        }
-
-        private void LateUpdate()
-        {
-            _runtime.LateTickPresentation();
-
-            if (Object.HasStateAuthority)
-                _runtime.LateTickLocal();
+                setLastAttackTick: value => LastAttackTick = value);
         }
 
         private void ApplyNickname()

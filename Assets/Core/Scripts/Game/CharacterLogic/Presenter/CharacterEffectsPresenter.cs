@@ -13,38 +13,39 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
 
         public void PlayFootprintParticles()
         {
+            if (!_footprintParticles) return;
             if (!_footprintParticles.isPlaying)
                 _footprintParticles.Play();
         }
 
         public void StopFootprintParticles()
         {
+            if (!_footprintParticles) return;
             if (_footprintParticles.isPlaying)
                 _footprintParticles.Stop();
         }
     }
-
+    
     public sealed class CharacterEffectsPresenter
     {
-        private bool _wasGroundedLastTick;
-        private float _lastVerticalVelocity;
+        private const float ON_GROUND_MIN_THRESHOLD = -0.5f;
+        private const float MOVING_MIN_SQR_SPEED = 0.02f;
 
         private readonly ICharacterMotor _motor;
-        private readonly ICharacterInput _input;
         private readonly MovementEffects _movementEffects;
         private readonly ParticleSystem _onGroundParticles;
 
-        private const float ON_GROUND_MIN_THRESHOLD = -25f;
+        private bool _wasGroundedLastTick;
+        private float _lastVerticalVelocity;
 
         public CharacterEffectsPresenter(
-            ICharacterMotor motor, ICharacterInput input,
+            ICharacterMotor motor,
             ParticleSystem footprintParticles,
             ParticleSystem onGroundParticles)
         {
             _motor = motor;
-            _input = input;
-            _onGroundParticles = onGroundParticles;
             _movementEffects = new MovementEffects(footprintParticles);
+            _onGroundParticles = onGroundParticles;
         }
 
         public void BeforeTick()
@@ -55,6 +56,8 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
 
         public void OnGroundEffect()
         {
+            if (!_onGroundParticles) return;
+
             if (!_wasGroundedLastTick && _motor.IsGrounded && _lastVerticalVelocity < ON_GROUND_MIN_THRESHOLD)
             {
                 _onGroundParticles.transform.position = _motor.Position;
@@ -64,7 +67,7 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
 
         public void LateUpdate()
         {
-            bool moving = _motor.IsGrounded && _input.SprintHeld && _motor.RealVelocity.sqrMagnitude > 0.02f;
+            bool moving = _motor.IsGrounded && _motor.RealVelocity.sqrMagnitude > MOVING_MIN_SQR_SPEED;
             if (moving) _movementEffects.PlayFootprintParticles();
             else _movementEffects.StopFootprintParticles();
         }

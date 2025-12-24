@@ -5,7 +5,6 @@ using Core.Scripts.Game.Infrastructure.Services.AssetProviderService;
 using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
 using Cysharp.Threading.Tasks;
 using Fusion;
-using UnityEngine;
 using Zenject;
 using LogLevel = Core.Scripts.Game.ScriptableObjects.Configs.Logger.LogLevel;
 

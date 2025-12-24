@@ -1,4 +1,3 @@
-using Core.Scripts.Game.PlayerLogic;
 using Core.Scripts.Game.ScriptableObjects.Sound;
 using Sirenix.OdinInspector;
 using UnityEngine;

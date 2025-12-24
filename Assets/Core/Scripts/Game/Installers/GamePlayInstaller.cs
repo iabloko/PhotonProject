@@ -1,21 +1,25 @@
-using Core.Scripts.Game.Infrastructure.Services.Inventory;
+using Core.Scripts.Game.Infrastructure.Bootstrapper;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain;
 using Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain.States;
+using UnityEngine;
 using Zenject;
 
 namespace Core.Scripts.Game.Installers
 {
     public sealed class GamePlayInstaller : MonoInstaller
     {
+        [SerializeField] private GamePlayBootstrapper _gamePlayBootstrapper;
+
         public override void InstallBindings()
         {
             BindGameServices();
             BindGameStateMachine();
+            
+            Container.Bind<GamePlayBootstrapper>().FromInstance(_gamePlayBootstrapper).AsSingle();
         }
 
         private void BindGameServices()
         {
-            Container.Bind<IInventory>().To<PlayerInventory>().AsSingle().NonLazy();
         }
 
         private void BindGameStateMachine()

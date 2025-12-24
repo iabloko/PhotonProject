@@ -4,7 +4,6 @@ using Core.Scripts.Game.Infrastructure.ProjectNetworking.Service;
 using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
 using Fusion;
 using Fusion.Sockets;
-using UnityEngine;
 using LogLevel = Core.Scripts.Game.ScriptableObjects.Configs.Logger.LogLevel;
 
 namespace Core.Scripts.Game.Infrastructure.ProjectNetworking

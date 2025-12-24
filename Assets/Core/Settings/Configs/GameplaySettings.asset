@@ -19,8 +19,8 @@ MonoBehaviour:
     jumpInertia: 0
     shiftMode: 1
     autoRun: 0
-    upGravity: -50
-    downGravity: -90
+    upGravity: 0
+    downGravity: 0
     groundAcceleration: 55
     groundDeceleration: 25
     airAcceleration: 25

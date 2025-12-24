@@ -21,6 +21,8 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
         private CancellationTokenSource _cts;
 
         private readonly IProjectSettings _settings;
+        private readonly GameMenuUIDescriptionState.Factory _descriptionFactory;
+        private readonly GameMenuUIGamePlayState.Factory _gamePlayFactory;
 
         [Inject]
         public MainGameUIStateMachine(
@@ -29,21 +31,14 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
             GameMenuUIDescriptionState.Factory descriptionFactory,
             GameMenuUIGamePlayState.Factory gamePlayFactory) : base(assetProvider)
         {
+            _gamePlayFactory = gamePlayFactory;
+            _descriptionFactory = descriptionFactory;
             _settings = projectSettings;
-            SetUpStateMachine(descriptionFactory, gamePlayFactory).Forget();
         }
 
         protected override string MainViewPath => GameConstant.GAME_UI_MAIN_VIEW;
 
-        void IDisposable.Dispose()
-        {
-            _cts.Cancel();
-            _cts.Dispose();
-        }
-
-        private async UniTaskVoid SetUpStateMachine(
-            GameMenuUIDescriptionState.Factory descriptionFactory,
-            GameMenuUIGamePlayState.Factory gamePlayFactory)
+        public async UniTaskVoid SetUpStateMachine()
         {
             _settings.ChangeGamePauseStatus(true);
             _settings.SetCursor(true);
@@ -54,11 +49,17 @@ namespace Core.Scripts.Game.Infrastructure.StateMachines.UIStateMachineMain
 
             States = new Dictionary<Type, IAsyncExitState>
             {
-                [typeof(GameMenuUIDescriptionState)] = descriptionFactory.Create(this),
-                [typeof(GameMenuUIGamePlayState)] = gamePlayFactory.Create(this),
+                [typeof(GameMenuUIDescriptionState)] = _descriptionFactory.Create(this),
+                [typeof(GameMenuUIGamePlayState)] = _gamePlayFactory.Create(this),
             };
 
             EnterAsync<GameMenuUIDescriptionState>().Forget();
+        }
+
+        void IDisposable.Dispose()
+        {
+            _cts.Cancel();
+            _cts.Dispose();
         }
 
         public override void SetUIStateView(UIAsyncPayloadView stateView) => 

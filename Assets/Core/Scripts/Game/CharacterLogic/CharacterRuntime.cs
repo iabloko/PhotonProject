@@ -14,22 +14,19 @@ namespace Core.Scripts.Game.CharacterLogic
         private readonly CharacterAnimationPresenter _anim;
         private readonly SkinPresenter _skin;
         private readonly WeaponPresenter _weapons;
-        private readonly CharacterVisualPresenter _visualPresenter;
-
-        private readonly CameraPresenter _camera;
+        private readonly CharacterVisualPresenter _visual;
 
         private readonly MoveSimulation _moveSim;
         private readonly LookSimulation _lookSim;
         private readonly CombatSimulation _combatSim;
         private readonly CombatStateMachine _combatState;
-        private readonly CharacterVisualPresenter _visual;
 
-        public CharacterRuntime(CharacterEffectsPresenter effects,
+        public CharacterRuntime(
+            CharacterEffectsPresenter effects,
             CharacterAnimationPresenter anim,
             SkinPresenter skin,
             CharacterVisualPresenter visual,
             WeaponPresenter weapons,
-            CameraPresenter camera,
             MoveSimulation moveSim,
             LookSimulation lookSim,
             CombatSimulation combatSim,
@@ -41,22 +38,15 @@ namespace Core.Scripts.Game.CharacterLogic
             _skin = skin;
             _weapons = weapons;
 
-            _camera = camera;
-
             _moveSim = moveSim;
             _lookSim = lookSim;
             _combatSim = combatSim;
             _combatState = combatState;
         }
-        
-        public CharacterVisualNetwork CreateRandomVisual() => _visual.CreateRandomVisual();
-        public NetworkString<_16> CreateDefaultNickname() => _visual.CreateDefaultNickname(); 
-        public string FormatNickname(string value, NetworkId objectId) => _visual.FormatNickname(value, objectId);
 
-        public void AfterSpawnedLocal()
-        {
-            _camera.AfterSpawned();
-        }
+        public CharacterVisualNetwork CreateRandomVisual() => _visual.CreateRandomVisual();
+        public NetworkString<_16> CreateDefaultNickname() => _visual.CreateDefaultNickname();
+        public string FormatNickname(string value, NetworkId objectId) => _visual.FormatNickname(value, objectId);
 
         public void BeforeTick()
         {
@@ -87,13 +77,7 @@ namespace Core.Scripts.Game.CharacterLogic
             _anim.LateUpdate();
         }
 
-        public void LateTickLocal()
-        {
-            _camera.LateUpdate();
-        }
-
         public void ApplySkin(CharacterVisualNetwork visual) => _skin.Apply(visual);
-        
         public void ApplyWeapon(int weaponId) => _weapons.Apply(weaponId);
 
         public void ApplyAttackSequence(int seq)
@@ -104,6 +88,7 @@ namespace Core.Scripts.Game.CharacterLogic
 
         public void Dispose()
         {
+            // Nothing to dispose currently.
         }
     }
 }
