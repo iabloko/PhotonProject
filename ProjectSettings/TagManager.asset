@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - PlayerLocal
+  - PlayerRemote
   layers:
   - Default
   - TransparentFX
@@ -14,8 +16,8 @@ TagManager:
   - Interactable
   - Player
   - Obstacles
-  - 
-  - 
+  - PlayerLocal
+  - PlayerRemote
   - 
   - 
   - 

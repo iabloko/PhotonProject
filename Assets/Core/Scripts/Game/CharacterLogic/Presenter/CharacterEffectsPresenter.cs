@@ -1,3 +1,4 @@
+using Core.Scripts.Game.Infrastructure.ModelData;
 using UnityEngine;
 
 namespace Core.Scripts.Game.CharacterLogic.Presenter
@@ -29,20 +30,20 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
     public sealed class CharacterEffectsPresenter
     {
         private const float ON_GROUND_MIN_THRESHOLD = -0.5f;
-        private const float MOVING_MIN_SQR_SPEED = 0.02f;
-
+        
         private readonly ICharacterMotor _motor;
         private readonly MovementEffects _movementEffects;
         private readonly ParticleSystem _onGroundParticles;
 
         private bool _wasGroundedLastTick;
         private float _lastVerticalVelocity;
+        private readonly GameplaySettings _data;
 
-        public CharacterEffectsPresenter(
-            ICharacterMotor motor,
+        public CharacterEffectsPresenter(ICharacterMotor motor,
             ParticleSystem footprintParticles,
-            ParticleSystem onGroundParticles)
+            ParticleSystem onGroundParticles, GameplaySettings data)
         {
+            _data = data;
             _motor = motor;
             _movementEffects = new MovementEffects(footprintParticles);
             _onGroundParticles = onGroundParticles;
@@ -67,9 +68,11 @@ namespace Core.Scripts.Game.CharacterLogic.Presenter
 
         public void LateUpdate()
         {
-            bool moving = _motor.IsGrounded && _motor.RealVelocity.sqrMagnitude > MOVING_MIN_SQR_SPEED;
+            bool moving = _motor.IsGrounded && IsMoving();
             if (moving) _movementEffects.PlayFootprintParticles();
             else _movementEffects.StopFootprintParticles();
         }
+        
+        private bool IsMoving() => _motor.RealVelocity.sqrMagnitude > (Mathf.Pow(_data.settings.walkingSpeed, 2) + _data.settings.walkingSpeed * 2);
     }
 }

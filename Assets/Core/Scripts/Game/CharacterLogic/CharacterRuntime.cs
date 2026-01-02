@@ -10,12 +10,12 @@ namespace Core.Scripts.Game.CharacterLogic
 {
     public sealed class CharacterRuntime : IDisposable
     {
+        private readonly ICharacterMotor _motor;
         private readonly CharacterEffectsPresenter _effects;
         private readonly CharacterAnimationPresenter _anim;
         private readonly SkinPresenter _skin;
         private readonly WeaponPresenter _weapons;
         private readonly CharacterVisualPresenter _visual;
-
         private readonly MoveSimulation _moveSim;
         private readonly LookSimulation _lookSim;
         private readonly CombatSimulation _combatSim;
@@ -30,8 +30,11 @@ namespace Core.Scripts.Game.CharacterLogic
             MoveSimulation moveSim,
             LookSimulation lookSim,
             CombatSimulation combatSim,
-            CombatStateMachine combatState)
+            CombatStateMachine combatState,
+            ICharacterMotor motor)
         {
+            _motor = motor;
+            
             _visual = visual;
             _effects = effects;
             _anim = anim;
@@ -47,7 +50,9 @@ namespace Core.Scripts.Game.CharacterLogic
         public CharacterVisualNetwork CreateRandomVisual() => _visual.CreateRandomVisual();
         public NetworkString<_16> CreateDefaultNickname() => _visual.CreateDefaultNickname();
         public string FormatNickname(string value, NetworkId objectId) => _visual.FormatNickname(value, objectId);
-
+        public void SetColliderLayer(string layer) => _motor.SetColliderLayer(layer);
+        public void SetColliderTag(string tag) => _motor.SetColliderTag(tag);
+        
         public void BeforeTick()
         {
             _effects.BeforeTick();

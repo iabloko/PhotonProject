@@ -19,5 +19,7 @@ namespace Core.Scripts.Game.CharacterLogic
         public void AddLookRotation(Vector2 delta);
         public Vector2 GetLookRotation(bool pitch = true, bool yaw = true);
         public bool ProjectOnGround(Vector3 vector, out Vector3 projectedVector);
+        public void SetColliderLayer(string layer);
+        public void SetColliderTag(string tag);
     }
 }

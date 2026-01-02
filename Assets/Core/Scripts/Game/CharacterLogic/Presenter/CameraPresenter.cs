@@ -1,6 +1,5 @@
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
-using Fusion.Addons.SimpleKCC;
 using UnityEngine;
 
 namespace Core.Scripts.Game.CharacterLogic.Presenter

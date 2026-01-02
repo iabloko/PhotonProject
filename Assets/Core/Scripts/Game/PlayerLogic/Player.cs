@@ -1,4 +1,5 @@
 using Core.Scripts.Game.CharacterLogic;
+using Core.Scripts.Game.CharacterLogic.Adapters;
 using Core.Scripts.Game.CharacterLogic.Data;
 using Core.Scripts.Game.Constants;
 using Core.Scripts.Game.GamePlay.UsableItems;
@@ -41,7 +42,7 @@ namespace Core.Scripts.Game.PlayerLogic
         [SerializeField] private Material _playerMaterial;
 
         [Title("Components"), SerializeField] private SimpleKCC _kcc;
-        [SerializeField] private PlayerInput _input; // DO NOT TOUCH (per request)
+        [SerializeField] private PlayerInput _input;
         [SerializeField] private GameplaySettings _gameplayData;
         [SerializeField] private Animator _animator;
         [SerializeField] private Transform _previewRotation;
@@ -55,7 +56,7 @@ namespace Core.Scripts.Game.PlayerLogic
         private INickNameFadeEffect _nickNameFadeEffect;
         private DiContainer _container;
 
-        private PlayerLocalAddon _localAddonInstance;
+        private PlayerLocalAddon _local;
 
         private CharacterRuntime _runtime;
         private ChangeDetector _changeDetector;
@@ -79,26 +80,25 @@ namespace Core.Scripts.Game.PlayerLogic
 
         void IAfterSpawned.AfterSpawned()
         {
-            InitializeRuntime();
+            ICharacterMotor motor = new KccMotorAdapter(_kcc);
+            InitializeRuntime(motor);
 
             if (Object.HasInputAuthority)
             {
-                // _kcc.SetColliderLayer(LayerMask.NameToLayer(GameConstants.LOCAL_PLAYER));
-                // _kcc.Collider.transform.tag = GameConstants.LOCAL_PLAYER;
+                _runtime.SetColliderLayer(GameConstants.LOCAL_PLAYER);
+                _runtime.SetColliderTag(GameConstants.LOCAL_PLAYER);
 
-                TryCreateLocalAddon();
+                TryCreateLocalAddon(motor);
                 InitializeNetworkSystems();
             }
             else
             {
-                // _kcc.SetColliderLayer(LayerMask.NameToLayer(GameConstants.REMOTE_PLAYER));
-                // _kcc.Collider.transform.tag = GameConstants.REMOTE_PLAYER;
-
-                _nickNameFadeEffect.RegisterNickName(_nickNameText);
-
+                _runtime.SetColliderLayer(GameConstants.REMOTE_PLAYER);
+                _runtime.SetColliderTag(GameConstants.REMOTE_PLAYER);
                 _runtime.ApplySkin(VisualNetwork);
                 _runtime.ApplyWeapon(PlayerWeaponId);
                 _runtime.ApplyAttackSequence(AttackSequence);
+                _nickNameFadeEffect.RegisterNickName(_nickNameText);
                 ApplyNickname();
             }
         }
@@ -110,10 +110,10 @@ namespace Core.Scripts.Game.PlayerLogic
             if (!Object.HasInputAuthority)
                 _nickNameFadeEffect.UnregisterNickName(_nickNameText);
 
-            if (_localAddonInstance != null)
+            if (_local != null)
             {
-                Destroy(_localAddonInstance.gameObject);
-                _localAddonInstance = null;
+                Destroy(_local.gameObject);
+                _local = null;
             }
 
             _runtime?.Dispose();
@@ -178,19 +178,18 @@ namespace Core.Scripts.Game.PlayerLogic
                 PlayerWeaponId = pickUpItem.id;
         }
 
-        private void TryCreateLocalAddon()
+        private void TryCreateLocalAddon(ICharacterMotor motor)
         {
-            _localAddonInstance =
-                _container.InstantiatePrefabForComponent<PlayerLocalAddon>(_localAddonPrefab, transform);
-            _localAddonInstance.Bind(_kcc, _input, _previewRotation);
-            _localAddonInstance.transform.SetParent(transform);
+            _local = _container.InstantiatePrefabForComponent<PlayerLocalAddon>(_localAddonPrefab, transform);
+            _local.transform.SetParent(transform);
+            _local.Bind(motor, _input, _previewRotation);
         }
 
-        private void InitializeRuntime()
+        private void InitializeRuntime(ICharacterMotor motor)
         {
             PlayerRuntimeConfig config = CreateRuntimeConfig();
             PlayerFactory factory = new(_projectSettings);
-            _runtime = factory.CreateRuntime(config);
+            _runtime = factory.CreateRuntime(config, motor);
         }
 
         private void InitializeNetworkSystems()

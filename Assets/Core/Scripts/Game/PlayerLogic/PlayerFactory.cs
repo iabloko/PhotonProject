@@ -1,5 +1,4 @@
 using Core.Scripts.Game.CharacterLogic;
-using Core.Scripts.Game.CharacterLogic.Adapters;
 using Core.Scripts.Game.CharacterLogic.CharacterCombat;
 using Core.Scripts.Game.CharacterLogic.Presenter;
 using Core.Scripts.Game.CharacterLogic.Simulation;
@@ -15,14 +14,10 @@ namespace Core.Scripts.Game.PlayerLogic
         private const int MAX_COMBO = 3;
         private const float COMBAT_RESET_SECONDS = 1.5f;
 
-        public PlayerFactory(IProjectSettings projectSettings)
-        {
-            _projectSettings = projectSettings;
-        }
+        public PlayerFactory(IProjectSettings projectSettings) => _projectSettings = projectSettings;
 
-        public CharacterRuntime CreateRuntime(PlayerRuntimeConfig config)
+        public CharacterRuntime CreateRuntime(PlayerRuntimeConfig config, ICharacterMotor motor)
         {
-            ICharacterMotor motor = new KccMotorAdapter(config.Kcc);
             ITimeSource time = new RunnerTimeSource(config.Runner);
 
             CharacterAnimationPresenter anim = CreateAnimationPresenter(motor, config);
@@ -53,14 +48,14 @@ namespace Core.Scripts.Game.PlayerLogic
                 combatSim = new CombatSimulation(input, _projectSettings, combatState);
             }
 
-            return new CharacterRuntime(effects, anim, skin, visual, weapons, moveSim, lookSim, combatSim, combatState);
+            return new CharacterRuntime(effects, anim, skin, visual, weapons, moveSim, lookSim, combatSim, combatState, motor);
         }
 
         private CharacterAnimationPresenter CreateAnimationPresenter(ICharacterMotor motor, PlayerRuntimeConfig config)
             => new(motor, config.Animator, _projectSettings, config.GameplayData);
 
         private CharacterEffectsPresenter CreateEffectsPresenter(ICharacterMotor motor, PlayerRuntimeConfig config)
-            => new(motor, config.FootprintParticles, config.OnGroundParticles);
+            => new(motor, config.FootprintParticles, config.OnGroundParticles, config.GameplayData);
 
         private CombatStateMachine CreateCombatStateMachine(PlayerRuntimeConfig config, ITimeSource time)
         {

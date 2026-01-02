@@ -15,12 +15,12 @@ MonoBehaviour:
   settings:
     walkingSpeed: 5
     runningSpeed: 10
-    jumpFactor: 1.35
+    jumpFactor: 1.5
     jumpInertia: 0
     shiftMode: 1
     autoRun: 0
-    upGravity: 0
-    downGravity: 0
+    upGravity: -60
+    downGravity: -90
     groundAcceleration: 55
     groundDeceleration: 25
     airAcceleration: 25

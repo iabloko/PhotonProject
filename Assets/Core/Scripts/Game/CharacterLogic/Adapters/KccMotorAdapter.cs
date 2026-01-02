@@ -24,5 +24,7 @@ namespace Core.Scripts.Game.CharacterLogic.Adapters
         public void AddLookRotation(Vector2 delta) => _kcc.AddLookRotation(delta);
         public Vector2 GetLookRotation(bool pitch = true, bool yaw = true) => _kcc.GetLookRotation(pitch, yaw);
         public bool ProjectOnGround(Vector3 vector, out Vector3 projectedVector) => _kcc.ProjectOnGround(vector, out projectedVector);
+        public void SetColliderLayer(string layer) => _kcc.SetColliderLayer(LayerMask.NameToLayer(layer));
+        public void SetColliderTag(string tag) => _kcc.Collider.transform.tag = tag;
     }
 }

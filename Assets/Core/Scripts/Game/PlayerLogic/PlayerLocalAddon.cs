@@ -1,10 +1,9 @@
-using Core.Scripts.Game.CharacterLogic.Adapters;
+using Core.Scripts.Game.CharacterLogic;
 using Core.Scripts.Game.CharacterLogic.Presenter;
 using Core.Scripts.Game.Infrastructure.Services.CinemachineService;
 using Core.Scripts.Game.Infrastructure.Services.NickName;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.PlayerLogic.InputLogic;
-using Fusion.Addons.SimpleKCC;
 using UnityEngine;
 using Zenject;
 
@@ -17,7 +16,6 @@ namespace Core.Scripts.Game.PlayerLogic
         private INickNameFadeEffect _nickNameFadeEffect;
 
         private CameraPresenter _cameraPresenter;
-        private bool _bound;
 
         [Inject]
         private void Construct(
@@ -30,12 +28,8 @@ namespace Core.Scripts.Game.PlayerLogic
             _nickNameFadeEffect = nickNameFadeEffect;
         }
 
-        public void Bind(SimpleKCC kcc, PlayerInput input, Transform previewRotation)
+        public void Bind(ICharacterMotor motor, PlayerInput input, Transform previewRotation)
         {
-            if (_bound) return;
-            _bound = true;
-
-            KccMotorAdapter motor = new(kcc);
             PlayerInputAdapter inputAdapter = new(input);
 
             _nickNameFadeEffect.Initialization(Camera.main);
