@@ -1,6 +1,8 @@
 using Core.Scripts.Game.CharacterLogic;
 using Core.Scripts.Game.CharacterLogic.Adapters;
 using Core.Scripts.Game.CharacterLogic.Data;
+using Core.Scripts.Game.Combat.Data;
+using Core.Scripts.Game.Combat.Events;
 using Core.Scripts.Game.Constants;
 using Core.Scripts.Game.GamePlay.UsableItems;
 using Core.Scripts.Game.Infrastructure.ModelData;
@@ -23,7 +25,7 @@ namespace Core.Scripts.Game.PlayerLogic
     }
 
     public sealed class Player : NetworkBehaviour, IAfterSpawned, IBeforeTick, IAfterTick, IRequiresInjection,
-        IItemPickUpHandler
+        IItemPickUpHandler, IDamageable
     {
         public bool RequiresInjection { get; set; } = true;
 
@@ -34,6 +36,12 @@ namespace Core.Scripts.Game.PlayerLogic
         [Networked, UnitySerializeField] public int PlayerWeaponId { get; set; }
         [Networked, UnitySerializeField] public int AttackSequence { get; set; }
         [Networked, UnitySerializeField] public int LastAttackTick { get; set; }
+        [Networked, UnitySerializeField] public HealthNetwork Health { get; set; }
+
+        NetworkId IDamageable.NetworkId => _networkId;
+        Transform IDamageable.Transform => _transform;
+        bool IDamageable.IsDead => _isDead;
+
         [Networked, UnitySerializeField] public CharacterVisualNetwork VisualNetwork { get; set; }
 
         [Title("Visual Data"), SerializeField] private CharacterVisual _characterVisualData;
@@ -60,6 +68,9 @@ namespace Core.Scripts.Game.PlayerLogic
 
         private CharacterRuntime _runtime;
         private ChangeDetector _changeDetector;
+        private NetworkId _networkId;
+        private Transform _transform;
+        private bool _isDead;
 
         [Inject]
         public void Constructor(
@@ -176,6 +187,16 @@ namespace Core.Scripts.Game.PlayerLogic
         {
             if (Object.HasStateAuthority)
                 PlayerWeaponId = pickUpItem.id;
+        }
+        
+        void IDamageable.ApplyDamage(DamageEvent damageEvent)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        int IDamageable.GetArmor()
+        {
+            throw new System.NotImplementedException();
         }
 
         private void TryCreateLocalAddon(ICharacterMotor motor)

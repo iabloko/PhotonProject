@@ -6,7 +6,6 @@ namespace Core.Scripts.Game.CharacterLogic.Adapters
     public sealed class KccMotorAdapter : ICharacterMotor
     {
         private readonly SimpleKCC _kcc;
-
         public KccMotorAdapter(SimpleKCC kcc) => _kcc = kcc;
 
         public Transform Transform => _kcc.transform;
