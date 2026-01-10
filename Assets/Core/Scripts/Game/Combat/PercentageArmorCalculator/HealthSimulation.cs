@@ -12,13 +12,13 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
     {
         private readonly Func<HealthNetwork> _getHealth;
         private readonly Action<HealthNetwork> _setHealth;
-        private readonly Action<Data.DamageEvent> _onDamageReceived;
+        private readonly Action<DamageEvent> _onDamageReceived;
         private readonly Action _onDeath;
 
         public HealthSimulation(
             Func<HealthNetwork> getHealth,
             Action<HealthNetwork> setHealth,
-            Action<Data.DamageEvent> onDamageReceived = null,
+            Action<DamageEvent> onDamageReceived = null,
             Action onDeath = null)
         {
             _getHealth = getHealth;
@@ -32,7 +32,7 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
         public int MaxHealth => _getHealth().max;
         public int Armor => _getHealth().armor;
 
-        public void ApplyDamage(Data.DamageEvent damageEvent)
+        public void ApplyDamage(DamageEvent damageEvent)
         {
             HealthNetwork health = _getHealth();
 

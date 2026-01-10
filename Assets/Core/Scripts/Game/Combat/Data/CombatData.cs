@@ -97,10 +97,7 @@ namespace Core.Scripts.Game.Combat.Data
             };
         }
     }
-
-    /// <summary>
-    /// Событие нанесения урона - для презентеров и эффектов
-    /// </summary>
+    
     public struct DamageEvent
     {
         public NetworkId VictimId;
@@ -109,6 +106,9 @@ namespace Core.Scripts.Game.Combat.Data
         public Vector3 HitPoint;
         public Vector3 HitDirection;
         public int Tick;
+
+        public override string ToString() =>
+            $"Damage Event: {VictimId} | {AttackerId} | {HitPoint} | {HitDirection} | {Tick}";
     }
 
     /// <summary>

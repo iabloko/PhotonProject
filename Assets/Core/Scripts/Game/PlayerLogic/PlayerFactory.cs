@@ -1,3 +1,4 @@
+using System;
 using Core.Scripts.Game.CharacterLogic;
 using Core.Scripts.Game.CharacterLogic.CharacterCombat;
 using Core.Scripts.Game.CharacterLogic.Presenter;
@@ -16,10 +17,12 @@ namespace Core.Scripts.Game.PlayerLogic
 
         public PlayerFactory(IProjectSettings projectSettings) => _projectSettings = projectSettings;
 
-        public CharacterRuntime CreateRuntime(PlayerRuntimeConfig config, ICharacterMotor motor)
+        public CharacterRuntime CreateRuntime(
+            PlayerRuntimeConfig config, 
+            ICharacterMotor motor,
+            ITimeSource time,
+            Action onAttackExecuted)
         {
-            ITimeSource time = new RunnerTimeSource(config.Runner);
-
             CharacterAnimationPresenter anim = CreateAnimationPresenter(motor, config);
             CharacterEffectsPresenter effects = CreateEffectsPresenter(motor, config);
             SkinPresenter skin = new(config.VisualData);
@@ -45,7 +48,7 @@ namespace Core.Scripts.Game.PlayerLogic
                     _projectSettings,
                     () => anim.PlayJump(true));
 
-                combatSim = new CombatSimulation(input, _projectSettings, combatState);
+                combatSim = new CombatSimulation(input, _projectSettings, combatState, onAttackExecuted);
             }
 
             return new CharacterRuntime(effects, anim, skin, visual, weapons, moveSim, lookSim, combatSim, combatState, motor);

@@ -7,10 +7,6 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
 {
-    /// <summary>
-    /// Симуляция атаки. Координирует детекцию попаданий, расчёт урона и применение.
-    /// Работает только на State Authority.
-    /// </summary>
     public sealed class AttackSimulation
     {
         private readonly IHitDetector _hitDetector;
@@ -24,7 +20,7 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
         private readonly Func<int> _getOwnLayer;
 
         private readonly IDamageable[] _hitBuffer;
-        private readonly Action<Data.DamageEvent> _onDamageDealt;
+        private readonly Action<DamageEvent> _onDamageDealt;
 
         private int _lastAttackTick;
 
@@ -37,7 +33,7 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
             Func<int> getWeaponId,
             Func<NetworkId> getNetworkId,
             Func<int> getOwnLayer,
-            Action<Data.DamageEvent> onDamageDealt = null,
+            Action<DamageEvent> onDamageDealt = null,
             int hitBufferSize = 16)
         {
             _hitDetector = hitDetector;
@@ -51,23 +47,20 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
             _onDamageDealt = onDamageDealt;
             _hitBuffer = new IDamageable[hitBufferSize];
         }
-
-        /// <summary>
-        /// Пытается выполнить атаку. Возвращает true если атака была выполнена.
-        /// </summary>
+        
         public bool TryAttack()
         {
             int weaponId = _getWeaponId();
-
+            
             if (!_weaponRegistry.TryGetConfig(weaponId, out WeaponCombatConfig config))
                 return false;
-
+            
             if (!CanAttack(config))
                 return false;
-
+            
             AttackContext context = CreateAttackContext(config);
             ExecuteAttack(context);
-
+            
             _lastAttackTick = _time.Tick;
             return true;
         }
@@ -97,37 +90,36 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
                     config.MeleeRadius,
                     _time.Tick);
             }
-            else
-            {
-                return AttackContext.CreateRanged(
-                    _getNetworkId(),
-                    config.Id,
-                    config.BaseDamage,
-                    origin,
-                    direction,
-                    config.ProjectileRange,
-                    _time.Tick);
-            }
+
+            return AttackContext.CreateRanged(
+                _getNetworkId(),
+                config.Id,
+                config.BaseDamage,
+                origin,
+                direction,
+                config.ProjectileRange,
+                _time.Tick);
         }
 
         private void ExecuteAttack(AttackContext context)
         {
             int excludeLayer = 1 << _getOwnLayer();
             int hitCount = _hitDetector.DetectHits(context, _hitBuffer, excludeLayer);
-
+            
+            Debug.Log($"[Player] Detect Hits - {hitCount}");
+            
             for (int i = 0; i < hitCount; i++)
             {
                 IDamageable target = _hitBuffer[i];
 
-                if (target.NetworkId == _getNetworkId())
-                    continue;
+                if (target.NetworkId == _getNetworkId()) continue;
 
                 DamageResult result = _damageCalculator.Calculate(context, target);
 
                 Vector3 hitPoint = target.Transform.position;
                 Vector3 hitDirection = (hitPoint - context.Origin).normalized;
 
-                Data.DamageEvent damageEvent = new Data.DamageEvent
+                DamageEvent damageEvent = new()
                 {
                     VictimId = target.NetworkId,
                     AttackerId = context.AttackerId,
@@ -136,7 +128,7 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
                     HitDirection = hitDirection,
                     Tick = context.Tick
                 };
-
+                
                 target.ApplyDamage(damageEvent);
                 _onDamageDealt?.Invoke(damageEvent);
             }

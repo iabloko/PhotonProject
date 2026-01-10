@@ -4,14 +4,11 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.Combat.Presenters
 {
-    /// <summary>
-    /// Реестр оружия. Загружает конфиги из ScriptableObject или Resources.
-    /// </summary>
     public sealed class WeaponRegistry : IWeaponRegistry
     {
         private readonly Dictionary<int, WeaponCombatConfig> _weapons;
 
-        public WeaponRegistry()
+        private WeaponRegistry()
         {
             _weapons = new Dictionary<int, WeaponCombatConfig>();
         }
@@ -20,11 +17,12 @@ namespace Core.Scripts.Game.Combat.Presenters
         {
             foreach (WeaponCombatConfig config in configs)
             {
+                Debug.Log($"WeaponRegistry {config.ToString()}");
                 Register(config);
             }
         }
 
-        public void Register(WeaponCombatConfig config)
+        private void Register(WeaponCombatConfig config)
         {
             if (config == null) return;
 
@@ -51,30 +49,27 @@ namespace Core.Scripts.Game.Combat.Presenters
             return _weapons.Values;
         }
     }
-
-    /// <summary>
-    /// Реестр оружия, загружающий конфиги из Resources.
-    /// </summary>
-    public sealed class ResourcesWeaponRegistry : IWeaponRegistry
-    {
-        private readonly WeaponRegistry _registry;
-
-        public ResourcesWeaponRegistry(string resourcesPath = "Weapons")
-        {
-            _registry = new WeaponRegistry();
-
-            var configs = Resources.LoadAll<WeaponCombatConfig>(resourcesPath);
-            foreach (WeaponCombatConfig config in configs)
-            {
-                _registry.Register(config);
-            }
-
-            Debug.Log($"[ResourcesWeaponRegistry] Loaded {configs.Length} weapon configs from '{resourcesPath}'");
-        }
-
-        public bool TryGetConfig(int weaponId, out WeaponCombatConfig config)
-        {
-            return _registry.TryGetConfig(weaponId, out config);
-        }
-    }
+    
+    // public sealed class ResourcesWeaponRegistry : IWeaponRegistry
+    // {
+    //     private readonly WeaponRegistry _registry;
+    //
+    //     public ResourcesWeaponRegistry(string resourcesPath = "Weapons")
+    //     {
+    //         _registry = new WeaponRegistry();
+    //
+    //         var configs = Resources.LoadAll<WeaponCombatConfig>(resourcesPath);
+    //         foreach (WeaponCombatConfig config in configs)
+    //         {
+    //             _registry.Register(config);
+    //         }
+    //
+    //         Debug.Log($"[ResourcesWeaponRegistry] Loaded {configs.Length} weapon configs from '{resourcesPath}'");
+    //     }
+    //
+    //     public bool TryGetConfig(int weaponId, out WeaponCombatConfig config)
+    //     {
+    //         return _registry.TryGetConfig(weaponId, out config);
+    //     }
+    // }
 }

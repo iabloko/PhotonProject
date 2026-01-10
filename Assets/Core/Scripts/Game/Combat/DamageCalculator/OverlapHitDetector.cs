@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.Combat.DamageCalculator
 {
-    /// <summary>
-    /// Детектор попаданий на основе Physics.OverlapSphere.
-    /// Поддерживает melee (сфера + угол) и ranged (SphereCast).
-    /// </summary>
     public sealed class OverlapHitDetector : IHitDetector
     {
         private readonly Collider[] _colliderBuffer;
@@ -31,16 +27,16 @@ namespace Core.Scripts.Game.Combat.DamageCalculator
             int layerMask = _damageableLayer != 0 
                 ? (1 << _damageableLayer) & ~excludeLayer 
                 : ~excludeLayer;
-
+            
             Vector3 castOrigin = context.Origin + context.Direction * (context.Radius * 0.5f);
-
+            
             int count = Physics.OverlapSphereNonAlloc(
                 castOrigin,
                 context.Range + context.Radius,
                 _colliderBuffer,
                 layerMask,
                 QueryTriggerInteraction.Ignore);
-
+            
             int hitCount = 0;
 
             for (int i = 0; i < count && hitCount < buffer.Length; i++)
@@ -75,7 +71,7 @@ namespace Core.Scripts.Game.Combat.DamageCalculator
             int layerMask = _damageableLayer != 0 
                 ? (1 << _damageableLayer) & ~excludeLayer 
                 : ~excludeLayer;
-
+            
             float sphereRadius = Mathf.Max(0.1f, context.Radius);
 
             RaycastHit[] hits = Physics.SphereCastAll(
@@ -106,7 +102,8 @@ namespace Core.Scripts.Game.Combat.DamageCalculator
 
         private bool TryGetDamageable(Collider collider, out IDamageable damageable)
         {
-            damageable = collider.GetComponentInParent<IDamageable>();
+            Debug.Log($"[OverlapHitDetector]: Try Get Damageable {collider.transform.parent.name}");
+            damageable = collider.transform.parent.GetComponentInParent<IDamageable>();
             return damageable != null;
         }
     }

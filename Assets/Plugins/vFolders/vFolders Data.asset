@@ -89,6 +89,7 @@ MonoBehaviour:
     - d663e6c06b9280246a5a49e54362d425
     - ff03243dd5d5f6948a342c45bccce8b6
     - 6892c962e9981274b89693dbacaec3a7
+    - 6eb5e98cd5a262e4c857b890784ea1d8
     values:
     - iconNameOrGuid: FreeformLayoutGroup Icon
       colorIndex: 0
@@ -387,6 +388,10 @@ MonoBehaviour:
       isIconRecursive: 0
       isColorRecursive: 0
     - iconNameOrGuid: PreMatCube
+      colorIndex: 0
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Folder Icon
       colorIndex: 0
       isIconRecursive: 0
       isColorRecursive: 0

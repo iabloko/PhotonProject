@@ -6,6 +6,7 @@ using Core.Scripts.Game.Combat.Events;
 using Core.Scripts.Game.Combat.PercentageArmorCalculator;
 using Fusion;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Core.Scripts.Game.Combat.Presenters
 {
@@ -33,13 +34,13 @@ namespace Core.Scripts.Game.Combat.Presenters
         // Презентеры (опционально)
         public Animator Animator { get; set; }
         public ParticleSystem HitParticles { get; set; }
-        public UnityEngine.UI.Image HealthBar { get; set; }
-        public CanvasGroup DamageFlash { get; set; }
+        // public Image HealthBar { get; set; }
+        // public CanvasGroup DamageFlash { get; set; }
         public GameObject RagdollRoot { get; set; }
 
         // Callbacks
-        public Action<Data.DamageEvent> OnDamageDealt { get; set; }
-        public Action<Data.DamageEvent> OnDamageReceived { get; set; }
+        public Action<DamageEvent> OnDamageDealt { get; set; }
+        public Action<DamageEvent> OnDamageReceived { get; set; }
         public Action OnDeath { get; set; }
     }
 
@@ -51,57 +52,60 @@ namespace Core.Scripts.Game.Combat.Presenters
         public HealthSimulation HealthSim { get; }
         public AttackSimulation AttackSim { get; }
 
-        public HealthPresenter HealthPresenter { get; }
+        // public HealthPresenter HealthPresenter { get; }
         public DamageEffectsPresenter DamageEffectsPresenter { get; }
         public DeathPresenter DeathPresenter { get; }
 
         public CombatRuntime(
             HealthSimulation healthSim,
             AttackSimulation attackSim,
-            HealthPresenter healthPresenter,
+            // HealthPresenter healthPresenter,
             DamageEffectsPresenter damageEffectsPresenter,
             DeathPresenter deathPresenter)
         {
             HealthSim = healthSim;
             AttackSim = attackSim;
-            HealthPresenter = healthPresenter;
+            // HealthPresenter = healthPresenter;
             DamageEffectsPresenter = damageEffectsPresenter;
             DeathPresenter = deathPresenter;
         }
 
-        public void FixedTick()
-        {
-        }
-
         public void LateUpdate(float deltaTime, float normalizedHealth)
         {
-            HealthPresenter.Update(deltaTime);
-            HealthPresenter.SetHealth(normalizedHealth);
+            // HealthPresenter.Update(deltaTime);
+            // HealthPresenter.SetHealth(normalizedHealth);
         }
 
         public void Dispose()
         {
         }
-    }
 
-    /// <summary>
-    /// Фабрика комбат-систем. Создаёт симуляции и презентеры согласно конфигурации.
-    /// </summary>
+        public void PlayDeath() => DeathPresenter.PlayDeath();
+
+        public void TryAttack()
+        {
+           bool result = AttackSim.TryAttack();
+           Debug.Log($"[Player] Try Attack Result - {result}");
+        }
+
+        public void SetHealth(float healthNormalizedHealth)
+        {
+            // HealthPresenter.SetHealth(healthNormalizedHealth);
+        }
+    }
+    
     public sealed class CombatFactory
     {
         private readonly int _damageableLayer;
 
-        public CombatFactory(int damageableLayer = 0)
-        {
-            _damageableLayer = damageableLayer;
-        }
+        public CombatFactory(int damageableLayer) => _damageableLayer = damageableLayer;
 
         public CombatRuntime Create(CombatConfig config)
         {
             HealthSimulation healthSim = null;
             AttackSimulation attackSim = null;
 
-            HealthPresenter healthPresenter = CreateHealthPresenter(config);
+            // HealthPresenter healthPresenter = CreateHealthPresenter(config);
             DamageEffectsPresenter damageEffectsPresenter = CreateDamageEffectsPresenter(config);
             DeathPresenter deathPresenter = CreateDeathPresenter(config);
 
@@ -114,7 +118,7 @@ namespace Core.Scripts.Game.Combat.Presenters
             return new CombatRuntime(
                 healthSim,
                 attackSim,
-                healthPresenter,
+                // healthPresenter,
                 damageEffectsPresenter,
                 deathPresenter);
         }
@@ -142,8 +146,7 @@ namespace Core.Scripts.Game.Combat.Presenters
         private AttackSimulation CreateAttackSimulation(CombatConfig config)
         {
             IHitDetector hitDetector = new OverlapHitDetector(
-                bufferSize: 16,
-                damageableLayer: _damageableLayer);
+                bufferSize: 16, damageableLayer: _damageableLayer);
 
             IDamageCalculator damageCalculator = new StandardDamageCalculator(config.WeaponRegistry);
 
@@ -159,10 +162,10 @@ namespace Core.Scripts.Game.Combat.Presenters
                 config.OnDamageDealt);
         }
 
-        private HealthPresenter CreateHealthPresenter(CombatConfig config)
-        {
-            return new HealthPresenter(config.HealthBar, config.DamageFlash);
-        }
+        // private HealthPresenter CreateHealthPresenter(CombatConfig config)
+        // {
+        //     return new HealthPresenter(config.HealthBar, config.DamageFlash);
+        // }
 
         private DamageEffectsPresenter CreateDamageEffectsPresenter(CombatConfig config)
         {

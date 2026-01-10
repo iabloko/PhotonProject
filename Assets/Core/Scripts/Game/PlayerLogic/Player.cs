@@ -3,6 +3,7 @@ using Core.Scripts.Game.CharacterLogic.Adapters;
 using Core.Scripts.Game.CharacterLogic.Data;
 using Core.Scripts.Game.Combat.Data;
 using Core.Scripts.Game.Combat.Events;
+using Core.Scripts.Game.Combat.Presenters;
 using Core.Scripts.Game.Constants;
 using Core.Scripts.Game.GamePlay.UsableItems;
 using Core.Scripts.Game.Infrastructure.ModelData;
@@ -15,6 +16,7 @@ using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace Core.Scripts.Game.PlayerLogic
@@ -31,18 +33,27 @@ namespace Core.Scripts.Game.PlayerLogic
 
         [Title("Network Behaviour"), Networked, UnitySerializeField]
         public NetworkString<_16> PlayerNickName { get; set; }
-
-        [Networked, UnitySerializeField] public int CurrentHealth { get; set; }
         [Networked, UnitySerializeField] public int PlayerWeaponId { get; set; }
         [Networked, UnitySerializeField] public int AttackSequence { get; set; }
         [Networked, UnitySerializeField] public int LastAttackTick { get; set; }
-        [Networked, UnitySerializeField] public HealthNetwork Health { get; set; }
+        
+        [Title("Network Behaviour", "Health"), Networked, UnitySerializeField, HideLabel] 
+        public HealthNetwork Health { get; set; }
+        [Title("Network Behaviour", "Visual"), Networked, UnitySerializeField,] 
+        public CharacterVisualNetwork VisualNetwork { get; set; }
 
-        NetworkId IDamageable.NetworkId => _networkId;
-        Transform IDamageable.Transform => _transform;
-        bool IDamageable.IsDead => _isDead;
+        NetworkId IDamageable.NetworkId => Object.Id;
+        HealthNetwork IDamageable.Health => Health;
+        Transform IDamageable.Transform => transform;
+        bool IDamageable.IsDead => Health.IsDead;
 
-        [Networked, UnitySerializeField] public CharacterVisualNetwork VisualNetwork { get; set; }
+        void IDamageable.ApplyDamage(DamageEvent damageEvent)
+        {
+            if (!Object.HasStateAuthority) return;
+            _combatRuntime?.HealthSim?.ApplyDamage(damageEvent);
+        }
+
+        int IDamageable.GetArmor() => Health.armor;
 
         [Title("Visual Data"), SerializeField] private CharacterVisual _characterVisualData;
         [SerializeField, TableList] private WeaponData[] _weaponData;
@@ -57,29 +68,40 @@ namespace Core.Scripts.Game.PlayerLogic
 
         [Title("Effects"), SerializeField] private ParticleSystem _footprintParticles;
         [SerializeField] private ParticleSystem _onGroundParticles;
+        [SerializeField] private ParticleSystem _hitParticles;
+        
+        // [Title("Combat UI"), SerializeField]
+        // private Image _healthBar;
+        // [SerializeField] private CanvasGroup _damageFlash;
 
         [Title("Local Only"), SerializeField] private PlayerLocalAddon _localAddonPrefab;
 
         private IProjectSettings _projectSettings;
         private INickNameFadeEffect _nickNameFadeEffect;
         private DiContainer _container;
+        private ICharacterMotor _motor;
+        private RunnerTimeSource _time;
 
         private PlayerLocalAddon _local;
 
         private CharacterRuntime _runtime;
+        private CombatRuntime _combatRuntime;
         private ChangeDetector _changeDetector;
         private NetworkId _networkId;
         private Transform _transform;
         private bool _isDead;
+        private IWeaponRegistry _weaponRegistry;
 
         [Inject]
         public void Constructor(
             IProjectSettings projectSettings,
             INickNameFadeEffect nickNameFadeEffect,
+            IWeaponRegistry weaponRegistry,
             DiContainer container)
         {
             _projectSettings = projectSettings;
             _nickNameFadeEffect = nickNameFadeEffect;
+            _weaponRegistry = weaponRegistry;
             _container = container;
         }
 
@@ -91,21 +113,23 @@ namespace Core.Scripts.Game.PlayerLogic
 
         void IAfterSpawned.AfterSpawned()
         {
-            ICharacterMotor motor = new KccMotorAdapter(_kcc);
-            InitializeRuntime(motor);
+            _motor = new KccMotorAdapter(_kcc);
+            _time = new RunnerTimeSource(Runner);
+
+            InitializeRuntime();
+            InitializeCombat();
 
             if (Object.HasInputAuthority)
             {
-                _runtime.SetColliderLayer(GameConstants.LOCAL_PLAYER);
-                _runtime.SetColliderTag(GameConstants.LOCAL_PLAYER);
+                ChangeTag(GameConstants.LOCAL_PLAYER);
 
-                TryCreateLocalAddon(motor);
+                TryCreateLocalAddon(_motor);
                 InitializeNetworkSystems();
             }
             else
             {
-                _runtime.SetColliderLayer(GameConstants.REMOTE_PLAYER);
-                _runtime.SetColliderTag(GameConstants.REMOTE_PLAYER);
+                ChangeTag(GameConstants.REMOTE_PLAYER);
+                
                 _runtime.ApplySkin(VisualNetwork);
                 _runtime.ApplyWeapon(PlayerWeaponId);
                 _runtime.ApplyAttackSequence(AttackSequence);
@@ -113,6 +137,8 @@ namespace Core.Scripts.Game.PlayerLogic
                 ApplyNickname();
             }
         }
+
+        private void ChangeTag(string value) => _runtime.SetColliderTag(value);
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
@@ -127,13 +153,15 @@ namespace Core.Scripts.Game.PlayerLogic
                 _local = null;
             }
 
+            _combatRuntime?.Dispose();
             _runtime?.Dispose();
+            _combatRuntime = null;
             _runtime = null;
         }
 
         void IBeforeTick.BeforeTick()
         {
-            _runtime?.BeforeTick();
+            _runtime.BeforeTick();
         }
 
         void IAfterTick.AfterTick()
@@ -145,6 +173,8 @@ namespace Core.Scripts.Game.PlayerLogic
         {
             base.FixedUpdateNetwork();
 
+            if (Health.IsDead) return;
+            
             if (Object.HasStateAuthority)
                 _runtime.FixedTickSimulation();
 
@@ -154,6 +184,7 @@ namespace Core.Scripts.Game.PlayerLogic
         private void LateUpdate()
         {
             _runtime.LateTickPresentation();
+            _combatRuntime.LateUpdate(Time.deltaTime, Health.NormalizedHealth);
         }
 
         public override void Render()
@@ -179,24 +210,40 @@ namespace Core.Scripts.Game.PlayerLogic
                     case nameof(AttackSequence):
                         _runtime.ApplyAttackSequence(AttackSequence);
                         break;
+                    
+                    case nameof(Health):
+                        OnHealthChanged();
+                        break;
                 }
             }
+        }
+
+        private void ExecuteAttack()
+        {
+            if (!Object.HasStateAuthority) return;
+            if (Health.IsDead) return;
+            
+            _combatRuntime.TryAttack();
+        }
+
+        public void Heal(int amount)
+        {
+            if (!Object.HasStateAuthority) return;
+            _combatRuntime.HealthSim.Heal(amount);
+        }
+
+        private void Respawn()
+        {
+            if (!Object.HasStateAuthority) return;
+
+            _combatRuntime.HealthSim.Reset();
+            _combatRuntime.DeathPresenter.Reset();
         }
 
         void IItemPickUpHandler.TryPickUp(Weapon pickUpItem)
         {
             if (Object.HasStateAuthority)
                 PlayerWeaponId = pickUpItem.id;
-        }
-        
-        void IDamageable.ApplyDamage(DamageEvent damageEvent)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        int IDamageable.GetArmor()
-        {
-            throw new System.NotImplementedException();
         }
 
         private void TryCreateLocalAddon(ICharacterMotor motor)
@@ -206,17 +253,53 @@ namespace Core.Scripts.Game.PlayerLogic
             _local.Bind(motor, _input, _previewRotation);
         }
 
-        private void InitializeRuntime(ICharacterMotor motor)
+        private void InitializeRuntime()
         {
             PlayerRuntimeConfig config = CreateRuntimeConfig();
             PlayerFactory factory = new(_projectSettings);
-            _runtime = factory.CreateRuntime(config, motor);
+            _runtime = factory.CreateRuntime(config, _motor, _time, onAttackExecuted: ExecuteAttack);
+        }
+
+        private void InitializeCombat()
+        {
+            if (Object.HasStateAuthority)
+            {
+                Health = new HealthNetwork(100, 10);
+            }
+
+            CombatConfig config = new()
+            {
+                Motor = _motor,
+                Time = _time,
+                WeaponRegistry = _weaponRegistry,
+
+                GetWeaponId = () => PlayerWeaponId,
+                GetNetworkId = () => Object.Id,
+                GetOwnLayer = () => gameObject.layer,
+
+                GetHealth = () => Health,
+                SetHealth = value => Health = value,
+
+                HasStateAuthority = Object.HasStateAuthority,
+
+                Animator = _animator,
+                HitParticles = _hitParticles,
+                // HealthBar = _healthBar,
+                // DamageFlash = _damageFlash,
+
+                OnDamageDealt = OnDamageDealt,
+                OnDamageReceived = OnDamageReceived,
+                OnDeath = OnDeath
+            };
+
+            CombatFactory factory = new(
+                damageableLayer: LayerMask.NameToLayer(GameConstants.PLAYER));
+
+            _combatRuntime = factory.Create(config);
         }
 
         private void InitializeNetworkSystems()
         {
-            CurrentHealth = 100;
-
             VisualNetwork = _runtime.CreateRandomVisual();
             PlayerNickName = _runtime.CreateDefaultNickname();
             _nickNameText.gameObject.SetActive(false);
@@ -254,6 +337,33 @@ namespace Core.Scripts.Game.PlayerLogic
             {
                 Debug.LogError($"Failed to apply nickname for player {Object.Id}: {e.Message}");
             }
+        }
+
+
+        private void OnDamageDealt(DamageEvent damageEvent)
+        {
+            Debug.Log($"[Player {Object.Id}] Dealt {damageEvent.Result.FinalDamage} damage to {damageEvent.VictimId}");
+        }
+
+        private void OnDamageReceived(DamageEvent damageEvent)
+        {
+            Debug.Log(
+                $"[Player {Object.Id}] Received {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId}");
+            // _combatRuntime.HealthPresenter.OnDamageReceived();
+        }
+
+        private void OnDeath()
+        {
+            Debug.Log($"[Player {Object.Id}] Died!");
+            _combatRuntime.PlayDeath();
+        }
+
+        private void OnHealthChanged()
+        {
+            Debug.Log($"[Player {Object.Id}] On Health Changed!");
+            
+            _combatRuntime.SetHealth(Health.NormalizedHealth);
+            if (Health.IsDead) _combatRuntime.PlayDeath();
         }
     }
 }

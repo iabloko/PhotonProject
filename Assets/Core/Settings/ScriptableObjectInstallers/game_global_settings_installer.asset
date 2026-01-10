@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2305895074364bc68a8887d26141522c, type: 3}
-  m_Name: GameConfigInstaller
+  m_Script: {fileID: 11500000, guid: 1b37a30656ce4c5ebad3d9cf420c398b, type: 3}
+  m_Name: game_global_settings_installer
   m_EditorClassIdentifier: 
-  gameConfig: {fileID: 11400000, guid: 95209d6b481d67a4ba002de712993a6c, type: 2}
+  gameGlobalSettings: {fileID: 11400000, guid: 8bafd5e52b79ab4499d6f1ce8a37ce85, type: 2}

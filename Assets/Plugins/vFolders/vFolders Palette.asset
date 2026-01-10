@@ -98,6 +98,7 @@ MonoBehaviour:
   - builtinIcons: []
     customIcons:
     - AssetStore Icon
+    - Folder Icon
     enabled: 1
   - builtinIcons: []
     customIcons: []
