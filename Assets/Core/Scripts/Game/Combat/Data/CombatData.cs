@@ -15,7 +15,7 @@ namespace Core.Scripts.Game.Combat.Data
     /// <summary>
     /// Результат расчёта урона
     /// </summary>
-    public struct DamageResult
+    public struct DamageResult : INetworkStruct
     {
         public int RawDamage;
         public int ArmorReduction;
@@ -98,7 +98,7 @@ namespace Core.Scripts.Game.Combat.Data
         }
     }
     
-    public struct DamageEvent
+    public struct DamageEvent : INetworkStruct
     {
         public NetworkId VictimId;
         public NetworkId AttackerId;

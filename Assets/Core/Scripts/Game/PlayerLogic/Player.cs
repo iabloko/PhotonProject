@@ -1,3 +1,4 @@
+using System;
 using Core.Scripts.Game.CharacterLogic;
 using Core.Scripts.Game.CharacterLogic.Adapters;
 using Core.Scripts.Game.CharacterLogic.Data;
@@ -15,8 +16,8 @@ using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 
 namespace Core.Scripts.Game.PlayerLogic
@@ -36,25 +37,18 @@ namespace Core.Scripts.Game.PlayerLogic
         [Networked, UnitySerializeField] public int PlayerWeaponId { get; set; }
         [Networked, UnitySerializeField] public int AttackSequence { get; set; }
         [Networked, UnitySerializeField] public int LastAttackTick { get; set; }
-        
-        [Title("Network Behaviour", "Health"), Networked, UnitySerializeField, HideLabel] 
+
+        [Title("Network Behaviour", "Health"), Networked, UnitySerializeField, HideLabel]
         public HealthNetwork Health { get; set; }
-        [Title("Network Behaviour", "Visual"), Networked, UnitySerializeField,] 
+        [Title("Network Behaviour", "Visual"), Networked, UnitySerializeField,]
         public CharacterVisualNetwork VisualNetwork { get; set; }
 
         NetworkId IDamageable.NetworkId => Object.Id;
         HealthNetwork IDamageable.Health => Health;
         Transform IDamageable.Transform => transform;
         bool IDamageable.IsDead => Health.IsDead;
-
-        void IDamageable.ApplyDamage(DamageEvent damageEvent)
-        {
-            if (!Object.HasStateAuthority) return;
-            _combatRuntime?.HealthSim?.ApplyDamage(damageEvent);
-        }
-
         int IDamageable.GetArmor() => Health.armor;
-
+        
         [Title("Visual Data"), SerializeField] private CharacterVisual _characterVisualData;
         [SerializeField, TableList] private WeaponData[] _weaponData;
         [SerializeField] private TMP_Text _nickNameText;
@@ -69,7 +63,7 @@ namespace Core.Scripts.Game.PlayerLogic
         [Title("Effects"), SerializeField] private ParticleSystem _footprintParticles;
         [SerializeField] private ParticleSystem _onGroundParticles;
         [SerializeField] private ParticleSystem _hitParticles;
-        
+
         // [Title("Combat UI"), SerializeField]
         // private Image _healthBar;
         // [SerializeField] private CanvasGroup _damageFlash;
@@ -91,6 +85,8 @@ namespace Core.Scripts.Game.PlayerLogic
         private Transform _transform;
         private bool _isDead;
         private IWeaponRegistry _weaponRegistry;
+
+        private int _maxHealth = 100;
 
         [Inject]
         public void Constructor(
@@ -129,7 +125,7 @@ namespace Core.Scripts.Game.PlayerLogic
             else
             {
                 ChangeTag(GameConstants.REMOTE_PLAYER);
-                
+
                 _runtime.ApplySkin(VisualNetwork);
                 _runtime.ApplyWeapon(PlayerWeaponId);
                 _runtime.ApplyAttackSequence(AttackSequence);
@@ -174,7 +170,7 @@ namespace Core.Scripts.Game.PlayerLogic
             base.FixedUpdateNetwork();
 
             if (Health.IsDead) return;
-            
+
             if (Object.HasStateAuthority)
                 _runtime.FixedTickSimulation();
 
@@ -210,7 +206,7 @@ namespace Core.Scripts.Game.PlayerLogic
                     case nameof(AttackSequence):
                         _runtime.ApplyAttackSequence(AttackSequence);
                         break;
-                    
+
                     case nameof(Health):
                         OnHealthChanged();
                         break;
@@ -222,7 +218,7 @@ namespace Core.Scripts.Game.PlayerLogic
         {
             if (!Object.HasStateAuthority) return;
             if (Health.IsDead) return;
-            
+
             _combatRuntime.TryAttack();
         }
 
@@ -264,7 +260,7 @@ namespace Core.Scripts.Game.PlayerLogic
         {
             if (Object.HasStateAuthority)
             {
-                Health = new HealthNetwork(100, 10);
+                Health = new HealthNetwork(_maxHealth, 10);
             }
 
             CombatConfig config = new()
@@ -333,12 +329,36 @@ namespace Core.Scripts.Game.PlayerLogic
                 _nickNameText.text = formattedName;
                 transform.name = formattedName;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Debug.LogError($"Failed to apply nickname for player {Object.Id}: {e.Message}");
             }
         }
+        
+        void IDamageable.ApplyDamage(DamageEvent damageEvent)
+        {
+            Debug.Log($"[Player {Object.Id}] ApplyDamage {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId} : {Object.HasStateAuthority}");
+            
+            if (Object.HasStateAuthority)
+            {
+                ApplyDamageInternal(damageEvent);
+            }
+            else
+            {
+                RPC_RequestDamage(damageEvent);
+            }
+        }
 
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_RequestDamage(DamageEvent damage) => ApplyDamageInternal(damage);
+
+        private void ApplyDamageInternal(DamageEvent damageEvent)
+        {
+            HealthNetwork currentHealth = Health;
+            currentHealth.current = Mathf.Clamp(currentHealth.current - damageEvent.Result.FinalDamage, 0, _maxHealth);
+            Health = currentHealth;
+        }
 
         private void OnDamageDealt(DamageEvent damageEvent)
         {
@@ -347,9 +367,7 @@ namespace Core.Scripts.Game.PlayerLogic
 
         private void OnDamageReceived(DamageEvent damageEvent)
         {
-            Debug.Log(
-                $"[Player {Object.Id}] Received {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId}");
-            // _combatRuntime.HealthPresenter.OnDamageReceived();
+            Debug.Log($"[Player {Object.Id}] Received {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId}");
         }
 
         private void OnDeath()
@@ -361,7 +379,7 @@ namespace Core.Scripts.Game.PlayerLogic
         private void OnHealthChanged()
         {
             Debug.Log($"[Player {Object.Id}] On Health Changed!");
-            
+
             _combatRuntime.SetHealth(Health.NormalizedHealth);
             if (Health.IsDead) _combatRuntime.PlayDeath();
         }

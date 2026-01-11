@@ -106,8 +106,6 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
             int excludeLayer = 1 << _getOwnLayer();
             int hitCount = _hitDetector.DetectHits(context, _hitBuffer, excludeLayer);
             
-            Debug.Log($"[Player] Detect Hits - {hitCount}");
-            
             for (int i = 0; i < hitCount; i++)
             {
                 IDamageable target = _hitBuffer[i];

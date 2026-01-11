@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: 1
   _displayName: Stick
   _attackType: 0
-  _baseDamage: 10
+  _baseDamage: 15
   _armorPenetration: 0
   _meleeRange: 2
   _meleeRadius: 0.5

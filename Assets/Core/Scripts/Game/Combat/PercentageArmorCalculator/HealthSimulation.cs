@@ -3,11 +3,6 @@ using Core.Scripts.Game.Combat.Data;
 
 namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
 {
-    /// <summary>
-    /// Симуляция здоровья персонажа.
-    /// Управляет получением урона, смертью и восстановлением.
-    /// Работает только на State Authority.
-    /// </summary>
     public sealed class HealthSimulation
     {
         private readonly Func<HealthNetwork> _getHealth;

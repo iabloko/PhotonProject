@@ -92,6 +92,8 @@ namespace Core.Scripts.Game.Combat.Presenters
         {
             // HealthPresenter.SetHealth(healthNormalizedHealth);
         }
+
+        public void ApplyDamage(DamageEvent damageEvent) => HealthSim.ApplyDamage(damageEvent);
     }
     
     public sealed class CombatFactory
@@ -133,7 +135,7 @@ namespace Core.Scripts.Game.Combat.Presenters
                 config.SetHealth,
                 onDamageReceived: damageEvent =>
                 {
-                    effectsPresenter?.PlayHitEffect(damageEvent);
+                    effectsPresenter.PlayHitEffect(damageEvent);
                     config.OnDamageReceived?.Invoke(damageEvent);
                 },
                 onDeath: () =>
