@@ -160,7 +160,6 @@ Shader "AmplifyShaderPack/UIGlow"
         ENDCG
         }
     }
-    CustomEditor "ASEMaterialInspector"
 	
 	Fallback Off
 }

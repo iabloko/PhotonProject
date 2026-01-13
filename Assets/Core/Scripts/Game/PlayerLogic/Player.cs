@@ -12,12 +12,14 @@ using Core.Scripts.Game.Infrastructure.RequiresInjection;
 using Core.Scripts.Game.Infrastructure.Services.NickName;
 using Core.Scripts.Game.Infrastructure.Services.ProjectSettingsService;
 using Core.Scripts.Game.PlayerLogic.InputLogic;
+using Core.Scripts.Game.ScriptableObjects.Configs.Logger;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using Zenject;
+using LogLevel = Core.Scripts.Game.ScriptableObjects.Configs.Logger.LogLevel;
 
 namespace Core.Scripts.Game.PlayerLogic
 {
@@ -35,7 +37,7 @@ namespace Core.Scripts.Game.PlayerLogic
         public NetworkString<_16> PlayerNickName { get; set; }
         [Networked, UnitySerializeField] public int PlayerWeaponId { get; set; }
         [Networked, UnitySerializeField] public int AttackSequence { get; set; }
-        [Networked, UnitySerializeField] public int LastAttackTick { get; set; }
+        [Networked, UnitySerializeField] private int LastAttackTick { get; set; }
 
         [Title("Network Behaviour", "Health"), Networked, UnitySerializeField, HideLabel]
         public HealthNetwork Health { get; set; }
@@ -43,11 +45,12 @@ namespace Core.Scripts.Game.PlayerLogic
         public CharacterVisualNetwork VisualNetwork { get; set; }
 
         NetworkId IDamageable.NetworkId => Object.Id;
-        HealthNetwork IDamageable.Health => Health;
         Transform IDamageable.Transform => transform;
+
+        HealthNetwork IDamageable.Health => Health;
         bool IDamageable.IsDead => Health.IsDead;
         int IDamageable.GetArmor() => Health.armor;
-        
+
         [Title("Visual Data"), SerializeField] private CharacterVisual _characterVisualData;
         [SerializeField, TableList] private WeaponData[] _weaponData;
         [SerializeField] private TMP_Text _nickNameText;
@@ -74,6 +77,7 @@ namespace Core.Scripts.Game.PlayerLogic
         private DiContainer _container;
         private ICharacterMotor _motor;
         private RunnerTimeSource _time;
+        private GameLogger _logger;
 
         private PlayerLocalAddon _local;
 
@@ -85,15 +89,17 @@ namespace Core.Scripts.Game.PlayerLogic
         private bool _isDead;
         private IWeaponRegistry _weaponRegistry;
 
-        private int _maxHealth = 100;
+        private readonly int _maxHealth = 100;
 
         [Inject]
         public void Constructor(
             IProjectSettings projectSettings,
             INickNameFadeEffect nickNameFadeEffect,
             IWeaponRegistry weaponRegistry,
-            DiContainer container)
+            DiContainer container,
+            GameLogger logger)
         {
+            _logger = logger;
             _projectSettings = projectSettings;
             _nickNameFadeEffect = nickNameFadeEffect;
             _weaponRegistry = weaponRegistry;
@@ -330,14 +336,15 @@ namespace Core.Scripts.Game.PlayerLogic
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to apply nickname for player {Object.Id}: {e.Message}");
+                _logger.Log<Player>(LogLevel.Error, $"Failed to apply nickname for player {Object.Id}: {e.Message}");
             }
         }
-        
+
         void IDamageable.ApplyDamage(DamageEvent damageEvent)
         {
-            Debug.Log($"[Player {Object.Id}] ApplyDamage {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId} : {Object.HasStateAuthority}");
-            
+            _logger.Log<Player>(LogLevel.Info,
+                $"[Player {Object.Id}] ApplyDamage {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId} : {Object.HasStateAuthority}");
+
             if (Object.HasStateAuthority)
             {
                 ApplyDamageInternal(damageEvent);
@@ -361,24 +368,26 @@ namespace Core.Scripts.Game.PlayerLogic
 
         private void OnDamageDealt(DamageEvent damageEvent)
         {
-            Debug.Log($"[Player {Object.Id}] Dealt {damageEvent.Result.FinalDamage} damage to {damageEvent.VictimId}");
+            _logger.Log<Player>(LogLevel.Info,
+                $"[Player {Object.Id}] Dealt {damageEvent.Result.FinalDamage} damage to {damageEvent.VictimId}");
             // _hitParticles.Play();
         }
 
         private void OnDamageReceived(DamageEvent damageEvent)
         {
-            Debug.Log($"[Player {Object.Id}] Received {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId}");
+            _logger.Log<Player>(LogLevel.Info,
+                $"[Player {Object.Id}] Received {damageEvent.Result.FinalDamage} damage from {damageEvent.AttackerId}");
         }
 
         private void OnDeath()
         {
-            Debug.Log($"[Player {Object.Id}] Died!");
+            _logger.Log<Player>(LogLevel.Info, $"[Player {Object.Id}] Died!");
             _combatRuntime.PlayDeath();
         }
 
         private void OnHealthChanged()
         {
-            Debug.Log($"[Player {Object.Id}] On Health Changed!");
+            _logger.Log<Player>(LogLevel.Info, $"[Player {Object.Id}] On Health Changed!");
             _hitParticles.Play();
 
             _combatRuntime.SetHealth(Health.NormalizedHealth);

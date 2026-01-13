@@ -3,18 +3,12 @@ using UnityEngine;
 
 namespace Core.Scripts.Game.Combat.Data
 {
-    /// <summary>
-    /// Тип атаки - влияет на способ детекции попаданий
-    /// </summary>
     public enum AttackType : byte
     {
         Melee = 0,
         Ranged = 1
     }
-
-    /// <summary>
-    /// Результат расчёта урона
-    /// </summary>
+    
     public struct DamageResult : INetworkStruct
     {
         public int RawDamage;
@@ -34,10 +28,7 @@ namespace Core.Scripts.Game.Combat.Data
             };
         }
     }
-
-    /// <summary>
-    /// Контекст атаки для передачи между системами
-    /// </summary>
+    
     public struct AttackContext
     {
         public NetworkId AttackerId;
@@ -110,10 +101,7 @@ namespace Core.Scripts.Game.Combat.Data
         public override string ToString() =>
             $"Damage Event: {VictimId} | {AttackerId} | {HitPoint} | {HitDirection} | {Tick}";
     }
-
-    /// <summary>
-    /// Сетевые данные здоровья для синхронизации
-    /// </summary>
+    
     [System.Serializable]
     public struct HealthNetwork : INetworkStruct
     {

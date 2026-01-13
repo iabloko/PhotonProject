@@ -16,14 +16,6 @@ namespace Core.Scripts.Game.Combat.Events
         public int GetArmor();
     }
     
-    public interface IDamageDealer
-    {
-        public NetworkId NetworkId { get; }
-        public Transform Transform { get; }
-        
-        public AttackContext GetAttackContext();
-    }
-    
     public interface IWeaponRegistry
     {
         public bool TryGetConfig(int weaponId, out WeaponCombatConfig config);
