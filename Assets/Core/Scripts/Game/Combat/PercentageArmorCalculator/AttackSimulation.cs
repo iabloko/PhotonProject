@@ -78,27 +78,37 @@ namespace Core.Scripts.Game.Combat.PercentageArmorCalculator
             Vector3 origin = _motor.Position + Vector3.up * 1.2f;
             Vector3 direction = _motor.TransformDirection;
 
-            if (config.AttackType == AttackType.Melee)
-            {
-                return AttackContext.CreateMelee(
-                    _getNetworkId(),
-                    config.Id,
-                    config.BaseDamage,
-                    origin,
-                    direction,
-                    config.MeleeRange,
-                    config.MeleeRadius,
-                    _time.Tick);
-            }
-
-            return AttackContext.CreateRanged(
+            return AttackContext.CreateMelee(
                 _getNetworkId(),
                 config.Id,
                 config.BaseDamage,
                 origin,
                 direction,
-                config.ProjectileRange,
+                config.MeleeRange,
+                config.MeleeRadius,
                 _time.Tick);
+            
+            // if (config.AttackType == AttackType.Melee)
+            // {
+            //     return AttackContext.CreateMelee(
+            //         _getNetworkId(),
+            //         config.Id,
+            //         config.BaseDamage,
+            //         origin,
+            //         direction,
+            //         config.MeleeRange,
+            //         config.MeleeRadius,
+            //         _time.Tick);
+            // }
+
+            // return AttackContext.CreateRanged(
+            //     _getNetworkId(),
+            //     config.Id,
+            //     config.BaseDamage,
+            //     origin,
+            //     direction,
+            //     config.ProjectileRange,
+            //     _time.Tick);
         }
 
         private void ExecuteAttack(AttackContext context)

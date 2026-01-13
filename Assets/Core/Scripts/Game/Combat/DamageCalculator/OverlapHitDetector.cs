@@ -102,7 +102,6 @@ namespace Core.Scripts.Game.Combat.DamageCalculator
 
         private bool TryGetDamageable(Collider collider, out IDamageable damageable)
         {
-            Debug.Log($"[OverlapHitDetector]: Try Get Damageable {collider.transform.parent.name}");
             damageable = collider.transform.parent.GetComponentInParent<IDamageable>();
             return damageable != null;
         }

@@ -12,16 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69d01169234d4c447a0fad3c04385e7a, type: 3}
   m_Name: bow_weapon_config
   m_EditorClassIdentifier: Assembly-CSharp::Core.Scripts.Game.Combat.Events.WeaponCombatConfig
-  _id: 2
-  _displayName: Stick
-  _attackType: 0
-  _baseDamage: 15
+  _weapon: {fileID: 11400000, guid: 00ff90a89185d784592c317cdbcd6be6, type: 2}
+  _attackType: 1
+  _baseDamage: 25
   _armorPenetration: 10
   _meleeRange: 2
   _meleeRadius: 0.5
   _meleeAngle: 90
-  _projectileRange: 50
-  _projectileSpeed: 100
-  _isHitscan: 1
   _attackCooldown: 0.5
   _damageDelay: 0.1

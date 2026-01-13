@@ -16,7 +16,6 @@ using Fusion;
 using Fusion.Addons.SimpleKCC;
 using Sirenix.OdinInspector;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 using Zenject;
 
@@ -363,6 +362,7 @@ namespace Core.Scripts.Game.PlayerLogic
         private void OnDamageDealt(DamageEvent damageEvent)
         {
             Debug.Log($"[Player {Object.Id}] Dealt {damageEvent.Result.FinalDamage} damage to {damageEvent.VictimId}");
+            // _hitParticles.Play();
         }
 
         private void OnDamageReceived(DamageEvent damageEvent)
@@ -379,6 +379,7 @@ namespace Core.Scripts.Game.PlayerLogic
         private void OnHealthChanged()
         {
             Debug.Log($"[Player {Object.Id}] On Health Changed!");
+            _hitParticles.Play();
 
             _combatRuntime.SetHealth(Health.NormalizedHealth);
             if (Health.IsDead) _combatRuntime.PlayDeath();

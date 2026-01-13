@@ -1,4 +1,4 @@
 {
   "name": "Daniil.Combat.Base.Logic",
-  "references":[ "GUID:b1e73be7c91e4b9a9459ad0bb1ccc79d" ]
+  "references":[ "GUID:b1e73be7c91e4b9a9459ad0bb1ccc79d", "GUID:ab72fcfa24834c71a033056c4aba3608" ]
 }

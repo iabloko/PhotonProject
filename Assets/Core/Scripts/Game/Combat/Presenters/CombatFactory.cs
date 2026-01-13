@@ -82,11 +82,7 @@ namespace Core.Scripts.Game.Combat.Presenters
 
         public void PlayDeath() => DeathPresenter.PlayDeath();
 
-        public void TryAttack()
-        {
-           bool result = AttackSim.TryAttack();
-           Debug.Log($"[Player] Try Attack Result - {result}");
-        }
+        public void TryAttack() => AttackSim.TryAttack();
 
         public void SetHealth(float healthNormalizedHealth)
         {
