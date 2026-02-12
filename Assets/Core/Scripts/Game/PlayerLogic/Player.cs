@@ -354,8 +354,7 @@ namespace Core.Scripts.Game.PlayerLogic
                 RPC_RequestDamage(damageEvent);
             }
         }
-
-
+        
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_RequestDamage(DamageEvent damage) => ApplyDamageInternal(damage);
 

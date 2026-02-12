@@ -4,7 +4,6 @@ using Core.Scripts.Game.CharacterLogic.Data;
 using Core.Scripts.Game.CharacterLogic.Presenter;
 using Core.Scripts.Game.CharacterLogic.Simulation;
 using Fusion;
-using CombatSimulation = Core.Scripts.Game.CharacterLogic.Simulation.CombatSimulation;
 
 namespace Core.Scripts.Game.CharacterLogic
 {
